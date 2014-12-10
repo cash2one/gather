@@ -1,0 +1,17 @@
+{% extends 'base_no_login.html'%}
+{% load staticfiles %}
+{% block title %}
+<title>Gather-邮箱验证</title>
+{% endblock %}
+
+{% block container %}
+<div class="container">
+    <div class="progress">
+      <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 50%">
+        <span class="sr-only">50% Complete (success)</span>
+      </div>
+    </div>
+    <p>验证邮件已发送至：<a href="{{ email_site }}" target="_blank"><font style="color:#e7b032">{{ email_mask }}</font></a>，请查收。</p>
+    <p class="btn-wrap" style=" margin-top:25px;"><a href="{{ email_site }}" class="btn checkmail" target="_blank">进入邮箱</a>没有收到？<a href="{% url 'account.views.resend_bind_email' %}">再次发送</a></p>
+</div>
+{% endblock %}
