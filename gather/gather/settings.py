@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding:utf-8 -*-
+
 """
 Django settings for gather project.
 
@@ -12,6 +15,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+TEMPLATE_DIRS = os.path.join(BASE_DIR, 'templates')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
@@ -40,7 +44,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'accounts',
+    'account',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -61,8 +65,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.static",
     "django.core.context_processors.tz",
     "django.contrib.messages.context_processors.messages",
-    'cms.context_processors.media',
-    'sekizai.context_processors.sekizai',
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -80,12 +82,8 @@ WSGI_APPLICATION = 'gather.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'gather',
-        'USER': 'root',
-        'PASSWORD': '123456',
-        'HOST': '115.29.76.132',
-        'PORT': '3306',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
@@ -220,14 +218,6 @@ LOGGING = {
             'handlers': ['statistics'],
             'level': 'INFO',
         },
-        'allinpay': {
-            'handlers': ['allinpay'],
-            'level': 'INFO',
-        },
-        'api': {
-            'handlers': ['api'],
-            'level': 'DEBUG',
-        },
     }
 }
 # admin页面时间格式
@@ -240,3 +230,9 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 # BROKER_URL = 'redis://localhost:6379/0'
 # CELERY_DISABLE_RATE_LIMITS = True
+
+try:
+    from local_settings import *
+except ImportError:
+    pass
+
