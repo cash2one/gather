@@ -10,7 +10,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import Context, loader, RequestContext
 from django.shortcuts import render
 
-from account.forms import RegistForm
+from account.forms import RegistForm, LoginForm
 from account.models import UserProfile
 
 def send_verify_email(request, title, email, url, template_name, **kwargs):
@@ -35,12 +35,12 @@ def send_verify_email(request, title, email, url, template_name, **kwargs):
         return False
 
 
-def login(request, form_class, tempalte_name='account/login.html'):
+def login(request, form_class=LoginForm, tempalte_name='account/login.html'):
     """ 用户登录"""
     return render(request, tempalte_name)
 
 
-def regist(request, form_class, tempalte_name='account/regist.html'):
+def regist(request, form_class=RegistForm, tempalte_name='account/regist.html'):
     """ 用户注册"""
     if request.method == 'POST':
         form = form_class(request, data=request.POST)
