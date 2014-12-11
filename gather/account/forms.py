@@ -38,7 +38,7 @@ class RegistForm(forms.Form):
     password = forms.CharField(label='密码', widget=forms.PasswordInput(render_value=False), error_messages={'required': '请输入您的密码'})
     confirm_password = forms.CharField(label='再次输入', widget=forms.PasswordInput(render_value=False), error_messages={'required': '请再次输入密码'})
 
-    def clearn_username(self):
+    def clean_username(self):
         username = self.cleaned_data['username']
         if '@' not in username:
             raise forms.ValidationError('请用邮箱注册')
@@ -70,15 +70,16 @@ class RegistForm(forms.Form):
         user.set_password(password)
         user.save()
 
-        UserProfile(
+        profile = UserProfile(
             user=user,
             username=username,
             nickname=username,
             email=username,
             is_mail_verified=False,
-            last_login=datetime.datetime.now(),
-            activity_ip=self._request.META['REMOTE_ADDR'],
-        ).save()
+        )
+        profile.save()
+        return profile
+
 
 
 
