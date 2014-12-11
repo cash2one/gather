@@ -163,19 +163,19 @@ LOGGING = {
         'debug': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/wei_debug.log'),
+            'filename': os.path.join(BASE_DIR, 'logs/gather_debug.log'),
             'formatter': 'verbose',
         },
         'info': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/wei_info.log'),
+            'filename': os.path.join(BASE_DIR, 'logs/gather_info.log'),
             'formatter': 'verbose',
         },
         'err': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/wei_err.log'),
+            'filename': os.path.join(BASE_DIR, 'logs/gather_err.log'),
             'formatter': 'verbose',
         },
         'statistics': {
