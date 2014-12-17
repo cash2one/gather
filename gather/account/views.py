@@ -43,7 +43,7 @@ def login(request, form_class=LoginForm, template_name='account/login.html'):
     return render(request, template_name)
 
 
-def regist(request, form_class=RegistForm, template_name='account/email_verify.html'):
+def regist(request, form_class=RegistForm, template_name='account/regist.html'):
     """ 用户注册"""
     if request.method == 'POST':
         form = form_class(request, data=request.POST)
