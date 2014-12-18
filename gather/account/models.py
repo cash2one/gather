@@ -26,7 +26,7 @@ class UserProfile(models.Model):
 
     def get_mask_username(self):
         # 用户名保密
-        return self.username[:3] + "******"
+        return self.username[:3] + "******" + '.com'
 
     def get_mask_email(self):
         # 邮箱保密

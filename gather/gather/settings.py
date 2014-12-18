@@ -30,7 +30,7 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
-LOGIN_URL = '/accounts/login/'
+LOGIN_URL = '/account/login/'
 
 ADMINS = (
     ('zhangbo', '413761980@qq.com'),
@@ -38,6 +38,7 @@ ADMINS = (
 # Application definition
 
 INSTALLED_APPS = (
+    'djangocms_admin_style',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
