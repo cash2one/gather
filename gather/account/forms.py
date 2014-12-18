@@ -5,6 +5,8 @@ import datetime
 
 from django import forms
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
+from django.contrib.auth import login
 
 from account.models import UserProfile
 
@@ -18,16 +20,33 @@ class LoginForm(forms.Form):
     username = forms.CharField(label='用户名', max_length=30, widget=forms.TextInput(attrs={'placeholder': '请输入您的用户名'}), error_messages={'required': '请输入您的用户名'})
     password = forms.CharField(label='密码', widget=forms.PasswordInput(render_value=False), error_messages={'required': '请输入您的密码'})
 
-    def clearn_username(self):
+    def clean_username(self):
         username = self.cleaned_data['username']
         if '@' not in username:
             raise forms.ValidationError('请用邮箱登录')
         elif not User.objects.filter(username=username).exists():
             raise forms.ValidationError('您还未注册')
-
+        print 'clean_username'
         return username
 
- 
+    def clean_password(self):
+        password = self.cleaned_data['password']
+        username = self.cleaned_data['username']
+        if User.objects.filter(username=username).exists():
+            user = User.objects.get(username=username)
+            if not user.check_password(password):
+                raise forms.ValidationError('密码输入错误')
+        print "pass"
+        return password
+
+    def login(self):
+        print "username"
+        print self.cleaned_data['username'], self.cleaned_data['password']
+
+        user = authenticate(username=self.cleaned_data['username'], password=self.cleaned_data['password'])
+        login(self._request, user)
+
+
 class RegistForm(forms.Form):
     """ 注册表单"""
     def __init__(self, request=None, *args, **kwargs):

@@ -118,6 +118,13 @@ def get_decipher_username(request):
         return None
 
 
+def get_encrypt_code(username):
+    """ 对用户名加密"""
+    signer = TimestampSigner()
+    code = base64.b64encode(signer.sign(username))
+    return code
+
+
 def main():
     print get_withdraw_max(2001 * 100)
     # print gen_password(12)

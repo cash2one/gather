@@ -7,7 +7,7 @@
 {% block title %}
 <title>GATHER</title>
 {% endblock %}
-<link href="{% static "styles/bootstrap.min.css" %}" rel="stylesheet" type="text/css">
+<link href="{% static "styles/bootstrap.css" %}" rel="stylesheet" type="text/css">
 <link rel="shortcut icon" type="image/png" href="{% static "images/favicon.ico" %}"/>
 {% block extra_css %}
 <!--其他页面特有的CSS-->
@@ -31,17 +31,22 @@
         </div><!--/.navbar-collapse -->
       </div>
     </nav>
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}-message" role="alert">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
 {% endblock %} 
 
 {% block container %}
 {% endblock %} 
 
 {% block foot %} 
-      <footer>
-        <p>&copy; Company 2014</p>
+      <footer class="pager">
+        <p>&copy; Company 2014. jacsice</p>
       </footer>
 {% endblock %} 
-    </div> <!-- /container -->
+</div> <!-- /container -->
 
 <script src="{% static "scripts/jquery.min.js" %}"></script> 
 <script src="{% static "scripts/bootstrap.min.js" %}"></script> 
