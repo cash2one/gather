@@ -55,7 +55,7 @@ def login(request, form_class=LoginForm, template_name='index.html'):
                 code = get_encrypt_code(user.username)
                 return HttpResponseRedirect('%s?code=%s' % (reverse('account.views.send_bind_email'), code))
     else:
-        form = form_class()
+        form = form_class(request)
     return render(request, template_name, {
         'form': form,
     })
