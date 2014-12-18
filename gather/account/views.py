@@ -143,3 +143,15 @@ def resend_bind_email(request, template_name='account/email_verify.html'):
             'code': code,
         })
 
+
+def account(request, template_name="account/index.html"):
+    """ 个人账户页"""
+    return render(request, template_name)
+
+
+def logout(request):
+    """ 退出登录"""
+    from django.contrib.auth import logout
+    logout(request)
+    messages.info(request, '已成功退出')
+    return HttpResponseRedirect('/')
