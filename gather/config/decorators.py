@@ -45,7 +45,8 @@ def unlogin_required(func):
     """ 不允许登录用户进入"""
     @wraps(func)
     def returned_wrapper(request, *args, **kwargs):
-        if request.user.is_authenticated:
+        if request.user.is_authenticated():
             messages.error(request, '您已登录!')
             return HttpResponseRedirect(reverse('gather.views.index'))
+        return func(request, *args, **kwargs)
     return returned_wrapper

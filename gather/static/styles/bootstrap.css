@@ -1398,8 +1398,14 @@ pre code {
   padding-left: 15px;
   margin-right: auto;
   margin-left: auto;
-  margin-top: 100px;
+  margin-top: 50px;
 }
+
+.index{
+  margin-top: 50px;
+  height: 800px;
+}
+
 @media (min-width: 768px) {
   .container {
     width: 750px;
@@ -4797,11 +4803,13 @@ a.thumbnail.active {
   background-color: #f2dede;
   border-color: #ebccd1;
   margin-top: 50px;
+  z-index: 9999;
 }
 .alert-info-message {
   color: #31708f;
   background-color: #d9edf7;
   border-color: #bce8f1;
+  z-index: 999999;
   margin-top: 50px;
 }
 

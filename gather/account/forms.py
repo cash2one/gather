@@ -26,7 +26,6 @@ class LoginForm(forms.Form):
             raise forms.ValidationError('请用邮箱登录')
         elif not User.objects.filter(username=username).exists():
             raise forms.ValidationError('您还未注册')
-        print 'clean_username'
         return username
 
     def clean_password(self):
@@ -36,13 +35,9 @@ class LoginForm(forms.Form):
             user = User.objects.get(username=username)
             if not user.check_password(password):
                 raise forms.ValidationError('密码输入错误')
-        print "pass"
         return password
 
     def login(self):
-        print "username"
-        print self.cleaned_data['username'], self.cleaned_data['password']
-
         user = authenticate(username=self.cleaned_data['username'], password=self.cleaned_data['password'])
         login(self._request, user)
 
