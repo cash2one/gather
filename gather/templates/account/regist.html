@@ -4,12 +4,8 @@
 <title>Gather-注册</title>
 {% endblock %}
 
-{% block extra_css %}
-<link href="{% static "styles/regist.css" %}" rel="stylesheet" type="text/css">
-{% endblock %}
-
 {% block container %}
-<div class="container" style="height:800px;background:url('/static/images/regist.jpg')">
+<div class="container" style="height:800px;background:url('/static/images/regist.jpg') no-repeat">
   <form class="form-signin" role="form" action="." method="post">
     {% csrf_token %}
     <div class="regist">
