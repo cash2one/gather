@@ -26,16 +26,18 @@ class LoginForm(forms.Form):
             raise forms.ValidationError('请用邮箱登录')
         elif not User.objects.filter(username=username).exists():
             raise forms.ValidationError('您还未注册')
-        return username
+        return self.cleaned_data['username']
 
-    def clean_password(self):
+    def clean(self):
+        if self.errors:
+            return
         password = self.cleaned_data['password']
         username = self.cleaned_data['username']
         if User.objects.filter(username=username).exists():
             user = User.objects.get(username=username)
             if not user.check_password(password):
                 raise forms.ValidationError('密码输入错误')
-        return password
+        return self.cleaned_data
 
     def login(self):
         user = authenticate(username=self.cleaned_data['username'], password=self.cleaned_data['password'])
