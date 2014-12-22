@@ -35,9 +35,9 @@
               <span class="caret"></span>
               </button>
               <ul class="dropdown-menu" role="menu">
-                <li><a href="{% url 'account'%}">我的账户</a></li>
-                <li><a href="{% url 'account'%}">收藏夹</a></li>
-                <li><a href="{% url 'account'%}">关注</a></li>
+                <li><a href="{% url 'account' %}">我的账户</a></li>
+                <li><a href="{% url 'bookmark' %}">收藏夹</a></li>
+                <li><a href="{% url 'account' %}">关注</a></li>
                 <li class="divider"></li>
                 <li><a href="{% url 'logout' %}">退出</a></li>
               </ul>
@@ -84,7 +84,6 @@
         {% endfor %}
       </footer>
 {% endblock %} 
-    </div> <!-- /container -->
 
 <script src="{% static "scripts/jquery.min.js" %}"></script> 
 <script src="{% static "scripts/bootstrap.min.js" %}"></script> 

@@ -1,0 +1,171 @@
+{% extends 'account/base.html'%}
+{% load staticfiles %}
+{% block title %}<title>Gather-个人书签</title>{% endblock %}
+{% block bookmark_li %}class="active"{% endblock %}
+{% block extra_css%}
+<link href="{% static "waterfall/css/main.css" %}" rel="stylesheet" type="text/css">
+<link href="{% static "styles/bookmark.css" %}" rel="stylesheet" type="text/css">
+<link href="{% static "waterfall/css/style.css" %}" rel="stylesheet" type="text/css">
+  <style>
+    #tiles li.inactive {
+      visibility: visible;
+      opacity: .2;
+      filter: alpha(opacity=20); /* IE 7 and Earlier */
+      /* Next 2 lines IE8 */
+      -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
+      filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=20);
+    }
+  </style>
+{% endblock %}
+
+{% block main %}
+<div id="container">
+    <ol id="filters">
+      <li data-filter="amsterdam">Amsterdam</li>
+      <li data-filter="tokyo">Tokyo</li>
+      <li data-filter="london">London</li>
+      <li data-filter="paris">Paris</li>
+      <li data-filter="berlin">Berlin</li>
+      <li data-filter="sport">Sport</li>
+      <li data-filter="fashion">Fashion</li>
+      <li data-filter="video">Video</li>
+      <li data-filter="art">Art</li>
+    </ol>
+    <br/>
+
+    <div id="main" role="main">
+
+      <ul id="tiles">
+        <li data-filter-class='["london", "art"]'>
+          <img src="/static/waterfall/images/image_1.jpg" height="283" width="200">
+          <p>London Art</p>
+        </li>
+        <li data-filter-class='["berlin", "art"]'>
+          <img src="/static/waterfall/images/image_2.jpg" height="300" width="200">
+          <p>Berlin Art</p>
+        </li>
+        <li data-filter-class='["berlin", "video"]'>
+          <img src="/static/waterfall/images/image_3.jpg" height="252" width="200">
+          <p>Berlin Video</p>
+        </li>
+        <li data-filter-class='["tokyo", "fashion"]'>
+          <img src="/static/waterfall/images/image_4.jpg" height="158" width="200">
+          <p>Tokyo Fashion</p>
+        </li>
+        <li data-filter-class='["berlin", "art"]'>
+          <img src="/static/waterfall/images/image_5.jpg" height="300" width="200">
+          <p>Berlin Art</p>
+        </li>
+        <li data-filter-class='["tokyo", "fashion"]'>
+          <img src="/static/waterfall/images/image_6.jpg" height="297" width="200">
+          <p>Tokyo Fashion</p>
+        </li>
+        <li data-filter-class='["london", "art"]'>
+          <img src="/static/waterfall/images/image_7.jpg" height="200" width="200">
+          <p>London Art</p>
+        </li>
+        <li data-filter-class='["tokyo", "video"]'>
+          <img src="/static/waterfall/images/image_8.jpg" height="200" width="200">
+          <p>Tokyo Video</p>
+        </li>
+        <li data-filter-class='["tokyo", "art"]'>
+          <img src="/static/waterfall/images/image_9.jpg" height="398" width="200">
+          <p>Tokyo Art</p>
+        </li>
+        <li data-filter-class='["berlin", "fashion"]'>
+          <img src="/static/waterfall/images/image_10.jpg" height="267" width="200">
+          <p>Berlin Fashion</p>
+        </li>
+        <li data-filter-class='["amsterdam", "art"]'>
+          <img src="/static/waterfall/images/image_1.jpg" height="283" width="200">
+          <p>Amsterdam Art</p>
+        </li>
+        <li data-filter-class='["paris", "video"]'>
+          <img src="/static/waterfall/images/image_2.jpg" height="300" width="200">
+          <p>Paris Video</p>
+        </li>
+        <li data-filter-class='["london", "video"]'>
+          <img src="/static/waterfall/images/image_3.jpg" height="252" width="200">
+          <p>London Video</p>
+        </li>
+        <li data-filter-class='["london", "video"]'>
+          <img src="/static/waterfall/images/image_4.jpg" height="158" width="200">
+          <p>London Video</p>
+        </li>
+        <li data-filter-class='["amsterdam"," video"]'>
+          <img src="/static/waterfall/images/image_5.jpg" height="300" width="200">
+          <p>Amsterdam Video</p>
+        </li>
+        <li data-filter-class='["tokyo", "fashion"]'>
+          <img src="/static/waterfall/images/image_6.jpg" height="297" width="200">
+          <p>Tokyo Fashion</p>
+        </li>
+        <li data-filter-class='["tokyo", "sport"]'>
+          <img src="/static/waterfall/images/image_7.jpg" height="200" width="200">
+          <p>Tokyo Sport</p>
+        </li>
+        <li data-filter-class='["berlin", "video"]'>
+          <img src="/static/waterfall/images/image_8.jpg" height="200" width="200">
+          <p>Berlin Video</p>
+        </li>
+        <li data-filter-class='["amsterdam", "fashion"]'>
+          <img src="/static/waterfall/images/image_9.jpg" height="398" width="200">
+          <p>Amsterdam Fashion</p>
+        </li>
+        <li data-filter-class='["berlin", "sport"]'>
+          <img src="/static/waterfall/images/image_10.jpg" height="267" width="200">
+          <p>Berlin Sport</p>
+        </li>
+        <li data-filter-class='["paris", "video"]'>
+          <img src="/static/waterfall/images/image_1.jpg" height="283" width="200">
+          <p>Paris Video</p>
+        </li>
+        <li data-filter-class='["tokyo", "sport"]'>
+          <img src="/static/waterfall/images/image_2.jpg" height="300" width="200">
+          <p>Tokyo Sport</p>
+        </li>
+        <li data-filter-class='["amsterdam", "art"]'>
+          <img src="/static/waterfall/images/image_3.jpg" height="252" width="200">
+          <p>Amsterdam Art</p>
+        </li>
+        <li data-filter-class='["berlin", "sport"]'>
+          <img src="/static/waterfall/images/image_4.jpg" height="158" width="200">
+          <p>Berlin Sport</p>
+        </li>
+        <li data-filter-class='["paris", "art"]'>
+          <img src="/static/waterfall/images/image_5.jpg" height="300" width="200">
+          <p>Paris Art</p>
+        </li>
+        <li data-filter-class='["berlin", "art"]'>
+          <img src="/static/waterfall/images/image_6.jpg" height="297" width="200">
+          <p>Berlin Art</p>
+        </li>
+        <li data-filter-class='["london", "art"]'>
+          <img src="/static/waterfall/images/image_7.jpg" height="200" width="200">
+          <p>London Art</p>
+        </li>
+        <li data-filter-class='["london", "video"]'>
+          <img src="/static/waterfall/images/image_8.jpg" height="200" width="200">
+          <p>London Video</p>
+        </li>
+        <li data-filter-class='["london", "video"]'>
+          <img src="/static/waterfall/images/image_9.jpg" height="398" width="200">
+          <p>London Video</p>
+        </li>
+        <li data-filter-class='["paris", "video"]'>
+          <img src="/static/waterfall/images/image_10.jpg" height="267" width="200">
+          <p>Paris Video</p>
+        </li>
+        <!-- End of grid blocks -->
+      </ul>
+
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static "waterfall/js/jquery.imagesloaded.js" %}"></script> 
+<script src="{% static "waterfall/js/jquery.wookmark.min.js" %}"></script> 
+<script src="{% static "waterfall/js/bookmark.js" %}"></script> 
+{% endblock %}
