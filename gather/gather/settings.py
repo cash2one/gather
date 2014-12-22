@@ -186,6 +186,18 @@ LOGGING = {
             'filename': os.path.join(BASE_DIR, 'logs/statistics.log'),
             'formatter': 'verbose',
         },
+        'click': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/click.log'),
+            'formatter': 'verbose',
+        },
+        'login': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/login.log'),
+            'formatter': 'verbose',
+        },
         
     },
     'loggers': {
@@ -218,6 +230,14 @@ LOGGING = {
         },
         'statistics': {
             'handlers': ['statistics'],
+            'level': 'INFO',
+        },
+        'click': {
+            'handlers': ['click'],
+            'level': 'INFO',
+        },
+        'login': {
+            'handlers': ['login'],
             'level': 'INFO',
         },
     }
