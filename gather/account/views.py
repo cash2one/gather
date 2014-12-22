@@ -2,6 +2,7 @@
 #-*- coding: utf-8 -*-
 
 import datetime
+import logging
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
@@ -16,8 +17,11 @@ from smtplib import SMTPRecipientsRefused
 
 from account.forms import RegistForm, LoginForm
 
-from config.decorators import code_valid, unlogin_required
-from utils import get_decipher_username, get_encrypt_code
+from config.decorators import code_valid, unlogin_required, click_log
+from utils import get_decipher_username, get_encrypt_code, gen_info_msg
+
+INFO_LOG = logging.getLogger('info')
+LOGIN_LOG = logging.getLogger('login')
 
 
 def send_verify_email(request, title, email, url, template_name, **kwargs):
@@ -42,6 +46,7 @@ def send_verify_email(request, title, email, url, template_name, **kwargs):
 
 
 @unlogin_required
+@click_log
 def login(request, form_class=LoginForm, template_name='index.html'):
     """ 用户登录"""
     if request.method == 'POST':
@@ -53,6 +58,7 @@ def login(request, form_class=LoginForm, template_name='index.html'):
                 return HttpResponseRedirect(reverse('gather.views.index'))
             else:
                 code = get_encrypt_code(user.username)
+                LOGIN_LOG.info(gen_info_msg(request, action=u'未验证用户登陆'))
                 return HttpResponseRedirect('%s?code=%s' % (reverse('account.views.send_bind_email'), code))
     else:
         form = form_class(request)
@@ -62,6 +68,7 @@ def login(request, form_class=LoginForm, template_name='index.html'):
 
 
 @unlogin_required
+@click_log
 def regist(request, form_class=RegistForm, template_name='account/regist.html'):
     """ 用户注册"""
     if request.method == 'POST':
@@ -73,6 +80,7 @@ def regist(request, form_class=RegistForm, template_name='account/regist.html'):
             url = 'verify'
             verify_template_name = 'account/email_verify_template.html'
             username = profile.username
+            INFO_LOG.info(gen_info_msg(request, action=u'发送验证邮件', user_id=request.user.id))
             send_verify_email(request, title, username, url, verify_template_name)
             return HttpResponseRedirect('%s?code=%s' % (reverse('account.views.send_bind_email'), code))
     else:
@@ -84,6 +92,7 @@ def regist(request, form_class=RegistForm, template_name='account/regist.html'):
 
 @code_valid
 @unlogin_required
+@click_log
 def send_bind_email(request, template_name='account/email_verify_succ.html'):
     """ 发送验证邮箱"""
     code = request.GET.get('code', None)
@@ -101,6 +110,7 @@ def send_bind_email(request, template_name='account/email_verify_succ.html'):
 
 @code_valid
 @unlogin_required
+@click_log
 def verify(request, template_name='account/email_verify_succ.html'):
     """ 验证邮箱"""
     username = get_decipher_username(request)
@@ -115,6 +125,7 @@ def verify(request, template_name='account/email_verify_succ.html'):
         profile.is_mail_verified = True
         profile.mail_verified_date = datetime.datetime.now()
         profile.save()
+        INFO_LOG.info(gen_info_msg(request, action=u'验证邮件成功', user_id=request.user.id))
         return render(request, template_name, {
             'email_mask': username[:3] + "******" + '.com'
         })
@@ -122,6 +133,7 @@ def verify(request, template_name='account/email_verify_succ.html'):
 
 @code_valid
 @unlogin_required
+@click_log
 def resend_bind_email(request, template_name='account/email_verify.html'):
     """ 重新发送验证邮箱的邮件"""
     code = request.GET.get('code', None)
@@ -144,11 +156,13 @@ def resend_bind_email(request, template_name='account/email_verify.html'):
         })
 
 
+@click_log
 def account(request, template_name="account/index.html"):
     """ 个人账户页"""
     return render(request, template_name)
 
 
+@click_log
 def logout(request):
     """ 退出登录"""
     from django.contrib.auth import logout

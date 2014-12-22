@@ -35,3 +35,28 @@ class UserProfile(models.Model):
         except:
             return None
 
+
+class LoginLog(models.Model):
+    """ 用户登录信息"""
+    username = models.CharField('用户名', max_length=30, blank=True, null=True, default='guest')
+    login_ip = models.CharField('登录IP', max_length=40, blank=True, null=True)
+    is_succ = models.BooleanField('登录是否成功', default=False)
+    fail_reason = models.CharField('登录失败原因', max_length=100, blank=True, null=True)
+    login_time = models.DateTimeField('登录时间', auto_now_add=True)
+
+    class Meta:
+        verbose_name = '用户登录记录'
+        verbose_name_plural = '用户登录记录列表'
+
+
+class ClickLog(models.Model):
+    """ 游客, 用户点击信息"""
+    username = models.CharField('用户名', max_length=30, blank=True, null=True, default='guest')
+    click_url = models.CharField('点击url', max_length=100, blank=True, null=True)
+    click_time = models.DateTimeField('点击时间', auto_now_add=True)
+
+    class Meta:
+        verbose_name = '用户点击信息'
+        verbose_name_plural = '用户点击信息列表'
+
+
