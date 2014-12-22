@@ -1,0 +1,21 @@
+{% extends 'base.html'%}
+{% load staticfiles %}
+{% block container %}
+<div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+            <li {% block account_li %}{% endblock %}><a href="{% url 'account' %}">我的账户</a></li>
+            <li {% block bookmark_li %}{% endblock %}><a href="{% url 'bookmark' %}">收藏夹</a></li>
+            <li><a href="#">sth</a></li>
+            <li><a href="#">修改密码</a></li>
+          </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            {% block main %}
+            {% endblock %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,3 +1,9 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from django.shortcuts import render
 
-# Create your views here.
+
+def bookmark(request, template_name='bookmark/bookmark.html'):
+    """ 个人书签展示"""
+    return render(request, template_name)
