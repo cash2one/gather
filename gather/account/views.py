@@ -27,7 +27,8 @@ LOGIN_LOG = logging.getLogger('login')
 def send_verify_email(request, title, email, url, template_name, **kwargs):
     """ 发送验证邮件"""
     code = get_encrypt_code(email)
-    verify_url = 'http://' + request.META['HTTP_HOST'] + '/account/' + url + '/?code=' + code
+    # verify_url = 'http://' + request.META['HTTP_HOST'] + '/account/' + url + '/?code=' + code
+    verify_url = 'http://www.jacsice.cn/account/' + url + '/?code=' + code
     context = {
         'nickname': email,
         'verify_url': verify_url,
