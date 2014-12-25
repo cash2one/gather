@@ -29,6 +29,7 @@
 }
 
 #filters li {
+  border: 1px solid;
   font-size: 12px;
   float: left;
   padding: 6px 0 4px 0;
