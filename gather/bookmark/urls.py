@@ -5,7 +5,7 @@ from django.conf.urls import patterns, url
 
 urlpatterns = patterns('bookmark.views',
     url(r'^$', 'bookmark', name='bookmark'),
+    url(r'^import/$', 'import_bookmark', name='import_bookmark'),
     
-
 )
 

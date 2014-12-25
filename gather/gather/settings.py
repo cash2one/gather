@@ -26,7 +26,7 @@ SECRET_KEY = 'q*a@dd=d-d^2p#+$%an3q#d^ww0i3csc)-ev4%nd+4(b72i70x'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = DEBUG
 
 ALLOWED_HOSTS = []
 
@@ -47,6 +47,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'account',
     'gather',
+    'config',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -103,7 +104,6 @@ USE_L10N = True
 # USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
@@ -247,11 +247,6 @@ DATETIME_FORMAT = 'Y-m-d'
 
 SESSION_COOKIE_AGE = 60 * 60 * 2
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-
-# django-celery
-# CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
-# BROKER_URL = 'redis://localhost:6379/0'
-# CELERY_DISABLE_RATE_LIMITS = True
 
 try:
     from local_settings import *
