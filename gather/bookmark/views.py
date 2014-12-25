@@ -31,12 +31,13 @@ def import_bookmark(request, template_name='bookmark/import.html'):
         html = ParseHtml()
         href_title = html.parse(book_mark)
         for k, v in href_title.items():
-            BookMark(
-                user=request.user,
-                title=v.encode('utf-8'),
-                url=k.encode('utf-8'),
-                summary=u'无',
-            ).save()
+            if not BookMark.objects.filter(url=k).exists():
+                BookMark(
+                    user=request.user,
+                    title=v.encode('utf-8'),
+                    url=k.encode('utf-8'),
+                    summary=u'无',
+                ).save()
         messages.info(request, u'导入成功')
         
     return render(request, template_name)
