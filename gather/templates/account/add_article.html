@@ -1,0 +1,23 @@
+{% extends 'account/base.html'%}
+{% load staticfiles %}
+{% block title %}<title>Gather-个人主页</title>{% endblock %}
+{% block article_li %}class="active"{% endblock %}
+
+{% block extra_css%}
+{% endblock %}
+
+{% block main %}
+<div class="no_nav account">
+
+<textarea class="ckeditor" cols="80" id="editor1" name="content" rows="10"></textarea>
+
+
+    
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'ckeditor/ckeditor.js' %}"></script>
+{% endblock %}
+
+

@@ -15,4 +15,8 @@ urlpatterns = patterns('account.views',
     url(r'^send_bind_email/$', 'send_bind_email', name='send_bind_email'),
     #url(r'^change_pwd/$', 'change_pwd', name='change_pwd'),
 
+    url(r'^article/$', 'article', name='article'),
+    url(r'^article/add/$', 'add_article', name='add_article'),
+
+
 )

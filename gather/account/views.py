@@ -164,6 +164,18 @@ def account(request, template_name="account/index.html"):
 
 
 @click_log
+def article(request, template_name="account/articles.html"):
+    """ 我的文章"""
+    return render(request, template_name)
+
+
+@click_log
+def add_article(request, template_name="account/add_article.html"):
+    """ 添加文章"""
+    return render(request, template_name)
+
+
+@click_log
 def logout(request):
     """ 退出登录"""
     from django.contrib.auth import logout

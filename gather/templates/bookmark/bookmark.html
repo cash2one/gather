@@ -4,7 +4,6 @@
 {% block bookmark_li %}class="active"{% endblock %}
 {% block extra_css%}
 <link href="{% static "waterfall/css/main.css" %}" rel="stylesheet" type="text/css">
-<link href="{% static "styles/bookmark.css" %}" rel="stylesheet" type="text/css">
 <link href="{% static "waterfall/css/style.css" %}" rel="stylesheet" type="text/css">
   <style>
     #tiles li.inactive {
@@ -30,17 +29,28 @@
     <br/>
 
     <div id="main" role="main">
-
       <ul id="tiles">
         {% if bookmarks %}
         {% for bookmark in bookmarks %}
-        <li data-filter-class='["git", "python"]'>
+        <li data-filter-class='["jquery"]'>
           <a href="{{ bookmark.url }}" target="_blank">{{ bookmark.title }}</a>
-          <div>
-          <p>
-            <span class="glyphicon glyphicon-heart" style="color:red;margin-right:3px;"></span>5
-            <span class="label label-primary" style="margin-left:63px;">评论(3)</span> 
-          </p> 
+          <div style="border-top:1px solid #eee;margin: 10px 0 5px;">
+            <div style="padding:1px;">
+              <span class="glyphicon glyphicon-heart" style="color:red;padding:5px;"></span>5
+              <span class="label label-primary" style="margin-right:20px;margin-left:25px;">评论(3)</span> 
+                <div class="btn-group">
+                  <button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown">
+                    移动 <span class="caret"></span>
+                  </button>
+                  <dl class="dropdown-menu" role="menu">
+                    <dd><a href="#">python</a></dd>
+                    <dd><a href="#">js</a></dd>
+                    <dd><a href="#">css</a></dd>
+                    <dd class="divider"></dd>
+                    <dd><a href="#">删除</a></dd>
+                  </dl>
+                </div>
+            </div>
           </div>   
         </li>
         {% endfor %}
