@@ -53,6 +53,13 @@ header p {
   border-radius: 5px;
   box-shadow: 3px 3px 3px #ccc;
   margin: 0px auto;
+
+  background: none repeat scroll 0 0 #fff;
+  border: 1px solid #eee;
+  border-radius: 5px;
+  box-shadow: 3px 3px 3px #ccc;
+  margin: 15px auto;
+  padding: 5px 5px;
 }
 
 #tiles li.inactive {
