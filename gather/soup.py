@@ -7,10 +7,13 @@ from bs4 import BeautifulSoup
 class ParseHtml():
 
     def parse(self, path):
-        soup = BeautifulSoup(open(path))
-        string_href = {}
+        soup = BeautifulSoup(path)
+        href_title = {}
         for a in soup.find_all("a"):
-            print a.parent.parent.name
+            href_title[a['href']] = a.string
+
+        return href_title
+
 
 def test():
     html = ParseHtml()

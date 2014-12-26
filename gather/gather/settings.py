@@ -48,6 +48,7 @@ INSTALLED_APPS = (
     'account',
     'gather',
     'config',
+    'bookmark',
 )
 
 MIDDLEWARE_CLASSES = (

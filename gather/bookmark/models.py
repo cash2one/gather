@@ -10,7 +10,7 @@ class BookMark(models.Model):
     user = models.ForeignKey(User, related_name='bookmarks')
     title = models.CharField('标题', max_length=150)
     url = models.CharField('url', max_length=300, null=True, blank=True)
-    summary = models.CharField('摘要', max_length=300, null=True, blank=True)
+    summary = models.CharField('摘要', max_length=300, null=True, blank=True, default='无')
 
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
     updated = models.DateTimeField('最后更新时间', auto_now=True)

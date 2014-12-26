@@ -9,6 +9,7 @@
 {% endblock %}
 <link href="{% static "styles/bootstrap.css" %}" rel="stylesheet" type="text/css">
 <link href="{% static "styles/regist.css" %}" rel="stylesheet" type="text/css">
+<link href="{% static "styles/add.css" %}" rel="stylesheet" type="text/css">
 <link rel="shortcut icon" type="image/png" href="{% static "images/favicon.ico" %}"/>
 {% block extra_css %}
 <!--其他页面特有的CSS-->
@@ -64,6 +65,7 @@
   <div class="alert alert-{{ message.tags }}-message" role="alert" style="float:left">{{ message }}</div>
   {% endfor %}
   {% endif %}
+
 {% endblock %} 
 
 {% block container %}

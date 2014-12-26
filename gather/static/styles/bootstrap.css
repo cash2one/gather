@@ -4804,6 +4804,9 @@ a.thumbnail.active {
   border-color: #bce8f1;
   z-index: 999999;
   margin-top: 50px;
+  position: absolute;
+  left: 250px;
+  top: 50px;
 }
 
 @-webkit-keyframes progress-bar-stripes {
