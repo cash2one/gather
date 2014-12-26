@@ -9,6 +9,7 @@
 {% endblock %}
 <link href="{% static "styles/bootstrap.css" %}" rel="stylesheet" type="text/css">
 <link href="{% static "styles/regist.css" %}" rel="stylesheet" type="text/css">
+<link href="{% static "styles/bookmark.css" %}" rel="stylesheet" type="text/css">
 <link href="{% static "styles/add.css" %}" rel="stylesheet" type="text/css">
 <link rel="shortcut icon" type="image/png" href="{% static "images/favicon.ico" %}"/>
 {% block extra_css %}
@@ -38,7 +39,7 @@
               <ul class="dropdown-menu" role="menu">
                 <li><a href="{% url 'account' %}">我的账户</a></li>
                 <li><a href="{% url 'bookmark' %}">收藏夹</a></li>
-                <li><a href="{% url 'account' %}">关注</a></li>
+                <li><a href="{% url 'add_article' %}">发表文章</a></li>
                 <li><a href="{% url 'import_bookmark' %}">导入书签</a></li>
                 <li class="divider"></li>
                 <li><a href="{% url 'logout' %}">退出</a></li>

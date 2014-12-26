@@ -1,0 +1,31 @@
+{% extends 'account/base.html'%}
+{% load staticfiles %}
+{% block title %}<title>Gather-个人主页</title>{% endblock %}
+{% block article_li %}class="active"{% endblock %}
+
+{% block extra_css%}
+<link href="{% static "styles/my_article.css" %}" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block main %}
+<div class="no_nav account">
+
+<div class="wrap">
+  <span class="horiz-flag noise "> <h1>冬日的下午</h1></span>
+   <div style="border-top:1px solid #eee;margin-top:50px;padding:5px;">
+         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam luctus consectetur dolor a porttitor. Curabitur id sem sed ante fringilla pulvinar et id lectus. Nullam justo ipsum, hendrerit ut commodo nec, pellentesque nec erat. Pellentesque pharetra.
+   </div> 
+</div>
+
+<div class="wrap">
+  <span class="horiz-flag noise "> <h1>北京的夜</h1></span>
+   <div style="border-top:1px solid #eee;margin-top:50px;padding:5px;">
+         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam luctus consectetur dolor a porttitor. Curabitur id sem sed ante fringilla pulvinar et id lectus. Nullam justo ipsum, hendrerit ut commodo nec, pellentesque nec erat. Pellentesque pharetra.
+   </div> 
+</div>
+
+
+
+    
+</div>
+{% endblock %}
