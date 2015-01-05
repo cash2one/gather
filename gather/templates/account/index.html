@@ -4,7 +4,20 @@
 {% block account_li %}class="active"{% endblock %}
 
 {% block main %}
-<div class="no_nav account" style="background:url('/static/images/account.jpg')">
-    
-</div>
+    <div class="container">
+      <!-- Example row of columns -->
+      <div class="row">
+        <div class="col-sm-10">
+          {% for img in imgs %}
+          <a href="{{ img.link_url }}"><img style="width:960px;height:800px;" src="{{ img.index_img.url }}"/></a>
+          {% endfor %}
+        </div>
+        <div class="col-sm-offset-10" >
+          <br>
+          <br>
+          {% for p in texts %}
+           {{ p.content|safe }}
+          {% endfor %}
+        </div>
+      </div>
 {% endblock %}

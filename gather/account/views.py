@@ -16,6 +16,7 @@ from django.shortcuts import render
 from smtplib import SMTPRecipientsRefused
 
 from account.forms import RegistForm, LoginForm
+from config.models import IndexImg, IndexText
 
 from config.decorators import code_valid, unlogin_required, click_log
 from utils import get_decipher_username, get_encrypt_code, gen_info_msg
@@ -160,7 +161,12 @@ def resend_bind_email(request, template_name='account/email_verify.html'):
 @click_log
 def account(request, template_name="account/index.html"):
     """ 个人账户页"""
-    return render(request, template_name)
+    imgs = IndexImg.objects.filter(is_show=True).order_by('ordering')[:1]
+    texts = IndexText.objects.filter(is_show=True)[:1]
+    return render(request, template_name, {
+        'imgs': imgs,
+        'texts': texts,
+    })
 
 
 @click_log

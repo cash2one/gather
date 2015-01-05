@@ -24,7 +24,7 @@ class Label(models.Model):
     """ 标签信息"""
     user_id = models.IntegerField(null=True, blank=True, default='0')
     name = models.CharField('标签名称', max_length=50)
-    parent_id = models.IntegerField('父标签', null=True, blank=True)
+    parent_id = models.IntegerField('父标签', null=True, blank=True, default=0)
 
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
     updated = models.DateTimeField('最后更新时间', auto_now=True)
@@ -32,4 +32,20 @@ class Label(models.Model):
     class Meta:
         verbose_name = '标签信息'
         verbose_name_plural = '标签信息列表'
+
+
+class NotePad(models.Model):
+    user = models.ForeignKey(User, related_name='notes')
+    title = models.CharField('便签标题', max_length=30)
+    comment = models.CharField('评论', max_length=30)
+    parent = models.IntegerField('所属评论下得评论', null=True, blank=True, default=0)
+
+    created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
+    updated = models.DateTimeField('最后更新时间', auto_now=True)
+
+    class Meta:
+        verbose_name = '标签信息'
+        verbose_name_plural = '标签信息列表'
+
+
         
