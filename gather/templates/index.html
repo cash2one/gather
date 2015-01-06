@@ -35,7 +35,7 @@
         {% for node in nodes %}
         <li >
           <a href="" data-toggle="modal" data-target="#myModal" class='note-a' value="{{ node.id }}" name="{{ node.title }}">
-            <h2>{{ node.title }}</h2>
+            <h2>{{ node.title|slice:'10' }}...</h2>
             <h5>{{ node.created|date:'Y-m-d H:i:s' }}</h5>
             <h6 class="text-right">by-{{ node.user.username }}</h6>
           </a>
