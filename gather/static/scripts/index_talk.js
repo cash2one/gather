@@ -32,8 +32,12 @@ $(".note-a").click(function(){
       url: '/comment/add/',
       data: _data,
       success: function(Data) {
-        comment_html = "<div class='row note_comment'><div class='col-sm-note-1'><img src='/static/images/regist.jpg' alt='140*140' style='width:40px;height:40px' class='img-rounded'/></div><div class='col-sm-note-11'><div class='note-info'><label class='pubtime'>" + Data['created'] + "&nbsp;&nbsp;<a href=''>" + Data['username'] +"</a></label><label class='text-right reply'><a href=''>#</a></label></div><p class='note-comment'>" + Data['comment'] + "</p></div></div>"
-        $("#comment-body").html($("#comment-body").html() + comment_html).show();
+        if(Data){
+          comment_html = "<div class='row note_comment'><div class='col-sm-note-1'><img src='/static/images/regist.jpg' alt='140*140' style='width:40px;height:40px' class='img-rounded'/></div><div class='col-sm-note-11'><div class='note-info'><label class='pubtime'>" + Data['created'] + "&nbsp;&nbsp;<a href=''>" + Data['username'] +"</a></label><label class='text-right reply'><a href=''>#</a></label></div><p class='note-comment'>" + Data['comment'] + "</p></div></div>"
+          $("#comment-body").html($("#comment-body").html() + comment_html).show();
+        }else{
+          alert("请先登录");
+        }
       }
     });
   });

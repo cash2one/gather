@@ -70,21 +70,25 @@ def comments(request):
 def add_comment(request):
     """ 便签添加评论"""
     if request.method == 'POST':
-        if request.is_ajax():
-            comment = request.POST.get('comment')
-            note_id = request.POST.get('note_id')
-            c = NotePad(
-                user=request.user,
-                comment=comment,
-                parent_id=note_id,
-            )
-            c.save()
-            comment_json = {
-                'comment': c.comment,
-                'id': c.id,
-                'created': str(c.created)[:20],
-                'username': c.user.username,
-            }
-            return HttpResponse(json.dumps(comment_json))
+        if request.user.is_authenticated():
+            if request.is_ajax():
+                comment = request.POST.get('comment')
+                note_id = request.POST.get('note_id')
+                c = NotePad(
+                    user=request.user,
+                    comment=comment,
+                    parent_id=note_id,
+                )
+                c.save()
+                comment_json = {
+                    'comment': c.comment,
+                    'id': c.id,
+                    'created': str(c.created)[:20],
+                    'username': c.user.username,
+                }
+                return HttpResponse(json.dumps(comment_json))
+        else:
+            return HttpResponse(json.dumps(False))
+
 
 
