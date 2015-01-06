@@ -1,6 +1,7 @@
 #!/usr/bin/python
 #-*- coding: utf-8 -*-
 
+import datetime
 import simplejson as json
 
 from django.contrib import messages
@@ -30,7 +31,7 @@ def index(request, template_name='index.html'):
                     messages.error(request, 'shout out不能为空')
             else:
                 messages.info(request, '请登录后才能shout out')
-    nodes = NotePad.objects.filter(parent_id=0).order_by("created")
+    nodes = NotePad.objects.filter(parent_id=0).order_by("-updated")
     return render(request, template_name, {
         'nodes': nodes,
     })
@@ -74,12 +75,15 @@ def add_comment(request):
             if request.is_ajax():
                 comment = request.POST.get('comment')
                 note_id = request.POST.get('note_id')
+                note = NotePad.objects.get(pk=note_id)
                 c = NotePad(
                     user=request.user,
                     comment=comment,
                     parent_id=note_id,
                 )
                 c.save()
+                note.updated = datetime.datetime.now()
+                note.save()
                 comment_json = {
                     'comment': c.comment,
                     'id': c.id,
