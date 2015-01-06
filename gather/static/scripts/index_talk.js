@@ -17,7 +17,9 @@ $(".note-a").click(function(){
           }
           $("#comment-body").html(comment_html).show();
         }
-    });
+      });
+     $("#comment_content").val("");
+    
   });
 
   $("#say").click(function(){
@@ -40,4 +42,5 @@ $(".note-a").click(function(){
         }
       }
     });
+     $("#comment_content").val("");
   });
