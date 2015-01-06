@@ -34,14 +34,57 @@
       <ul class="note">
         {% for node in nodes %}
         <li >
-          <a href="">
+          <a href="" data-toggle="modal" data-target="#myModal" class='note-a' value="{{ node.id }}" name="{{ node.title }}">
             <h2>{{ node.title }}</h2>
             <h5>{{ node.created|date:'Y-m-d H:i:s' }}</h5>
+            <h6 class="text-right">by-{{ node.user.username }}</h6>
           </a>
         </li>
         {% endfor %}
       </ul>
   </div>
 
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel"></h4>
+      </div>
+      <div class="modal-body" id="comment-body">
+
+        <!--
+            <div style="border-top:1px solid #eee;margin-bottom:5px;">
+              <div class="row top5">
+                <div class="col-sm-note-1">
+                  <img src="/static/images/account.jpg" alt='140*140' style="width:40px;height:40px" class="img-rounded"/>
+                </div>
+                <div class="col-sm-note-11">
+                  <label class="reply">呵呵</label><br>
+                  <label class="reply-pubtime">2014-12-12 12:12&nbsp;&nbsp;<a href="">413761980@qq.com</a></label>
+                  <label class="text-right reply"><a href="">回复</a></label>
+                </div>
+              </div>
+            </div>
+      -->
+
+      </div>
+      <div class="modal-footer-note">
+      <div class="form-inline">
+        <a href=""><span class="glyphicon glyphicon-heart heart-left" style="color:red;padding:5px;">&nbsp;5</span></a>
+        <a href=""><span class="glyphicon glyphicon-thumbs-down thumbs-left" style="color:black;padding:5px;">&nbsp;5</span></a>
+        <input type="text" class="form-control input-md" name="comment" id="comment_content"/>
+        <button type="button" class="btn btn-primary" id="say">发表</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+      </div>
+    </div>
+  </div>
 </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static "scripts/index_talk.js" %}"></script> 
 {% endblock %}

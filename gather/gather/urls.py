@@ -13,6 +13,8 @@ urlpatterns = patterns('',
     url(r'^$', 'gather.views.index', name='index'),
     url(r'^account/', include('account.urls')),
     url(r'^bookmark/', include('bookmark.urls')),
+    url(r'^comment/add/', 'gather.views.add_comment', name='add_comment'),
+    url(r'^comment/list/', 'gather.views.comments', name='comments'),
 
 )
 
