@@ -4,12 +4,13 @@
 import logging
 import traceback
 import base64
-
+import os
 
 import string
 import time
 import random
 
+from PIL import Image
 from datetime import datetime
 from django.core.signing import TimestampSigner, SignatureExpired, BadSignature
 from django.contrib import messages
@@ -116,6 +117,34 @@ def get_decipher_username(request):
             return None
     else:
         return None
+
+
+def resize_avatar(request, profile):
+    """ 缩小上传图片大小"""
+    path = os.path.join(settings.MEDIA_ROOT, str(profile.big_photo))
+    f = Image.open(path)
+    xsize, ysize = f.size
+    if xsize > ysize:
+        if xsize > 600:
+            f.resize((600, 600 * ysize / xsize), Image.ANTIALIAS).save(path)
+    else:
+        if ysize > 400:
+            f.resize((xsize * 400 / ysize, 400), Image.ANTIALIAS).save(path)
+
+
+def crop_avatar(request, profile):
+    """ 裁剪上传头像"""
+    path = os.path.join(settings.MEDIA_ROOT, str(profile.big_photo))
+    f = Image.open(path)
+    xsize, ysize = f.size
+    size = request.POST.get('crop')
+    size_arr = size.split(':')
+    top = int(size_arr[0][:-2])
+    left = int(size_arr[1][:-2])
+    width = int(size_arr[3][:-2])
+    # box变量是一个四元组(左，上，右，下)。
+    box = (left, top, width+left, width+top)
+    f.crop(box).save(path)
 
 
 def get_encrypt_code(username):

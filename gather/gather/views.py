@@ -52,12 +52,22 @@ def comments(request):
                 comment['comment'] = one.comment
                 comment['username'] = one.user.username
                 comment['created'] = str(one.created)[:20]
+                try:
+                    big_photo = one.user.profile.big_photo.url
+                except:
+                    big_photo = '/static/images/default_head.png'
+                comment['url'] = big_photo
                 for two in level_two:
                     reply = {}
                     if two.parent_id == one.id:
                         reply['id'] = two.id
                         reply['comment'] = two.comment
                         reply['created'] = str(two.created)[:20]
+                        try:
+                            big_photo = two.user.profile.big_photo.url
+                        except:
+                            big_photo = '/static/images/default_head.png'
+                        reply['url'] = big_photo
                         try:
                             comment['replys']
                         except KeyError:
@@ -84,11 +94,16 @@ def add_comment(request):
                 c.save()
                 note.updated = datetime.datetime.now()
                 note.save()
+                try:
+                    big_photo = c.user.profile.big_photo.url
+                except:
+                    big_photo = '/static/images/default_head.png'
                 comment_json = {
                     'comment': c.comment,
                     'id': c.id,
                     'created': str(c.created)[:20],
                     'username': c.user.username,
+                    'url': big_photo,
                 }
                 return HttpResponse(json.dumps(comment_json))
         else:

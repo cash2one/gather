@@ -3,23 +3,26 @@
 
 import datetime
 import logging
+import simplejson as json
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import Context, loader, RequestContext
 from django.shortcuts import render
 
 from smtplib import SMTPRecipientsRefused
 
-from account.forms import RegistForm, LoginForm
+from account.forms import RegistForm, LoginForm, UploadBigPicForm
 from config.models import IndexImg, IndexText
 
 from config.decorators import code_valid, unlogin_required, click_log
-from utils import get_decipher_username, get_encrypt_code, gen_info_msg
+from utils import get_decipher_username, get_encrypt_code, gen_info_msg, resize_avatar, crop_avatar
 
 INFO_LOG = logging.getLogger('info')
 LOGIN_LOG = logging.getLogger('login')
@@ -158,6 +161,7 @@ def resend_bind_email(request, template_name='account/email_verify.html'):
         })
 
 
+@login_required
 @click_log
 def account(request, template_name="account/index.html"):
     """ 个人账户页"""
@@ -169,16 +173,46 @@ def account(request, template_name="account/index.html"):
     })
 
 
+@login_required
 @click_log
 def article(request, template_name="account/articles.html"):
     """ 我的文章"""
     return render(request, template_name)
 
 
+@login_required
 @click_log
 def add_article(request, template_name="account/add_article.html"):
     """ 添加文章"""
     return render(request, template_name)
+
+
+@csrf_exempt
+@login_required
+@click_log
+def head_pic_big(request, form_class=UploadBigPicForm, template_name='account/upload_pic.html'):
+    """ 上传大头像"""
+    profile = request.user.profile
+
+    if request.method == 'POST':
+        #print request.is_ajax()
+        #if request.is_ajax():
+        crop = request.POST.get('crop')
+        if crop == '':
+            form = form_class(data=request.POST, files=request.FILES, instance=profile)
+            if form.is_valid():
+                form.save()
+                resize_avatar(request, profile)
+        else:
+            crop_avatar(request, profile)
+            form = form_class()
+    else:
+        form = form_class()
+        
+    return render(request, template_name, {
+        'form': form,
+        'profile': profile,
+    })
 
 
 @click_log
