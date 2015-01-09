@@ -74,8 +74,12 @@
 {% endblock %} 
 
 {% block foot %} 
-      <footer class="pager">
-        <p>&copy; Company 2015.jacsice.forgive me</p>
+      <footer class="footer">
+        <div class="row footer-bottom">
+          <ul class="list-inline text-center">
+            <li>&copy; Company 2015.jacsice.forgive me</li>
+          </ul>
+        </div>
         {% for error in form.non_field_errors %} 
         {{ error }}
         {% endfor %}
