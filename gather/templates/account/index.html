@@ -4,8 +4,9 @@
 {% block account_li %}class="active"{% endblock %}
 
 {% block main %}
-    <div class="container">
+  <div class="container">
       <!-- Example row of columns -->
+      <!--
       <div class="row">
         <div class="col-sm-10">
           {% for img in imgs %}
@@ -19,5 +20,17 @@
            {{ p.content|safe }}
           {% endfor %}
         </div>
+      -->
+
+      <!-- 开发日志 -->
+      {% for log in logs %}
+      <div class="bs-callout bs-callout-info">
+        <span class="label label-danger" target="_blank">{{ log.created|date:'Y-m-d H:i:s' }}</span> 
+        &nbsp;&nbsp;&nbsp;
+        {{ log.content }}
       </div>
+
+      {% endfor %}
+
+  </div>
 {% endblock %}

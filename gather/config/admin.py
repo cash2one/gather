@@ -3,7 +3,7 @@
 
 from django.contrib import admin
 
-from config.models import IndexImg, IndexText
+from config.models import IndexImg, IndexText, DevelopLog
 
 
 class IndexImgAdmin(admin.ModelAdmin):
@@ -13,9 +13,14 @@ class IndexImgAdmin(admin.ModelAdmin):
 
 
 class IndexTextAdmin(admin.ModelAdmin):
-    fields = ('title', 'is_show', 'content')
     list_display = ('title', 'is_show', 'created')
+
+
+class DevelopLogAdmin(admin.ModelAdmin):
+    fields = ('content',)
+    list_display = ('created', 'content')
 
 admin.site.register(IndexImg, IndexImgAdmin)
 admin.site.register(IndexText, IndexTextAdmin)
+admin.site.register(DevelopLog, DevelopLogAdmin)
 
