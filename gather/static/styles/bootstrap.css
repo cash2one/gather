@@ -1394,11 +1394,6 @@ pre code {
   margin-left: auto;
 }
 
-.index{
-  margin-top: 50px;
-  height: 800px;
-}
-
 @media (min-width: 768px) {
   .container {
     width: 750px;
