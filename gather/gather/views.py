@@ -11,8 +11,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 from bookmark.models import NotePad
 
-from config.models import IndexImg, IndexText
 from config.decorators import click_log
+
+from utils import adjacent_paginator
 
 
 @click_log
@@ -31,9 +32,11 @@ def index(request, template_name='index.html'):
                     messages.error(request, 'shout out不能为空')
             else:
                 messages.info(request, '请登录后才能shout out')
-    nodes = NotePad.objects.filter(parent_id=0).order_by("-updated")
+    node_list = NotePad.objects.filter(parent_id=0).order_by("-updated")
+    nodes, page_numbers = adjacent_paginator(node_list, request.GET.get('page', 0))
     return render(request, template_name, {
         'nodes': nodes,
+        'pages': page_numbers,
     })
 
 
