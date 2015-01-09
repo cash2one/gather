@@ -38,3 +38,15 @@ class IndexText(models.Model):
     class Meta:
         verbose_name = u"首页诗词"
         verbose_name_plural = u"首页诗词列表"
+
+
+class DevelopLog(models.Model):
+    """ 开发日志"""
+    content = models.TextField('内容', default='惶惶然如有所失')
+
+    created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
+    updated = models.DateTimeField('更新时间', auto_now=True)
+
+    class Meta:
+        verbose_name = u"开发日志"
+        verbose_name_plural = u"开发日志列表"
