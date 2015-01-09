@@ -11,7 +11,7 @@ from django.contrib.auth import login
 
 from account.models import UserProfile, LoginLog
 
-from utils import gen_info_msg
+from utils import gen_info_msg, gen_photo_name
 
 LOGIN_LOG = logging.getLogger('login')
 INFO_LOG = logging.getLogger('info')
@@ -133,12 +133,29 @@ class RegistForm(forms.Form):
         return profile
 
 
+class UploadBigPicForm(forms.ModelForm):
+    """ 上传大头像表单"""
+    def __init__(self, request=None, *args, **kwargs):
+        super(UploadBigPicForm, self).__init__(*args, **kwargs)
+        self._request = request
 
+    class Meta:
+        model = UserProfile
+        fields = ('big_photo',)
 
+    def clean_big_photo(self):
+        if self.cleaned_data['big_photo'] is not None:
+            photo = self.cleaned_data['big_photo']
+            photo_name = photo.name[:photo.name.rfind('.')]
+            ext = photo.name[photo.name.rfind('.') + 1:]
+            photo.name = gen_photo_name() + "." + ext
+            if not photo_name:
+                raise forms.ValidationError('必须上传一个图片。')
+            if ext.lower() not in ['jpg', 'png', 'jpeg', 'bmp']:
+                raise forms.ValidationError('只允许上传图片格式，不支持gif格式')
+            if len(photo) / (1024 * 1024) > 2:
+                raise forms.ValidationError('请上传2M以下大小的图片')
+        return self.cleaned_data['big_photo']
 
-
-
-
-
-
-               
+    def clean(self):
+        return self.cleaned_data

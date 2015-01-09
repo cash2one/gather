@@ -14,6 +14,8 @@ class UserProfile(models.Model):
     is_mail_verified = models.BooleanField('是否已经通过验证', default=False)
     mail_verified_date = models.DateTimeField('邮箱通过验证时间', blank=True, null=True)
 
+    big_photo = models.ImageField(upload_to='head/%Y/%m/%d', blank=True, null=True)
+
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
     updated = models.DateTimeField('最后更新时间', auto_now=True)
 
