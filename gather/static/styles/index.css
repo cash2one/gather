@@ -152,8 +152,7 @@ ul.note li:nth-child(3n) a:before {
   background-color:  rgba(204, 204, 255,0.5);
 }
 /*step4*/
-ul.note li a:hover,
-ul.note li a:focus {
+ul.note li a:hover{
   /*改变阴影效果*/
   text-decoration:none;
   -moz-box-shadow: 10px 10px 7px rgba(0,0,0,0.7);
@@ -250,3 +249,7 @@ ul.note li a:focus {
 .index {
   margin-top: 50px;
 }
+ body{
+  overflow-x: hidden;
+
+ }
