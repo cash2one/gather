@@ -33,7 +33,7 @@ def index(request, template_name='index.html'):
             else:
                 messages.info(request, '请登录后才能shout out')
     node_list = NotePad.objects.filter(parent_id=0).order_by("-updated")
-    nodes, page_numbers = adjacent_paginator(node_list, request.GET.get('page', 0))
+    nodes, page_numbers = adjacent_paginator(node_list, request.GET.get('page', 1))
     return render(request, template_name, {
         'nodes': nodes,
         'pages': page_numbers,
