@@ -24,11 +24,11 @@ TEMPLATE_DIRS = os.path.join(BASE_DIR, 'templates')
 SECRET_KEY = 'q*a@dd=d-d^2p#+$%an3q#d^ww0i3csc)-ev4%nd+4(b72i70x'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 TEMPLATE_DEBUG = DEBUG
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 LOGIN_URL = '/account/login/'
 
