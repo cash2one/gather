@@ -48,3 +48,4 @@ local_settings.py
 .DS_Store
 media
 uwsgi.xml
+uwsgi.ini
