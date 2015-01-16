@@ -6390,4 +6390,8 @@ button.close {
     display: none !important;
   }
 }
+
+.x-none{
+  overflow-x: hidden;
+}
 /*# sourceMappingURL=bootstrap.css.map */
