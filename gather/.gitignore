@@ -46,6 +46,6 @@ local_settings.py
 
 # mac
 .DS_Store
-/media
+media
 uwsgi.xml
 uwsgi.ini
