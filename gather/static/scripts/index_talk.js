@@ -11,6 +11,7 @@ $(".note-a").click(function(){
         data: _data,
         success: function(Data) {
           comment_html = '';
+          $("#read_sum").html(Data['read_sum']).show();
           $("#heart").attr('value', Data['id']);
           $("#heart").html("&nbsp;" + Data['heart']).show();
           if(parseInt(Data['heart'])>0){
@@ -18,7 +19,6 @@ $(".note-a").click(function(){
           }else{
             $("#heart").css('color', '');
           }
-
           $("#thumb_down").attr('value', Data['id']);
           $("#thumb_down").html("&nbsp;" + Data['thumb_down']).show();
           $("#myModalLabel").html(Data['title']).show();
