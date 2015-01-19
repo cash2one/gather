@@ -21,7 +21,7 @@ from smtplib import SMTPRecipientsRefused
 from account.forms import RegistForm, LoginForm, UploadBigPicForm
 from config.models import IndexImg, IndexText, DevelopLog
 
-from config.decorators import code_valid, unlogin_required, click_log
+from config.decorators import code_valid, unlogin_required
 from utils import get_decipher_username, get_encrypt_code, gen_info_msg, resize_avatar, crop_avatar
 
 INFO_LOG = logging.getLogger('info')
@@ -51,7 +51,6 @@ def send_verify_email(request, title, email, url, template_name, **kwargs):
 
 
 @unlogin_required
-@click_log
 def login(request, form_class=LoginForm, template_name='index.html'):
     """ 用户登录"""
     if request.method == 'POST':
@@ -73,7 +72,6 @@ def login(request, form_class=LoginForm, template_name='index.html'):
 
 
 @unlogin_required
-@click_log
 def regist(request, form_class=RegistForm, template_name='account/regist.html'):
     """ 用户注册"""
     if request.method == 'POST':
@@ -97,7 +95,6 @@ def regist(request, form_class=RegistForm, template_name='account/regist.html'):
 
 @code_valid
 @unlogin_required
-@click_log
 def send_bind_email(request, template_name='account/email_verify_succ.html'):
     """ 发送验证邮箱"""
     code = request.GET.get('code', None)
@@ -115,7 +112,6 @@ def send_bind_email(request, template_name='account/email_verify_succ.html'):
 
 @code_valid
 @unlogin_required
-@click_log
 def verify(request, template_name='account/email_verify_succ.html'):
     """ 验证邮箱"""
     username = get_decipher_username(request)
@@ -138,7 +134,6 @@ def verify(request, template_name='account/email_verify_succ.html'):
 
 @code_valid
 @unlogin_required
-@click_log
 def resend_bind_email(request, template_name='account/email_verify.html'):
     """ 重新发送验证邮箱的邮件"""
     code = request.GET.get('code', None)
@@ -162,7 +157,6 @@ def resend_bind_email(request, template_name='account/email_verify.html'):
 
 
 @login_required
-@click_log
 def account(request, template_name="account/index.html"):
     """ 个人账户页"""
     imgs = IndexImg.objects.filter(is_show=True).order_by('ordering')[:1]
@@ -176,14 +170,12 @@ def account(request, template_name="account/index.html"):
 
 
 @login_required
-@click_log
 def article(request, template_name="account/articles.html"):
     """ 我的文章"""
     return render(request, template_name)
 
 
 @login_required
-@click_log
 def add_article(request, template_name="account/add_article.html"):
     """ 添加文章"""
     return render(request, template_name)
@@ -191,7 +183,6 @@ def add_article(request, template_name="account/add_article.html"):
 
 @csrf_exempt
 @login_required
-@click_log
 def head_pic_big(request, form_class=UploadBigPicForm, template_name='account/upload_pic.html'):
     """ 上传大头像"""
     profile = request.user.profile
@@ -217,7 +208,7 @@ def head_pic_big(request, form_class=UploadBigPicForm, template_name='account/up
     })
 
 
-@click_log
+@login_required
 def logout(request):
     """ 退出登录"""
     from django.contrib.auth import logout

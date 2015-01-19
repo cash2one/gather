@@ -7,7 +7,10 @@ from django.conf import settings
 from django.core.cache import get_cache
 from django.utils.importlib import import_module
 
+from utils import gen_info_msg
+
 ERROR_LOG = logging.getLogger('err')
+CLICK_LOG = logging.getLogger('click')
 
 
 class UserRestrictMiddleware(object):
@@ -27,3 +30,21 @@ class UserRestrictMiddleware(object):
                     cache.set(cache_key, request.session.session_key, cache_timeout)
             else:
                 cache.set(cache_key, request.session.session_key, cache_timeout)
+
+
+class ClickLog(object):
+    def process_request(self, request):
+        """ 用户点击纪录"""
+        if request.user.is_authenticated():
+            username = request.user.username
+            ClickLog(
+                username=username,
+                click_url=request.path,
+            ).save()
+            CLICK_LOG.info(gen_info_msg(request, action=u'点击', url=request.path, username=username))
+        else:
+            ClickLog(
+                username='guest',
+                click_url=request.path,
+            ).save()
+            CLICK_LOG.info(gen_info_msg(request, action=u'点击', url=request.path, username='guest'))

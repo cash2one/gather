@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib import messages
-
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
@@ -41,3 +40,4 @@ def import_bookmark(request, template_name='bookmark/import.html'):
         messages.info(request, u'导入成功')
         
     return render(request, template_name)
+
