@@ -8,15 +8,14 @@ from django.contrib import messages
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 
-from bookmark.models import NotePad
-
-from config.decorators import click_log
+from bookmark.models import NotePad, NoteHeart
 
 from utils import adjacent_paginator
 
 
-@click_log
 def index(request, template_name='index.html'):
     """ 主页显示"""
     if request.method == "POST":
@@ -46,7 +45,11 @@ def comments(request):
     if request.method == "POST":
         if request.is_ajax():
             note_id = request.POST.get('note_id')
+            note_all = {}
             comments = []
+            note = NotePad.objects.get(pk=note_id)
+            note.read_sum += 1
+            note.save()
             level_one = NotePad.objects.filter(parent_id=note_id).order_by('created')
             level_two = NotePad.objects.filter(parent_id__in=level_one).order_by('created')
             for one in level_one:
@@ -77,7 +80,16 @@ def comments(request):
                             comment['replys'] = []
                         comment['replys'].append(reply)
                 comments.append(comment)
-            return HttpResponse(json.dumps(comments))
+            note_all = {
+                'id': note_id,
+                'title': note.title,
+                'read_sum': note.read_sum,
+                'heart': NoteHeart.objects.filter(note=note, is_still=True).count(),
+                'created': str(note.created)[:20],
+                'username': note.user.username,
+                'comments': comments,
+            }
+            return HttpResponse(json.dumps(note_all))
 
 
 @csrf_exempt
@@ -111,6 +123,42 @@ def add_comment(request):
                 return HttpResponse(json.dumps(comment_json))
         else:
             return HttpResponse(json.dumps(False))
+
+
+@require_POST
+@csrf_exempt
+def heart(request):
+    """ 喜欢"""
+    if request.user.is_authenticated():
+        if request.is_ajax():
+            user = request.user
+            note_id = request.POST.get('note_id')
+            note = NotePad.objects.get(pk=note_id)
+            try:
+                # 已经喜欢, 取消喜欢
+                heart = NoteHeart.objects.get(note=note, user=user, is_still=True)
+                heart.is_still = False
+                heart.save()
+                data = {
+                    'result': True,
+                    'sign': False,
+                }
+                return HttpResponse(json.dumps(data))
+            except NoteHeart.DoesNotExist:
+                # 添加喜欢
+                NoteHeart(
+                    user=user,
+                    note=note,
+                    is_still=True,
+                ).save()
+                data = {
+                    'result': True,
+                    'sign': True,
+                }
+                return HttpResponse(json.dumps(data))
+    else:
+        return HttpResponse(json.dumps({'result': False}))
+
 
 
 

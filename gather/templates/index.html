@@ -34,7 +34,7 @@
       <ul class="note">
         {% for node in nodes %}
         <li >
-          <a href="" data-toggle="modal" data-target="#myModal" class='note-a' value="{{ node.id }}" name="{{ node.title }}">
+          <a href="" data-toggle="modal" data-target="#myModal" class='note-a' value="{{ node.id }}">
             <h2>{{ node.title|slice:'10' }}...</h2>
             <h5>{{ node.created|date:'Y-m-d H:i:s' }}</h5>
             <h6 class="text-right">by-{{ node.user.username }}</h6>
@@ -59,7 +59,7 @@
       </nav>
   </div>
 
-<!-- Modal -->
+<!-- comments -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -67,7 +67,7 @@
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
         <h4 class="modal-title" id="myModalLabel"></h4>
       </div>
-      <div class="modal-body pre-scrollable" id="comment-body">
+      <div class="modal-body note-scrollable" id="comment-body">
 
         <!--
             <div style="border-top:1px solid #eee;margin-bottom:5px;">
@@ -87,8 +87,7 @@
       </div>
       <div class="modal-footer-note">
       <div class="form-inline">
-        <a href=""><span class="glyphicon glyphicon-heart heart-left" style="color:red;padding:5px;">&nbsp;5</span></a>
-        <a href=""><span class="glyphicon glyphicon-thumbs-down thumbs-left" style="color:black;padding:5px;">&nbsp;5</span></a>
+        <a href="javascript:;"><span class="glyphicon glyphicon-heart heart-left" style="padding:5px;margin-right:200px;" id="heart" value="0"></span></a>
         <input type="text" class="form-control input-md" name="comment" id="comment_content"/>
         <button type="button" class="btn btn-primary" id="say">发表</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
@@ -96,8 +95,34 @@
     </div>
   </div>
 </div>
-
 </div>
+
+<!-- login-required -->
+<div class="modal fade" id="login" tabindex="-1" role="dialog" aria-labelledby="loginLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" id="login_close1"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">登录</h4>
+      </div>
+      <form action="{% url 'login' %}" method="post" class="form-signin" role="form">
+        <div class="modal-body">
+            {% csrf_token %}
+              <input type="text" placeholder="邮箱地址" class="form-control" name="username">
+              <input type="password" placeholder="密码" class="form-control" name="password">
+        </div>
+        <div class="modal-footer-login">
+          <div class="form-inline">
+            <button type="submit" class="btn btn-info">登录</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal" id="login_close2">关闭</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
 </div>
 {% endblock %}
 

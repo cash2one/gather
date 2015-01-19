@@ -64,24 +64,3 @@ def unlogin_required(func):
             return HttpResponseRedirect(reverse('gather.views.index'))
         return func(request, *args, **kwargs)
     return returned_wrapper
-
-
-def click_log(func):
-    """ 用户行为记录"""
-    @wraps(func)
-    def returned_wrapper(request, *args, **kwargs):
-        if request.user.is_authenticated():
-            username = request.user.username
-            ClickLog(
-                username=username,
-                click_url=request.path,
-            ).save()
-            CLICK_LOG.info(gen_info_msg(request, action=u'点击', url=request.path, username=username))
-        else:
-            ClickLog(
-                username='guest',
-                click_url=request.path,
-            ).save()
-            CLICK_LOG.info(gen_info_msg(request, action=u'点击', url=request.path, username='guest'))
-        return func(request, *args, **kwargs)
-    return returned_wrapper
