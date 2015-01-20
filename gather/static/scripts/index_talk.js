@@ -1,7 +1,7 @@
 /*
  * 显示评论
  */
-$(".note-a").click(function(){
+  $(".note-a").click(function(){
     _data = {};
     _data['note_id'] = $(this).attr("value");
     $.ajax({
@@ -51,6 +51,7 @@ $(".note-a").click(function(){
           comment_html = "<div class='row note_comment'><div class='col-sm-note-1'><img src='" + Data['url'] + "' alt='140*140' style='width:40px;height:40px' class='img-rounded'/></div><div class='col-sm-note-11'><div class='note-info'><label class='pubtime'>" + Data['created'] + "&nbsp;&nbsp;<a href=''>" + Data['username'] +"</a></label><label class='text-right reply'><a href=''>#</a></label></div><p class='note-comment'>" + Data['comment'] + "</p></div></div>"
           $("#comment-body").html($("#comment-body").html() + comment_html).show();
         }else{
+          $("#myModal").css("display", "none");
           $("#login").removeClass('fade').addClass('show');
         }
       }
@@ -91,6 +92,6 @@ $(".note-a").click(function(){
  /*
   * 提示登录框关闭
   */ 
-  $("#login_close1, #login_close2").click(function(){
+  $("#login_close1, #login_close2").click(function(){    
     $("#login").removeClass('show').addClass('fade');
   })
