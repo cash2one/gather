@@ -17,7 +17,7 @@ class BookMark(models.Model):
 
     class Meta:
         verbose_name = '书签信息'
-        verbose_name_plural = '书签信息列表'
+        verbose_name_plural = '书签列表'
 
 
 class Label(models.Model):
@@ -31,7 +31,7 @@ class Label(models.Model):
 
     class Meta:
         verbose_name = '标签信息'
-        verbose_name_plural = '标签信息列表'
+        verbose_name_plural = '标签列表'
 
 
 class NotePad(models.Model):
@@ -46,8 +46,8 @@ class NotePad(models.Model):
     updated = models.DateTimeField('最后更新时间')
 
     class Meta:
-        verbose_name = '标签信息'
-        verbose_name_plural = '标签信息列表'
+        verbose_name = '便签信息'
+        verbose_name_plural = '便签列表'
 
 
 class NoteHeart(models.Model):
@@ -61,6 +61,4 @@ class NoteHeart(models.Model):
 
     class Meta:
         verbose_name = '喜欢信息'
-        verbose_name_plural = '喜欢信息列表'
-
-   
+        verbose_name_plural = '点赞列表'
