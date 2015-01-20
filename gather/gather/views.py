@@ -26,6 +26,7 @@ def index(request, template_name='index.html'):
                         NotePad(
                             user=request.user,
                             title=title,
+                            updated=datetime.datetime.now(),
                         ).save()
                 else:
                     messages.error(request, 'shout out不能为空')
