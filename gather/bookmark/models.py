@@ -43,7 +43,7 @@ class NotePad(models.Model):
     read_sum = models.IntegerField('点击次数', default=0)
 
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
-    updated = models.DateTimeField('最后更新时间', auto_now=True)
+    updated = models.DateTimeField('最后更新时间')
 
     class Meta:
         verbose_name = '标签信息'

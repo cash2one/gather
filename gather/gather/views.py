@@ -105,6 +105,7 @@ def add_comment(request):
                     user=request.user,
                     comment=comment,
                     parent_id=note_id,
+                    updated=datetime.datetime.now(),
                 )
                 c.save()
                 note.updated = datetime.datetime.now()
