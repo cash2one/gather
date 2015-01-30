@@ -8,6 +8,7 @@ from django.core.cache import get_cache
 from django.utils.importlib import import_module
 
 from utils import gen_info_msg
+from account.models import ClickLog
 
 ERROR_LOG = logging.getLogger('err')
 CLICK_LOG = logging.getLogger('click')
@@ -32,7 +33,7 @@ class UserRestrictMiddleware(object):
                 cache.set(cache_key, request.session.session_key, cache_timeout)
 
 
-class ClickLog(object):
+class ClickLogMiddleWare(object):
     def process_request(self, request):
         """ 用户点击纪录"""
         if request.user.is_authenticated():
@@ -40,13 +41,13 @@ class ClickLog(object):
             ClickLog(
                 username=username,
                 click_url=request.path,
-                remote_ip=request.META['REMOTE_ADDR']
+                remote_ip=request.META['REMOTE_ADDR'],
             ).save()
             CLICK_LOG.info(gen_info_msg(request, action=u'点击', url=request.path, username=username))
         else:
             ClickLog(
                 username='guest',
                 click_url=request.path,
-                remote_ip=request.META['REMOTE_ADDR']
+                remote_ip=request.META['REMOTE_ADDR'],
             ).save()
             CLICK_LOG.info(gen_info_msg(request, action=u'点击', url=request.path, username='guest'))
