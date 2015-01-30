@@ -55,6 +55,7 @@ class ClickLog(models.Model):
     """ 游客, 用户点击信息"""
     username = models.CharField('用户名', max_length=30, blank=True, null=True, default='guest')
     click_url = models.CharField('点击url', max_length=100, blank=True, null=True)
+    remote_ip = models.CharField('来源ip', max_length=20, blank=True, null=True)
     click_time = models.DateTimeField('点击时间', auto_now_add=True)
 
     class Meta:
