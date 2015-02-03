@@ -11,6 +11,7 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
     url(r'^$', 'gather.views.index', name='index'),
+    url(r'^note/$', 'gather.views.note', name='note'),
     url(r'^account/', include('account.urls')),
     url(r'^bookmark/', include('bookmark.urls')),
 

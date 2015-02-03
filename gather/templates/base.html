@@ -74,24 +74,24 @@
 {% endblock %} 
 
 {% block foot %} 
-      <footer class="footer">
-        <div class="row footer-bottom">
-          <ul class="list-inline text-center">
-            <li>&copy; Company 2015.jacsice.forgive me</li>
-          </ul>
-        </div>
-        {% for error in form.non_field_errors %} 
-        {{ error }}
-        {% endfor %}
+  <footer class="footer">
+    <div class="row footer-bottom">
+      <ul class="list-inline text-center">
+        <li>&copy; Company 2015.jacsice.forgive me</li>
+      </ul>
+    </div>
+    {% for error in form.non_field_errors %} 
+    {{ error }}
+    {% endfor %}
 
-        {% for error in form.username.errors %}
-        {{ error }}
-        {% endfor %}
+    {% for error in form.username.errors %}
+    {{ error }}
+    {% endfor %}
 
-        {% for error in form.password.errors %}
-        {{ error }}
-        {% endfor %}
-      </footer>
+    {% for error in form.password.errors %}
+    {{ error }}
+    {% endfor %}
+  </footer>
 {% endblock %} 
 
 <script src="{% static "scripts/jquery.min.js" %}"></script> 
