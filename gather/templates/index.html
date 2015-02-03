@@ -5,128 +5,49 @@
 {% endblock %}
 
 {% block extra_css%}
-<link href="{% static "styles/index.css" %}" rel="stylesheet" type="text/css">
+<link href="{% static "styles/style.css" %}" rel="stylesheet" type="text/css">
+<link href="{% static "styles/font-awesome.css" %}" rel="stylesheet" type="text/css">
 {% endblock %}
 
 {% block container %}
-<div class="container index">
-  <div class="container">
-    <div class="col-md-4"></div>
-    <div class="col-md-6">
-      <form class="form-inline" role="form" action='.' method="post">
-        {% csrf_token %}
-          <div class="form-group">
-            <input type="input" class="form-control input-lg" placeholder="Come on!" name="note">
-          </div>
-          <div class="checkbox">
-            <label>
-              <button class="btn btn-danger btn-lg" type="submit">shout out</button>
-            </label>
-          </div>
-      </form>
+<div class="container">
+    <div class="switch demo4" style="margin-left:150px;margin-top:180px;">
+        <input type="checkbox" class="index_btn" value="1"/>
+        <label><i class='icon-off'></i></label>
     </div>
-  </div>
-
-  <br/>
-  <br/>
-
-  <div class="container">
-      <ul class="note">
-        {% for node in nodes %}
-        <li >
-          <a href="" data-toggle="modal" data-target="#myModal" class='note-a' value="{{ node.id }}">
-            <h2>{{ node.title|slice:'10' }}...</h2>
-            <h5>{{ node.created|date:'Y-m-d H:i:s' }}</h5>
-            <h6 class="text-right">by-{{ node.user.username }}</h6>
-          </a>
-        </li>
-        {% endfor %}
-      </ul>
-
-      <nav>
-        <ul class="pager">
-          {% if nodes.has_previous %}
-          <li class="previous"><a href="?page={{ nodes.previous_page_number }}">&larr; Newer</a></li>
-          {% else %}
-          <li class="previous disabled"><a href="#">&larr; Newer</a></li>
-          {% endif %}
-          {% if nodes.has_next %}
-          <li class="next"><a href="?page={{ nodes.next_page_number }}">Older &rarr;</a></li>
-          {% else %}
-          <li class="next disabled"><a href="#">Older &rarr;</a></li>
-          {% endif %}
-        </ul>
-      </nav>
-  </div>
-
-<!-- comments -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="myModalLabel"></h4>
-      </div>
-      <div class="modal-body note-scrollable" id="comment-body">
-
-        <!--
-            <div style="border-top:1px solid #eee;margin-bottom:5px;">
-              <div class="row top5">
-                <div class="col-sm-note-1">
-                  <img src="/static/images/account.jpg" alt='140*140' style="width:40px;height:40px" class="img-rounded"/>
-                </div>
-                <div class="col-sm-note-11">
-                  <label class="reply">呵呵</label><br>
-                  <label class="reply-pubtime">2014-12-12 12:12&nbsp;&nbsp;<a href="">413761980@qq.com</a></label>
-                  <label class="text-right reply"><a href="">回复</a></label>
-                </div>
-              </div>
-            </div>
-      -->
-
-      </div>
-      <div class="modal-footer-note">
-      <div class="form-inline">
-        <a href="javascript:;"><span class="glyphicon glyphicon-heart heart-left" style="padding:5px;margin-right:50px;" id="heart" value="0"></span></a>
-        <label style="color:#999999;margin-right:50px;">共点击<label id="read_sum">123</label>次</label>
-        <input type="text" class="form-control input-md" name="comment" id="comment_content"/>
-        <button type="button" class="btn btn-primary" id="say">发表</button>
-        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-      </div>
+    <div class="switch demo4" style="margin-left:500px;margin-top:180px;">
+        <input type="checkbox" class="index_btn" value="2"/>
+        <label><i class='icon-off'></i></label>
     </div>
-  </div>
-</div>
-</div>
-
-<!-- login-required -->
-<div class="modal fade" id="login" tabindex="-1" role="dialog" aria-labelledby="loginLabel" aria-hidden="true">
-  <div class="modal-dialog modal-sm">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" id="login_close1"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title">登录</h4>
-      </div>
-      <form action="{% url 'login' %}" method="post" class="form-signin" role="form">
-        <div class="modal-body">
-            {% csrf_token %}
-              <input type="text" placeholder="邮箱地址" class="form-control" name="username"/>
-              <input type="password" placeholder="密码" class="form-control" name="password"/>
-        </div>
-        <div class="modal-footer-login">
-          <div class="form-inline">
-            <button type="submit" class="btn btn-info">登录</button>
-            <button type="button" class="btn btn-default" data-dismiss="modal" id="login_close2">关闭</button>
-          </div>
-        </div>
-      </form>
+    <div class="switch demo4" style="margin-left:850px;margin-top:180px;">
+        <input type="checkbox" class="index_btn" value="3"/>
+        <label><i class='icon-off'></i></label>
     </div>
-  </div>
-</div>
-
-
 </div>
 {% endblock %}
 
+{% block foot %} 
+  <footer class="footer" style="margin-top:550px;">
+    <div class="row footer-bottom">
+      <ul class="list-inline text-center">
+        <li>&copy; Company 2015.jacsice.forgive me</li>
+      </ul>
+    </div>
+  </footer>
+{% endblock %} 
+
 {% block extra_js %}
-<script src="{% static "scripts/index_talk.js" %}"></script> 
+<script type="text/javascript">
+$("div").click(function(){
+    var num = 0;
+    $(".index_btn").each(function(){
+        if($(this).is(':checked')){
+            num = num + parseInt($(this).val());
+        }
+    });
+    if(num == 4){
+        window.location.href = '/note/';
+    }
+});
+</script>
 {% endblock %}

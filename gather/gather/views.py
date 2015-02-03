@@ -18,6 +18,11 @@ from utils import adjacent_paginator
 
 def index(request, template_name='index.html'):
     """ 主页显示"""
+    return render(request, template_name, {})
+
+
+def note(request, template_name='notes.html'):
+    """ 便签显示"""
     if request.method == "POST":
             if request.user.is_authenticated():
                 if request.POST.get('note'):
