@@ -50,6 +50,7 @@ INSTALLED_APPS = (
     'config',
     'bookmark',
     'common',
+    'debug_toolbar',
 )
 
 MIDDLEWARE_CLASSES = (
