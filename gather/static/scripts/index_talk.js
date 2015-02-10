@@ -100,7 +100,6 @@
           }
         }else{
           // 回复评论后刷新评论
-          $("#comment-body").html('').show();
           show_comments();
         }
       }
@@ -108,7 +107,7 @@
      $("#comment_content").val("");
      // 重置name为node_id
      $("#say").attr("name", "comment:" + $("#myModalLabel").attr("name"));
-     $("#say").attr('placeholder', '');
+     $("#comment_content").attr('placeholder', '');
   });
 
 /*
