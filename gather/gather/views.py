@@ -95,6 +95,7 @@ def comments(request):
                 'created': str(note.created)[:20],
                 'username': note.user.username,
                 'comments': comments,
+                'url': note.user.profile.big_photo.url
             }
             return HttpResponse(json.dumps(note_all))
 
