@@ -59,7 +59,8 @@ def login(request, form_class=LoginForm, template_name='index.html'):
             user = User.objects.get(username=request.POST.get('username'))
             if user.is_active:
                 form.login()
-                return HttpResponseRedirect(reverse('gather.views.index'))
+                next = request.GET.get('next', '/')
+                return HttpResponseRedirect(next)
             else:
                 code = get_encrypt_code(user.username)
                 LOGIN_LOG.info(gen_info_msg(request, action=u'未验证用户登陆'))
@@ -214,4 +215,5 @@ def logout(request):
     from django.contrib.auth import logout
     logout(request)
     messages.info(request, '已成功退出')
-    return HttpResponseRedirect('/')
+    next = request.GET.get('next', '/')
+    return HttpResponseRedirect(next)

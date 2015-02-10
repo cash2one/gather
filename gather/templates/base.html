@@ -43,11 +43,11 @@
                 <li><a href="{% url 'import_bookmark' %}">导入书签</a></li>
                 <li><a href="{% url 'head_pic_big' %}">上传头像</a></li>
                 <li class="divider"></li>
-                <li><a href="{% url 'logout' %}">退出</a></li>
+                <li><a href="{% url 'logout' %}?next={{ request.path }}">退出</a></li>
               </ul>
             </div>
           {% else %}
-          <form action="{% url 'login' %}" method="post" class="navbar-form navbar-right" role="form">
+          <form action="{% url 'login' %}?next={{ request.path }}" method="post" class="navbar-form navbar-right" role="form">
             {% csrf_token %}
             <div class="form-group">
               <input type="text" placeholder="邮箱地址" class="form-control" name="username">

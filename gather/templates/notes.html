@@ -106,7 +106,7 @@
         <button type="button" class="close" data-dismiss="modal" id="login_close1"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
         <h4 class="modal-title">登录</h4>
       </div>
-      <form action="{% url 'login' %}" method="post" class="form-signin" role="form">
+      <form action="{% url 'login' %}?next={{ request.path }}" method="post" class="form-signin" role="form">
         <div class="modal-body">
             {% csrf_token %}
               <input type="text" placeholder="邮箱地址" class="form-control" name="username"/>
