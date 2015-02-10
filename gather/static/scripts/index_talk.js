@@ -12,9 +12,9 @@
 /*
  * 显示评论
  */
- function show_comments(obj){
+ function show_comments(note_id){
     _data = {};
-    _data['note_id'] = obj.attr("value");
+    _data['note_id'] = note_id;
     $.ajax({
         type: 'post',
         dataType: "json",
@@ -64,7 +64,7 @@
  */
   $(".note-a").click(function(){
     //点击时间后显示评论
-    show_comments($(this));
+    show_comments($(this).attr('value'));
   });
 
   /*
@@ -100,7 +100,8 @@
           }
         }else{
           // 回复评论后刷新评论
-          show_comments();
+          note_id = $("#myModalLabel").attr("name");
+          show_comments(note_id);
         }
       }
     });
