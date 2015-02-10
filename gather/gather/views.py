@@ -69,6 +69,7 @@ def comments(request):
                 except:
                     big_photo = '/static/images/default_head.png'
                 comment['url'] = big_photo
+                comment['replys'] = []
                 for two in level_two:
                     reply = {}
                     if two.parent_id == one.id:
