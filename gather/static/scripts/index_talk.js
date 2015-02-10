@@ -12,9 +12,9 @@
 /*
  * 显示评论
  */
- function show_comments(){
+ function show_comments(obj){
     _data = {};
-    _data['note_id'] = $(".note-a").attr("value");
+    _data['note_id'] = obj.attr("value");
     $.ajax({
         type: 'post',
         dataType: "json",
@@ -64,7 +64,7 @@
  */
   $(".note-a").click(function(){
     //点击时间后显示评论
-    show_comments();
+    show_comments($(this));
   });
 
   /*
