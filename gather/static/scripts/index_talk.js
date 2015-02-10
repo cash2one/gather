@@ -2,8 +2,8 @@
  * 回复评论
  */
  function answer_comment(obj){
-    var commnet_obj = $(obj).parent().parent().find('a.commenter').first();
-    var placeholder = "回复" + commnet_obj.html() + ":";
+    var comment_obj = $(obj).parent().parent().find('a.commenter').first();
+    var placeholder = "回复" + comment_obj.html() + ":";
     $("#comment_content").attr('placeholder', placeholder);
     $("#say").attr("name", "answer:" + $(obj).attr('name'));
     $("#comment_content").focus();
@@ -31,8 +31,8 @@
           }else{
             $("#heart").css('color', '');
           }
-          $("#thumb_down").attr('value', Data['id']);
-          $("#thumb_down").html("&nbsp;" + Data['thumb_down']).show();
+          $("#note_url").attr("src", Data['url']);
+          $("#note_created").html(Data['created']).show();
           $("#myModalLabel").html(Data['title']).show();
           $("#myModalLabel").attr("name", Data['id']);
           for(var i=0;i<Data['comments'].length;i++){
@@ -41,8 +41,8 @@
                 reply_html = reply_html + "<div style='border-top:1px solid #eee;margin-bottom:5px;'><div class='row top5'><div class='col-sm-note-1'><img src='" +
                 reply['url'] + "' alt='-_-' style='width:40px;height:40px' class='img-rounded'/></div><div class='col-sm-note-11'><label class='reply'>" + 
                 reply['comment'] + "</label><br><label class='reply-pubtime'>" + 
-                reply['created'] + "&nbsp;&nbsp;<a href='javascript:;'>413761980@qq.com</a></label><label class='text-right reply'><a href='javascript:;' name=" +
-                reply['id'] + " onclick='answer_comment(this)'>&nbsp;回复</a></label></div></div></div>";
+                reply['created'] + "&nbsp;&nbsp;<a href='javascript:;' class='commenter'>413761980@qq.com</a></label><label class='text-right reply'><a href='javascript:;' name=" +
+                Data['comments'][i]['id'] + " onclick='answer_comment(this)'>&nbsp;回复</a></label></div></div></div>";
               }
               comment_html = comment_html + "<div class='row note_comment'><div class='col-sm-note-1'><img src='" +
                 Data['comments'][i]['url'] + "' alt='-_-' style='width:40px;height:40px' class='img-rounded'/></div><div class='col-sm-note-11'><div class='note-info'><label class='pubtime'>" +
@@ -87,7 +87,12 @@
       success: function(Data) {
         if(comment_type == 'comment'){
           if(Data){
-            comment_html = "<div class='row note_comment'><div class='col-sm-note-1'><img src='" + Data['url'] + "' alt='140*140' style='width:40px;height:40px' class='img-rounded'/></div><div class='col-sm-note-11'><div class='note-info'><label class='pubtime'>" + Data['created'] + "&nbsp;&nbsp;<a href='javascript:;'' class='commenter'>" + Data['username'] +"</a></label><label class='text-right reply'><a href='javascript:;' class='answer'>回复</a></label></div><p class='note-comment'>" + Data['comment'] + "</p></div></div>"
+            comment_html = "<div class='row note_comment'><div class='col-sm-note-1'><img src='" + 
+            Data['url'] + "' alt='140*140' style='width:40px;height:40px' class='img-rounded'/></div><div class='col-sm-note-11'><div class='note-info'><label class='pubtime'>" + 
+            Data['created'] + "&nbsp;&nbsp;<a href='javascript:;'' class='commenter'>" + 
+            Data['username'] +"</a></label><label class='text-right reply'><a href='javascript:;' name='" + 
+            Data['id'] + "' onclick='answer_comment(this)'>回复</a></label></div><p class='note-comment'>" + 
+            Data['comment'] + "</p></div></div>";
             $("#comment-body").html($("#comment-body").html() + comment_html).show();
           }else{
             $("#myModal").css("display", "none");
@@ -103,6 +108,7 @@
      $("#comment_content").val("");
      // 重置name为node_id
      $("#say").attr("name", "comment:" + $("#myModalLabel").attr("name"));
+     $("#say").attr('placeholder', '');
   });
 
 /*
