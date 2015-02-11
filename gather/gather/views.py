@@ -37,7 +37,7 @@ def note(request, template_name='notes.html'):
                     messages.error(request, 'shout out不能为空')
             else:
                 messages.info(request, '请登录后才能shout out')
-    node_list = NotePad.objects.filter(parent_id=0).order_by("-updated")
+    node_list = NotePad.objects.filter(parent_id=0).select_related().order_by("-updated")
     nodes, page_numbers = adjacent_paginator(node_list, request.GET.get('page', 1))
     return render(request, template_name, {
         'nodes': nodes,
