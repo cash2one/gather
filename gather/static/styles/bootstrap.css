@@ -6417,6 +6417,8 @@ button.close {
 
 .x-none{
   overflow-x: hidden;
-  background: url('/static/images/happy_birthday_to_me.png');
+  background: url('/static/images/new_year.jpg');
+  background-repeat: repeat-x;
+
 }
 /*# sourceMappingURL=bootstrap.css.map */
