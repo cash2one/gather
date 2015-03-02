@@ -35,7 +35,11 @@
         {% for node in nodes %}
         <li >
           <a href="" data-toggle="modal" data-target="#myModal" class='note-a' value="{{ node.id }}">
+            {% if node.title|length > 10 %}
             <h2>{{ node.title|slice:'10' }}...</h2>
+            {% else %}
+            <h2>{{ node.title }}</h2>
+            {% endif %}
             <h5>{{ node.created|date:'Y-m-d H:i:s' }}</h5>
             <h6 class="text-right">by-{{ node.user.username }}</h6>
           </a>
@@ -69,7 +73,7 @@
         <span class="text-right" id="note_created"></span>
         <h4 class="modal-title" id="myModalLabel"></h4>
       </div>
-      <div class="modal-body note-scrollable" id="comment-body">
+      <div class="modal-body-comment note-scrollable" id="comment-body">
 
       </div>
       <div class="modal-footer-note">

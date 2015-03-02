@@ -1,0 +1,30 @@
+{% extends 'account/base.html'%}
+{% load staticfiles %}
+{% block title %}<title>Gather-一图一世界</title>{% endblock %}
+{% block pic_li %}class="active"{% endblock %}
+
+{% block main %}
+<div class="no_nav account">
+    <form>
+        <div>
+            <span class="label label-success">第一步</span>
+            <h3 color="green">上传TA的照片</h3>
+            <input type="file" name="pic"/>  
+        </div>
+        <div style="margin:10px 0px;padding:20px 0px;">
+            <span class="label label-success">第二步</span>
+
+            <h3>书写TA的故事</h3>
+            <textarea class="ckeditor" cols="80" id="editor1" name="content" rows="30"></textarea>
+        </div>
+        
+        <div class="text-left" style="margin-top:20px;margin-right:50px;">
+            <button type="submit" class="btn btn-danger btn-lg">提交</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'ckeditor/ckeditor.js' %}"></script>
+{% endblock %}
