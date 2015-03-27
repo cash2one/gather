@@ -2,6 +2,9 @@ h2,p {
   font-size: 100%;
   font-weight:normal;
 }
+a {
+  outline: none;
+}
 ul.note,li {
   list-style:none;
 }
@@ -249,6 +252,9 @@ ul.note li a:hover{
  body{
   overflow-x: hidden;
 
+ }
+ .modal-body-comment {
+  overflow-x: hidden;
  }
 
 /* 评论样式*/ 
