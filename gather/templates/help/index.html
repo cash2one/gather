@@ -4,27 +4,174 @@
 <title>Gather-聚</title>
 {% endblock %}
 
-{% block extra_css%}
+{% block extra_css %}
+<style type="text/css">
+    .help-search{
+        background: none repeat scroll 0 0 #333;
+        border-radius: 5px;
+        bottom: 0;
+        box-shadow: 3px 3px 3px #666 inset;
+        left: 0;
+        opacity: 0.8;
+        padding: 10px;
+        position: fixed;
+        width: 25%;
+    }
+    .help-bottom{
+        background: none repeat scroll 0 0 #333;
+        border-radius: 5px;
+        bottom: 0;
+        box-shadow: 3px 3px 3px #666 inset;
+        left: 0;
+        opacity: 0.8;
+        padding: 10px;
+        position: fixed;
+        width: 100%;
+    }
+    body{
+        overflow-y: hidden; 
+    }
+</style>
 {% endblock %}
 
 {% block container %}
-<div id="map" style="width:1500px;height:1000px"></div>
+ <div id="map"></div>
+
+ <div class="help-search">
+    <span class="label label-info" style="font-size:15px;">找</span>
+    <input type="text" id="suggestId" size="20" value="百度" style="width:180px;font-color: black;margin-left:0px;" />
+    <div id="searchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
+</div>
+
+ <div class="help-bottom text-right">
+    <button class="btn btn-success" style="margin-right:150px;" data-toggle="modal" data-target="#myModal" id="help_btn">发布求助</button>
+ </div>
+
+ <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">拜托拜托~</h4>
+        <span class="label label-default" id="x"></span>
+        <span class="label label-default" id="y"></span>
+        <span></span>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label>求助内容</label>
+            <textarea class="form-control" rows="3" placeholder="请输入要拜托的内容"></textarea>
+          </div>
+          <div class="form-group">
+            <label>失效日期</label>
+            <input type="text" class="form-control" placeholder="失效日期">
+          </div>
+           <div class="form-group">
+            <label>备注</label>
+            <input type="text" class="form-control" placeholder="备注">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="button" class="btn btn-primary">提交</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=9YHq6ry1x8dptH7God0GnteU"></script>
 <script type="text/javascript">
-function initialize() {
-var mp = new BMap.Map('map');
-mp.centerAndZoom(new BMap.Point(116.403119,39.914492), 15); }
-function loadScript() {
-var script = document.createElement("script");
-script.src = "http://api.map.baidu.com/api?v=1.5&ak=9YHq6ry1x8dptH7God0GnteU&callback=initialize";
-    document.body.appendChild(script);
-}
-window.onload = loadScript;
-var map = new BMap.Map("map");
-var opts = {type: BMAP_NAVIGATION_CONTROL_SMALL};
-map.addControl(new BMap.NavigationControl(opts));
-</script>
+    $("#map").css('height', window.screen.availHeight - 90);
+    $("#map").css('width', window.screen.availWidth);
+    $(".help-search").css('margin-bottom', window.screen.availHeight * 0.7);
+    $(".help-search").css('margin-left', window.screen.availWidth * 0.8);
 
+    var map = new BMap.Map("map");
+    map.centerAndZoom(new BMap.Point(116.404, 39.915), 15);
+
+    /*
+     * 放大缩小的标尺
+     */ 
+    var top_left_control = new BMap.ScaleControl({anchor: BMAP_ANCHOR_TOP_LEFT});// 左上角，添加比例尺
+    var top_left_navigation = new BMap.NavigationControl();  //左上角，添加默认缩放平移控件
+    //添加控件和比例尺
+    map.addControl(top_left_control);        
+    map.addControl(top_left_navigation);     
+
+    /*
+     *  添加定位控件
+     */ 
+    var geolocationControl = new BMap.GeolocationControl();
+    map.addControl(geolocationControl);
+
+    /*
+     * 点击事件
+     */
+    function showInfo(e){
+        $("#x").html("经度" + e.point.lng)
+        $("#y").html("维度" + e.point.lat)
+        $("#help_btn").click();
+    }
+    map.addEventListener("click", showInfo);
+
+
+    /*
+     * 地图地点搜索
+     */
+    // 百度地图API功能
+    function G(id) {
+        return document.getElementById(id);
+    }
+
+    var ac = new BMap.Autocomplete(    //建立一个自动完成的对象
+        {"input" : "suggestId"
+        ,"location" : map
+    });
+
+    ac.addEventListener("onhighlight", function(e) {  //鼠标放在下拉列表上的事件
+    var str = "";
+        var _value = e.fromitem.value;
+        var value = "";
+        if (e.fromitem.index > -1) {
+            value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+        }    
+        str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
+        
+        value = "";
+        if (e.toitem.index > -1) {
+            _value = e.toitem.value;
+            value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+        }    
+        str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
+        G("searchResultPanel").innerHTML = str;
+    });
+
+    var myValue;
+    ac.addEventListener("onconfirm", function(e) {    //鼠标点击下拉列表后的事件
+    var _value = e.item.value;
+        myValue = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+        G("searchResultPanel").innerHTML ="onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
+        
+        setPlace();
+    });
+
+    function setPlace(){
+        map.clearOverlays();    //清除地图上所有覆盖物
+        function myFun(){
+            var pp = local.getResults().getPoi(0).point;    //获取第一个智能搜索的结果
+            map.centerAndZoom(pp, 18);
+            map.addOverlay(new BMap.Marker(pp));    //添加标注
+        }
+        var local = new BMap.LocalSearch(map, { //智能搜索
+          onSearchComplete: myFun
+        });
+        local.search(myValue);
+    }
+
+</script>
 {% endblock %}
