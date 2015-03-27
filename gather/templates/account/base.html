@@ -10,6 +10,7 @@
             <li {% block import_li %}{% endblock %}><a href="{% url 'import_bookmark' %}">导入书签</a></li>
             <li {% block article_li %}{% endblock %}><a href="{% url 'article' %}">我的文章</a></li>
             <li {% block upload_li %}{% endblock %}><a href="{% url 'head_pic_big' %}">上传头像</a></li>
+            <li {% block pic_li %}{% endblock %}><a href="{% url 'add_pic' %}">图文说说</a></li>
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">

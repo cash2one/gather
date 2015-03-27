@@ -75,6 +75,7 @@ def comments(request):
                     if two.parent_id == one.id:
                         reply['id'] = two.id
                         reply['comment'] = two.comment
+                        reply['username'] = two.user.username
                         reply['created'] = str(two.created)[:20]
                         try:
                             big_photo = two.user.profile.big_photo.url
@@ -167,6 +168,11 @@ def heart(request):
                 return HttpResponse(json.dumps(data))
     else:
         return HttpResponse(json.dumps({'result': False}))
+
+
+def pic(request, template_name='content_pics.html'):
+    """ 图文展示"""
+    return render(request, template_name, {})
 
 
 

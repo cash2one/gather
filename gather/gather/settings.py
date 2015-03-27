@@ -50,6 +50,7 @@ INSTALLED_APPS = (
     'config',
     'bookmark',
     'common',
+    'help',
     'debug_toolbar',
 )
 

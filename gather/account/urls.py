@@ -17,6 +17,7 @@ urlpatterns = patterns('account.views',
 
     url(r'^article/$', 'article', name='article'),
     url(r'^article/add/$', 'add_article', name='add_article'),
+    url(r'^pic/add/$', 'add_pic', name='add_pic'),
 
     url(r'^head_pic_big/$', 'head_pic_big', name='head_pic_big'),
 

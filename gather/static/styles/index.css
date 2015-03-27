@@ -246,10 +246,13 @@ ul.note li a:hover{
   margin-top: 10px;
 }
 
-.index {
-  margin-top: 50px;
-}
  body{
   overflow-x: hidden;
 
  }
+
+/* 评论样式*/ 
+.modal-body-comment {
+  position: relative;
+  padding-left: 15px;
+}

@@ -41,7 +41,8 @@
                 reply_html = reply_html + "<div style='border-top:1px solid #eee;margin-bottom:5px;'><div class='row top5'><div class='col-sm-note-1'><img src='" +
                 reply['url'] + "' alt='-_-' style='width:40px;height:40px' class='img-rounded'/></div><div class='col-sm-note-11'><label class='reply'>" + 
                 reply['comment'] + "</label><br><label class='reply-pubtime'>" + 
-                reply['created'] + "&nbsp;&nbsp;<a href='javascript:;' class='commenter'>413761980@qq.com</a></label><label class='text-right reply'><a href='javascript:;' name=" +
+                reply['created'] + "&nbsp;&nbsp;<a href='javascript:;' class='commenter'>"+
+                reply['username'] +"</a></label><label class='text-right reply'><a href='javascript:;' name=" +
                 Data['comments'][i]['id'] + " onclick='answer_comment(this)'>&nbsp;回复</a></label></div></div></div>";
               }
               comment_html = comment_html + "<div class='row note_comment'><div class='col-sm-note-1'><img src='" +

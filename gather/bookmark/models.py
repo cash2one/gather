@@ -62,3 +62,4 @@ class NoteHeart(models.Model):
     class Meta:
         verbose_name = '喜欢信息'
         verbose_name_plural = '点赞列表'
+
