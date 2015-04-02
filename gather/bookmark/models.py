@@ -51,7 +51,7 @@ class NotePad(models.Model):
 
 
 class NoteHeart(models.Model):
-    """ 便签中喜欢信息"""
+    """ 便签中'喜欢'信息"""
     user = models.ForeignKey(User, related_name='hearts')
     note = models.ForeignKey(NotePad, related_name='hearts')
     is_still = models.BooleanField('是否仍喜欢', default=False)

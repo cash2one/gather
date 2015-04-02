@@ -33,14 +33,14 @@ def code_valid(func):
         else:
             code = request.GET.get('code', None)
         if code:
+            value = base64.b64decode(code)
+            signer = TimestampSigner()
             try:
-                value = base64.b64decode(code)
-                signer = TimestampSigner()
                 username = signer.unsign(value, ONE_DAY)
                 INFO_LOG.info(gen_info_msg(request, action='链接正常', code_url=request.path, valid=True, username=username))
-
                 return func(request, *args, **kwargs)
             except (SignatureExpired, BadSignature, TypeError), e:
+                username = signer.unsign(value)
                 if isinstance(e, SignatureExpired):
                     messages.error(request, '链接已失效')
                     INFO_LOG.info(gen_info_msg(request, action=u'链接已失效', code_url=request.path, valid=False, username=username))

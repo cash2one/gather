@@ -168,12 +168,4 @@ def heart(request):
                 return HttpResponse(json.dumps(data))
     else:
         return HttpResponse(json.dumps({'result': False}))
-
-
-def pic(request, template_name='content_pics.html'):
-    """ 图文展示"""
-    return render(request, template_name, {})
-
-
-
-
+        

@@ -1,0 +1,95 @@
+{% extends 'base.html'%}
+{% load staticfiles %}
+{% block title %}
+<title>Gather-{{ share.title }}</title>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" type="text/css" href="{% static 'styles/share.css' %}">
+{% endblock %}
+
+{% block container %}
+    <div class="container" style="background-color:white">
+
+    <div class="blog-header">
+        <h1 class="blog-title">
+          <span class="label label-success">Love</span>
+          <span class="label label-primary">Life</span>
+          <span class="label label-warning">,</span>
+          <span class="label label-default">Love</span>
+          <span class="label label-danger">Share</span>
+        </h1>
+        <p class="lead blog-description" style="margin-top:20px;">Don't waste life in doubts and fears.</p>
+    </div>
+    
+      <div class="row">
+        <div class="col-sm-8 blog-main">
+          <ol class="breadcrumb">
+            <li><a href="{% url 'share' %}">全部分享</a></li>
+            <li class="active">{{ share.title }}</li>
+          </ol>
+          <div class="row">
+            <div class="col-md-10" >
+              <div class="blog-post-detail">
+                <h2 class="blog-post-title">{{ share.title }}</h2>
+                <p class="blog-post-meta">{{ share.created|date:'Y-m-d H:i:s' }} by <a href="#">{{ share.user.username }}</a></p>
+                {% if share.photo %}
+                <img src="/media/{{ share.photo }}" style="width:150px;height:200px;"/>
+                {% endif %}
+                <p>{{ share.content|safe }}</p>
+              </div><!-- /.blog-post -->
+            </div>
+          </div>
+          <div class="text-right">
+            {% if share.is_read %}
+            <button class="btn btn-info btn-sm">
+              <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>再次阅读
+            </button>
+            {% else %}
+            <button class="btn btn-sm">
+              <span class="glyphicon  glyphicon-remove" aria-hidden="true"></span>不再看
+            </button>
+            {% endif %}
+          </div>
+        </div><!-- /.blog-main -->
+
+        <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+          <div class="sidebar-module sidebar-module-inset">
+            <h4>HOPE</h4>
+            <p>希望能留住更多的美好与回忆,希望能与更多的人分享悲伤与快乐,希望这个世界会更好。</p>
+            <p class="text-right">jacsice 2015-03-30</p>
+          </div>
+          <div class="sidebar-module">
+            <h4>浏览最多</h4>
+            <ol class="list-unstyled">
+              <li><a href="#">March 2014</a></li>
+              <li><a href="#">February 2014</a></li>
+              <li><a href="#">January 2014</a></li>
+              <li><a href="#">December 2013</a></li>
+              <li><a href="#">November 2013</a></li>
+              <li><a href="#">October 2013</a></li>
+              <li><a href="#">September 2013</a></li>
+              <li><a href="#">August 2013</a></li>
+              <li><a href="#">July 2013</a></li>
+              <li><a href="#">June 2013</a></li>
+              <li><a href="#">May 2013</a></li>
+              <li><a href="#">April 2013</a></li>
+            </ol>
+          </div>
+          <div class="sidebar-module">
+            <h4>Elsewhere</h4>
+            <ol class="list-unstyled">
+              <li><a href="#">GitHub</a></li>
+              <li><a href="#">Twitter</a></li>
+              <li><a href="#">Facebook</a></li>
+            </ol>
+          </div>
+        </div><!-- /.blog-sidebar -->
+
+      </div><!-- /.row -->
+
+    </div><!-- /.container -->
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}

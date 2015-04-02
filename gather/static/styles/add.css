@@ -17,3 +17,9 @@
 .bs-callout-info {
     border-left-color: #5bc0de;
 }
+
+/* 全部页面默认背景图片 */
+body {
+  overflow-x: hidden;
+  background: url('/static/images/bg.jpg');
+}
