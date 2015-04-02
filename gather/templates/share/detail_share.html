@@ -34,7 +34,7 @@
                 <h2 class="blog-post-title">{{ share.title }}</h2>
                 <p class="blog-post-meta">{{ share.created|date:'Y-m-d H:i:s' }} by <a href="#">{{ share.user.username }}</a></p>
                 {% if share.photo %}
-                <img src="/media/{{ share.photo }}" style="width:150px;height:200px;"/>
+                <img src="/media/{{ share.photo }}" style="width:300px;height:300px;"/>
                 {% endif %}
                 <p>{{ share.content|safe }}</p>
               </div><!-- /.blog-post -->

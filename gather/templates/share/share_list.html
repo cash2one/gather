@@ -47,7 +47,7 @@
             </div>
           {% endfor %}
           </div>
-
+          {% if shares.paginator.num_pages > 1 %}
           <nav>
             <ul class="pagination">
               {% if shares.has_previous %}
@@ -67,6 +67,7 @@
               {% endif %}
             </ul>
           </nav>
+          {% endif %}
 
         </div><!-- /.blog-main -->
 
