@@ -189,8 +189,6 @@ def head_pic_big(request, form_class=UploadBigPicForm, template_name='account/up
     profile = request.user.profile
 
     if request.method == 'POST':
-        #print request.is_ajax()
-        #if request.is_ajax():
         crop = request.POST.get('crop')
         if crop == '':
             form = form_class(data=request.POST, files=request.FILES, instance=profile)
@@ -217,9 +215,3 @@ def logout(request):
     messages.info(request, '已成功退出')
     next = request.GET.get('next', '/')
     return HttpResponseRedirect(next)
-
-
-@login_required
-def add_pic(request, template_name='account/content_pic.html'):
-    """ 图文展示"""
-    return render(request, template_name, {})

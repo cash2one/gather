@@ -14,14 +14,17 @@
     <div class="switch demo4" style="margin-left:150px;margin-top:180px;">
         <input type="checkbox" class="index_btn" value="1"/>
         <label><i class='icon-off'></i></label>
+        <h2 style="margin-left:30px"><span class="label label-info" >拜托</span></h2>
     </div>
     <div class="switch demo4" style="margin-left:500px;margin-top:180px;">
         <input type="checkbox" class="index_btn" value="2"/>
         <label><i class='icon-off'></i></label>
+        <h2 style="margin-left:35px"><span class="label label-info">分享</span></h2>
     </div>
     <div class="switch demo4" style="margin-left:850px;margin-top:180px;">
         <input type="checkbox" class="index_btn" value="3"/>
         <label><i class='icon-off'></i></label>
+        <h2 style="margin-left:40px"><span class="label label-info">心情</span></h2>
     </div>
 </div>
 {% endblock %}
@@ -30,7 +33,7 @@
   <footer class="footer" style="margin-top:550px;">
     <div class="row footer-bottom">
       <ul class="list-inline text-center">
-        <li>&copy; Company 2015.jacsice.forgive me</li>
+        <li>&copy; Company 2015.jacsice.love shan</li>
       </ul>
     </div>
   </footer>
@@ -45,11 +48,11 @@ $("div").click(function(){
             num = num + parseInt($(this).val());
         }
     });
-    if(num == 4){
+    if(num == 3){
         window.location.href = '/note/';
-    }else if(num == 3){
-        window.location.href = '/pic/';
-    }else if(num == 5){
+    }else if(num == 2){
+        window.location.href = '/share/';
+    }else if(num == 1){
         window.location.href = '/help/';
     }
 });

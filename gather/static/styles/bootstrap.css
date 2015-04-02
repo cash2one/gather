@@ -6414,9 +6414,4 @@ button.close {
     display: none !important;
   }
 }
-
-.x-none{
-  overflow-x: hidden;
-  background: url('/static/images/bg.jpg');
-}
 /*# sourceMappingURL=bootstrap.css.map */

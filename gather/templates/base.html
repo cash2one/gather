@@ -17,7 +17,7 @@
 <!--其他页面特有的CSS-->
 {% endblock %}
 </head>
-<body class="x-none">
+<body>
 {% block header %} 
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="background-color:#428bca">
       <div class="container">
@@ -40,7 +40,7 @@
               <ul class="dropdown-menu" role="menu">
                 <li><a href="{% url 'account' %}">我的账户</a></li>
                 <li><a href="{% url 'bookmark' %}">收藏夹</a></li>
-                <li><a href="{% url 'add_article' %}">发表文章</a></li>
+                <li><a href="{% url 'add_share' %}">分享点滴</a></li>
                 <li><a href="{% url 'import_bookmark' %}">导入书签</a></li>
                 <li><a href="{% url 'head_pic_big' %}">上传头像</a></li>
                 <li class="divider"></li>
@@ -78,7 +78,7 @@
   <footer class="footer">
     <div class="row footer-bottom">
       <ul class="list-inline text-center">
-        <li>&copy; Company 2015.jacsice.forgive me</li>
+        <li>&copy; Company 2015.jacsice.love shan</li>
       </ul>
     </div>
     {% for error in form.non_field_errors %} 

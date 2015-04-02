@@ -51,6 +51,7 @@ INSTALLED_APPS = (
     'bookmark',
     'common',
     'help',
+    'share',
     'debug_toolbar',
 )
 
