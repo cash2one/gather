@@ -26,7 +26,6 @@ class Share(models.Model):
 
     def can_show_desc(self):
         """ 能否显示简介"""
-        print '<img' in self.content
         if '<img' in self.content:
             return False
         else:
