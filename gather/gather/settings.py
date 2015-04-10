@@ -53,6 +53,7 @@ INSTALLED_APPS = (
     'help',
     'share',
     'debug_toolbar',
+    'djcelery'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -252,6 +253,12 @@ DATETIME_FORMAT = 'Y-m-d'
 
 SESSION_COOKIE_AGE = 60 * 60 * 2
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# django-celery
+CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
+BROKER_URL = 'redis://localhost:6379/0'
+CELERY_DISABLE_RATE_LIMITS = True
+# celery worker --app=project.celery:app --loglevel=INFO
 
 try:
     from local_settings import *
