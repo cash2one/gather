@@ -14,7 +14,7 @@ from django.views.decorators.http import require_POST
 from bookmark.models import NotePad, NoteHeart
 
 from utils import adjacent_paginator
-
+from gather.celery import async_send_html_email
 
 def index(request, template_name='index.html'):
     """ 主页显示"""
@@ -130,6 +130,14 @@ def add_comment(request):
                     'username': c.user.username,
                     'url': big_photo,
                 }
+                
+                if request.user.username != note.user.username:
+                    context = {
+                        'username': request.user.username,
+                        'action': '评论了您的状态:',
+                        'content': c.comment,
+                    }
+                    async_send_html_email.delay('新状态提醒', [note.user.username,], 'new_action_template.html', context)
                 return HttpResponse(json.dumps(comment_json))
         else:
             return HttpResponse(json.dumps(False))
@@ -165,6 +173,13 @@ def heart(request):
                     'result': True,
                     'sign': True,
                 }
+                context = {
+                    'username': user.username,
+                    'action': '赞了您的状态:',
+                    'content': note.title,
+                }
+                if request.user.username != note.user.username:
+                    async_send_html_email.delay('新状态提醒', [note.user.username,], 'new_action_template.html', context)
                 return HttpResponse(json.dumps(data))
     else:
         return HttpResponse(json.dumps({'result': False}))
