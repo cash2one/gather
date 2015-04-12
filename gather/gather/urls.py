@@ -18,8 +18,9 @@ urlpatterns = patterns('',
     url(r'^bookmark/', include('bookmark.urls')),
 
     url(r'^comment/add/', 'gather.views.add_comment', name='add_comment'),
-    url(r'^comment/list/', 'gather.views.comments', name='comments'),
+    url(r'^comment/list/(?P<note_id>\d+)/', 'gather.views.comments', name='comments'),
     url(r'^note/heart/', 'gather.views.heart', name='heart'),
+    url(r'^note/special_care/', 'gather.views.special_care', name='special_care'),
 
 )
 
