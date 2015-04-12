@@ -40,6 +40,8 @@ class NotePad(models.Model):
     title = models.CharField('便签标题', max_length=50, null=True, blank=True)
     comment = models.CharField('评论', max_length=50, null=True, blank=True,)
     parent_id = models.IntegerField('所属评论下得评论', null=True, blank=True, default=0)
+    parent_note_id = models.IntegerField('所属便签', null=True, blank=True, default=0)
+    reply_to = models.ForeignKey(User, related_name='replys', null=True)
     read_sum = models.IntegerField('点击次数', default=0)
 
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
@@ -48,6 +50,27 @@ class NotePad(models.Model):
     class Meta:
         verbose_name = '便签信息'
         verbose_name_plural = '便签列表'
+
+    def is_special_care(self, user=None):
+        """ 是否特别关心该用户"""
+        if user.is_authenticated():
+            return SpecialCare.objects.filter(user=user, care=self.user, is_valid=True).exists()
+        else:
+            return False
+
+    def is_self_note(self, user=None):
+        """ 是否是自己的状态"""
+        if user.is_authenticated():
+            return self.user.id == user.id
+        else:
+            return False
+
+    def get_owner_photo(self):
+        """ 获取状态所有者的头像"""
+        try:
+            return self.user.profile.big_photo.url
+        except:
+            return '/static/images/default_head.png'
 
 
 class NoteHeart(models.Model):
@@ -60,6 +83,20 @@ class NoteHeart(models.Model):
     updated = models.DateTimeField('最后更新时间', auto_now=True)
 
     class Meta:
-        verbose_name = '喜欢信息'
+        verbose_name = '点赞信息'
         verbose_name_plural = '点赞列表'
 
+
+class SpecialCare(models.Model):
+    """ 特别关心对应关系"""
+    user = models.ForeignKey(User)
+    care = models.ForeignKey(User, related_name='cares')
+
+    is_valid = models.BooleanField('是否有效', default=False)
+
+    created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
+    updated = models.DateTimeField('最后更新时间', auto_now=True)
+
+    class Meta:
+        verbose_name = '特别关心信息'
+        verbose_name_plural = '特别关心列表'
