@@ -26,19 +26,22 @@ def index(request, template_name='index.html'):
 def note(request, template_name='notes.html'):
     """ 便签显示"""
     if request.method == "POST":
-            if request.user.is_authenticated():
-                if request.POST.get('note'):
-                    title = request.POST.get('note')
+        if request.user.is_authenticated():
+            if request.POST.get('note'):
+                title = request.POST.get('note')
+                if len(title) > 45:
+                    messages.error(request, 'shout out内容过长!')
+                else:
                     if not NotePad.objects.filter(title=title).exists():
                         NotePad(
                             user=request.user,
                             title=title,
                             updated=datetime.datetime.now(),
                         ).save()
-                else:
-                    messages.error(request, 'shout out不能为空')
             else:
-                messages.info(request, '请登录后才能shout out')
+                messages.error(request, 'shout out不能为空')
+        else:
+            messages.info(request, '请登录后才能shout out')
     node_list = NotePad.objects.filter(parent_id=0).select_related().order_by("-updated")
     nodes, page_numbers = adjacent_paginator(node_list, request.GET.get('page', 1))
     return render(request, template_name, {
