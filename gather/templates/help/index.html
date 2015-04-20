@@ -38,45 +38,101 @@
 {% block container %}
  <div id="map"></div>
 
+<input type="hidden" value="{{ latitude|default:'116.404' }}" id="init_x"/>
+<input type="hidden" value="{{ longitude|default:'39.915'}}" id="init_y"/>
+
  <div class="help-search">
-    <span class="label label-info" style="font-size:15px;">找</span>
+    <span class="label label-info" style="font-size:15px;">搜</span>
     <input type="text" id="suggestId" size="20" value="百度" style="width:180px;font-color: black;margin-left:0px;" />
     <div id="searchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
 </div>
 
  <div class="help-bottom text-right">
+    <div class="text-left" style="position:absolute;margin-left:200px;">
+    <span class="label label-danger" id="x_bottom"></span><br/>
+    <span class="label label-danger" id="y_bottom"></span>
+    </div>
     <button class="btn btn-success" style="margin-right:150px;" data-toggle="modal" data-target="#myModal" id="help_btn">发布求助</button>
  </div>
 
+<!-- 添加拜托信息 -->
  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel">拜托拜托~</h4>
-        <span class="label label-default" id="x"></span>
-        <span class="label label-default" id="y"></span>
+        <span class="label label-danger" id="x"></span>
+        <span class="label label-danger" id="y"></span>
+        <span></span>
+      </div>
+      <form action="{% url 'help_add' %}" method="post">
+        {% csrf_token %}
+          <div class="modal-body">
+             <div class="form-group">
+                <label>标题</label>
+                <input type="text" class="form-control" placeholder="简短描述拜托" name="title"/>
+              </div>
+              <div class="form-group">
+                <label>求助内容</label>
+                <textarea class="form-control" rows="3" placeholder="请输入要拜托的内容" name="content"></textarea>
+              </div>
+              <div class="form-group">
+                <label>失效日期</label>
+                <input type="text" class="form-control" placeholder="空则为长期有效" name="cancel_time"/>
+              </div>
+              <div class="form-group">
+                <label>联系方式</label>
+                <input type="text" class="form-control" placeholder="电话、qq、email" name="connect_method"/>
+              </div>
+               <div class="form-group">
+                <label>备注</label>
+                <input type="text" class="form-control" placeholder="备注" name="remark"/>
+               </div>
+               <input type="hidden" value="" name="longitude" id="longitude"/>
+               <input type="hidden" value="" name="latitude" id="latitude"/>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            <button type="submit" class="btn btn-primary">提交</button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- 显示拜托信息 -->
+<div class="modal fade" id="helpModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">拜托拜托~</h4>
+        <span class="label label-default" id="help_longitude"></span>
+        <span class="label label-default" id="help_latitude"></span>
         <span></span>
       </div>
       <div class="modal-body">
-        <form>
           <div class="form-group">
-            <label>求助内容</label>
-            <textarea class="form-control" rows="3" placeholder="请输入要拜托的内容"></textarea>
+            <label>求助内容:</label>
+            <label id="help_content"></label>
           </div>
           <div class="form-group">
-            <label>失效日期</label>
-            <input type="text" class="form-control" placeholder="失效日期">
+            <label>失效日期:</label>
+            <label id="help_cancel_time"></label>
+          </div>
+          <div class="form-group">
+            <label>联系方式:</label>
+            <label id="help_connect_method"></label>
           </div>
            <div class="form-group">
-            <label>备注</label>
-            <input type="text" class="form-control" placeholder="备注">
-          </div>
-        </form>
+            <label>备注:</label>
+            <label id="help_remark"></label>
+           </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-        <button type="button" class="btn btn-primary">提交</button>
+        <button type="button" class="btn btn-info" data-dismiss="modal">去帮助</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal" class="close">关闭</button>
       </div>
     </div>
   </div>
@@ -93,7 +149,60 @@
     $(".help-search").css('margin-left', window.screen.availWidth * 0.8);
 
     var map = new BMap.Map("map");
-    map.centerAndZoom(new BMap.Point(116.404, 39.915), 15);
+
+    // 进入时焦点位置；第一次进入为默认，其他为发布拜托后位置
+    var init_x = parseFloat($("#init_x").val());
+    var init_y = parseFloat($("#init_y").val());
+    map.centerAndZoom(new BMap.Point(init_x, init_y), 15);
+
+    window.onload = get_location;
+    function get_location(){
+        // 获取所有拜托的位置
+        $.ajax({
+            url: '/help/points/',
+            type: 'GET',
+            dataType: 'json',
+            success: function(Data) {
+                if(Data['result']){
+                    var json_data = Data['points'];
+                    var pointArray = new Array();
+                    for(var i=0;i<json_data.length;i++){
+                        var marker = new BMap.Marker(new BMap.Point(json_data[i][0], json_data[i][1])); // 创建点
+                        map.addOverlay(marker);    //增加点
+                        pointArray[i] = new BMap.Point(json_data[i][0], json_data[i][1]);
+                        help_id= json_data[i][2];
+                        marker.addEventListener("click", function(){
+                            $.ajax({
+                                url: '/help/detail/' + help_id + '/',
+                                type: 'GET',
+                                dataType: 'json',
+                                data: {},
+                                success: function(Data){
+                                    if(Data['result']){
+                                        $("#help_longitude").html("经度" + Data['longitude']);
+                                        $("#help_latitude").html("维度" + Data['latitude']);
+                                        $("#help_title").html(Data['title']);
+                                        $("#help_content").html(Data['content']);
+                                        $("#help_remark").html(Data['remark']);
+                                        $("#help_connect_method").html(Data['connect_method']);
+                                        $("#help_cancel_time").html(Data['cancel_time']);
+                                        $("#helpModal").removeClass('fade').addClass('show');
+                                    }else{
+                                        alert("拜托详情错误, 请刷新");
+                                    }
+                                }
+                            })
+                        });
+                    }
+                    //让所有点在视野范围内
+                    map.setViewport(pointArray);
+                }
+            }
+        })
+        .fail(function() {
+            alert("获取地点加载失败, 请刷新");
+        })
+    }
 
     /*
      * 放大缩小的标尺
@@ -116,10 +225,14 @@
     function showInfo(e){
         $("#x").html("经度" + e.point.lng)
         $("#y").html("维度" + e.point.lat)
-        $("#help_btn").click();
+
+        $("#longitude").val(e.point.lng)
+        $("#latitude").val(e.point.lat)
+
+        $("#x_bottom").html("经度" + e.point.lng)
+        $("#y_bottom").html("维度" + e.point.lat)
     }
     map.addEventListener("click", showInfo);
-
 
     /*
      * 地图地点搜索
@@ -173,6 +286,13 @@
         });
         local.search(myValue);
     }
+
+    /* 
+     * bootstrap modal 关闭按钮, 隐藏modal
+     */
+     $(".class").click(function(){
+        $(".modal").removeClass('show').addClass('fade');
+     });
 
 </script>
 {% endblock %}

@@ -63,7 +63,8 @@ class NotePad(models.Model):
         if user.is_authenticated():
             return self.user.id == user.id
         else:
-            return False
+            # 非登录用户与自己的状态不显示特别关心
+            return True
 
     def get_owner_photo(self):
         """ 获取状态所有者的头像"""
