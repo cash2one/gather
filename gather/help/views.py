@@ -62,6 +62,7 @@ def help_detail(request, help_id=None):
                 'id': help.id,
                 'latitude': help.latitude,
                 'longitude': help.longitude,
+                'connect_method': help.connect_method,
                 'title': help.title,
                 'content': help.content,
                 'remark': help.remark,
