@@ -3,6 +3,7 @@
 
 import datetime
 import logging
+import time
 
 from django import forms
 
@@ -40,6 +41,15 @@ class AddHelpForm(forms.ModelForm):
         elif(len(connect_method)>50):
             raise forms.ValidationError('联系方式最长50个字符')
         return connect_method
+
+    def clean_cancel_time(self):
+        try:
+            cancel_time = self.cleaned_data['cancel_time']
+            time.strptime(cancel_time, "%Y-%m-%d")
+            return cancel_time
+        except:
+            # 日期格式输入错误，则一天后失效
+            return datetime.datetime.now() + datetime.timedelta(days=1)
 
     def clean(self):
         print self.errors

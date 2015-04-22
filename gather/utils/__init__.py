@@ -139,9 +139,15 @@ def crop_avatar(request, profile):
     xsize, ysize = f.size
     size = request.POST.get('crop')
     size_arr = size.split(':')
-    top = int(size_arr[0][:-2])
-    left = int(size_arr[1][:-2])
-    width = int(size_arr[3][:-2])
+    if size_arr:
+        top = int(size_arr[0][:-2])
+        left = int(size_arr[1][:-2])
+        width = int(size_arr[3][:-2])
+        # 未截取图框直接上传
+        if top == 0 and left == 0 and width == 0:
+            top = 0
+            left = 0
+            width = ysize/2
     # box变量是一个四元组(左，上，右，下)。
     box = (left, top, width+left, width+top)
     f.crop(box).save(path)

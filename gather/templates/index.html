@@ -14,7 +14,7 @@
     <div class="switch demo4" style="margin-left:150px;margin-top:180px;">
         <input type="checkbox" class="index_btn" value="1"/>
         <label><i class='icon-off'></i></label>
-        <h2 style="margin-left:30px"><span class="label label-info" >拜托</span></h2>
+        <h2 style="margin-left:30px"><span class="label label-info" >心情</span></h2>
     </div>
     <div class="switch demo4" style="margin-left:500px;margin-top:180px;">
         <input type="checkbox" class="index_btn" value="2"/>
@@ -24,7 +24,7 @@
     <div class="switch demo4" style="margin-left:850px;margin-top:180px;">
         <input type="checkbox" class="index_btn" value="3"/>
         <label><i class='icon-off'></i></label>
-        <h2 style="margin-left:40px"><span class="label label-info">心情</span></h2>
+        <h2 style="margin-left:40px"><span class="label label-info">拜托</span></h2>
     </div>
 </div>
 {% endblock %}
@@ -40,21 +40,5 @@
 {% endblock %} 
 
 {% block extra_js %}
-<script type="text/javascript">
-$("div").click(function(){
-    var num = 0;
-    $(".index_btn").each(function(){
-        if($(this).is(':checked')){
-            num = num + parseInt($(this).val());
-        }
-    });
-    if(num == 3){
-        window.location.href = '/note/';
-    }else if(num == 2){
-        window.location.href = '/share/';
-    }else if(num == 1){
-        window.location.href = '/help/';
-    }
-});
-</script>
+<script type="text/javascript" src="{% static 'scripts/index.js'%}"></script>
 {% endblock %}
