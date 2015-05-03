@@ -1,0 +1,17 @@
+{% extends 'account/base.html'%}
+{% load staticfiles %}
+{% block title %}<title>Gather-关于我们</title>{% endblock %}
+{% block about_li %}class="active"{% endblock %}
+
+{% block main %}
+  <div class="container">
+      <!-- 开发日志 -->
+      {% for log in logs %}
+      <div class="bs-callout bs-callout-info">
+        <span class="label label-success" target="_blank">{{ log.created|date:'Y-m-d H:i:s' }}</span> 
+        &nbsp;&nbsp;&nbsp;
+        {{ log.content }}
+      </div>
+      {% endfor %}
+  </div>
+{% endblock %}

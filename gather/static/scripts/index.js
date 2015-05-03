@@ -5,6 +5,6 @@ $("input").click(function(){
     }else if(num == '2'){
         window.location.href = '/share/';
     }else if(num == '1'){
-        window.location.href = '/note/';
+        window.location.href = '/bookmark/note/';
     }
 });

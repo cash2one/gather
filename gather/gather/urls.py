@@ -11,17 +11,12 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
     url(r'^$', 'gather.views.index', name='index'),
-    url(r'^note/$', 'gather.views.note', name='note'),
     url(r'^share/', include('share.urls')),
     url(r'^help/', include('help.urls')),
     url(r'^account/', include('account.urls')),
     url(r'^bookmark/', include('bookmark.urls')),
-
-    url(r'^comment/add/', 'gather.views.add_comment', name='add_comment'),
-    url(r'^comment/list/(?P<note_id>\d+)/', 'gather.views.comments', name='comments'),
-    url(r'^note/heart/', 'gather.views.heart', name='heart'),
-    url(r'^note/special_care/', 'gather.views.special_care', name='special_care'),
-
+    url(r'^comment/', include('comment.urls')),
+    url(r'^abount_us/', 'gather.views.about_us', name='about_us'),
 )
 
 if settings.DEBUG:

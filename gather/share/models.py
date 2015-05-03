@@ -12,7 +12,8 @@ class Share(models.Model):
     title = models.CharField('标题', max_length=30)
     photo = models.ImageField(upload_to='share/%Y/%m/%d', blank=True, null=True)
     content = models.TextField('分享的简介信息', blank=True, null=True)
-
+    read_sum = models.IntegerField('点击次数', default=0)
+    
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
     updated = models.DateTimeField('最后更新时间', auto_now=True)
 

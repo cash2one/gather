@@ -52,6 +52,7 @@ INSTALLED_APPS = (
     'common',
     'help',
     'share',
+    'comment',
     'debug_toolbar',
     'djcelery'
 )

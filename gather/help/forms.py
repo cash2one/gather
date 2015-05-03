@@ -2,18 +2,19 @@
 #!-*- coding: utf-8 -*-
 
 import datetime
-import logging
 import time
 
 from django import forms
 
 from help.models import Help
 
+
 class AddHelpForm(forms.ModelForm):
     """ 添加拜托表单"""
     def __init__(self, request=None, *args, **kwargs):
         super(AddHelpForm, self).__init__(*args, **kwargs)
         self._request = request
+
     class Meta:
         model = Help
         fields = ('title', 'connect_method', 'content', 'latitude', 'longitude', 'remark', 'cancel_time')
@@ -24,13 +25,13 @@ class AddHelpForm(forms.ModelForm):
     latitude = forms.FloatField(label='维度')
     longitude = forms.FloatField(label='经度')
     remark = forms.CharField(label='备注', max_length=400, required=False)
-    cancel_time = forms.DateField(label='失效时间', required=False)
+    cancel_time = forms.CharField(label='失效时间', required=False)
 
     def clean_title(self):
         title = self.cleaned_data['title']
         if not title:
             raise forms.ValidationError('标题不能为空')
-        elif(len(title)>50):
+        elif(len(title) > 50):
             raise forms.ValidationError('标题最多容纳50个字符')
         return title
 
@@ -38,7 +39,7 @@ class AddHelpForm(forms.ModelForm):
         connect_method = self.cleaned_data['connect_method']
         if not connect_method:
             raise forms.ValidationError('联系方式不能为空')
-        elif(len(connect_method)>50):
+        elif(len(connect_method) > 50):
             raise forms.ValidationError('联系方式最长50个字符')
         return connect_method
 
@@ -49,7 +50,7 @@ class AddHelpForm(forms.ModelForm):
             return cancel_time
         except:
             # 日期格式输入错误，则一天后失效
-            return datetime.datetime.now() + datetime.timedelta(days=1)
+            return (datetime.datetime.now() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 
     def clean(self):
         print self.errors
