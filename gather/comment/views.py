@@ -183,17 +183,7 @@ def add_comment(request, obj_type):
                         'content': c.comment,
                     }
                     async_send_html_email.delay('新状态提醒', [obj.user.username,], 'new_action_template.html', context)
-                # 对关注者发送邮件提醒
-                interests = SpecialCare.objects.filter(care=obj.user)
-                for interest in interests:
-                    context = {
-                        'username': obj.user.username,
-                        'action': '发布了新的状态:',
-                        'content': obj.comment,
-                    }
-                    async_send_html_email.delay('新状态提醒', [interest.user.username,], 'new_action_template.html', context)
-                
-                return HttpResponse(json.dumps(comment_json))
+            return HttpResponse(json.dumps(comment_json))
     return HttpResponse(json.dumps({'result': False, 'msg': '请登录'}))
 
 

@@ -49,8 +49,7 @@ def import_bookmark(request, template_name='bookmark/import.html'):
                     url=k.encode('utf-8'),
                     summary=u'无',
                 ).save()
-        messages.info(request, u'导入成功')
-        
+        messages.info(request, u'导入成功')       
     return render(request, template_name)
 
 
@@ -64,10 +63,20 @@ def note(request, template_name='bookmark/notes.html'):
                     messages.error(request, 'shout out内容过长!')
                 else:
                     if not NotePad.objects.filter(title=title).exists():
-                        NotePad(
+                        note = NotePad(
                             user=request.user,
                             title=title,
-                        ).save()
+                        )
+                        note.save()
+                        # 对关注者发送邮件提醒
+                        interests = SpecialCare.objects.filter(care=request.user)
+                        for interest in interests:
+                            context = {
+                                'username': note.user.username,
+                                'action': '发布了新的状态:',
+                                'content': note.title,
+                            }
+                            async_send_html_email.delay('新状态提醒', [interest.user.username,], 'new_action_template.html', context)
             else:
                 messages.error(request, 'shout out不能为空')
         else:
