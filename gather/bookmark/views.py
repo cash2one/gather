@@ -1,11 +1,23 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import datetime
+import simplejson as json
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.db import transaction
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
-from bookmark.models import BookMark
+from bookmark.models import BookMark, NotePad
+from comment.models import Heart
+from account.models import SpecialCare
+
+from gather.celery import async_send_html_email
 
 from soup import ParseHtml
 from utils import adjacent_paginator
@@ -41,3 +53,29 @@ def import_bookmark(request, template_name='bookmark/import.html'):
         
     return render(request, template_name)
 
+
+def note(request, template_name='bookmark/notes.html'):
+    """ 便签显示"""
+    if request.method == "POST":
+        if request.user.is_authenticated():
+            if request.POST.get('note'):
+                title = request.POST.get('note')
+                if len(title) > 45:
+                    messages.error(request, 'shout out内容过长!')
+                else:
+                    if not NotePad.objects.filter(title=title).exists():
+                        NotePad(
+                            user=request.user,
+                            title=title,
+                        ).save()
+            else:
+                messages.error(request, 'shout out不能为空')
+        else:
+            messages.info(request, '请登录后才能shout out')
+    node_list = NotePad.objects.all().select_related().order_by("-updated")
+    nodes, page_numbers = adjacent_paginator(node_list, request.GET.get('page', 1))
+    return render(request, template_name, {
+        'nodes': nodes,
+        'pages': page_numbers,
+    })
+        

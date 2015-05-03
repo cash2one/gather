@@ -8,5 +8,5 @@ urlpatterns = patterns('help.views',
     url(r'^add/$', 'help_add', name='help_add'),
     url(r'^points/$', 'help_points', name='help_points'),
     url(r'^detail/(?P<help_id>\d+)/$', 'help_detail', name='help_detail'),
+    url(r'^list/$', 'help_list', name='help_list'),
 )
-

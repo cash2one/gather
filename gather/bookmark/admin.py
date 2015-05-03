@@ -3,7 +3,7 @@
 
 from django.contrib import admin
 
-from bookmark.models import BookMark, Label, NotePad, NoteHeart
+from bookmark.models import BookMark, Label, NotePad
 
 
 class BookMarkAdmin(admin.ModelAdmin):
@@ -26,24 +26,11 @@ admin.site.register(Label, LabelAdmin)
 
 class NotePadAdmin(admin.ModelAdmin):
     """ 便签列表"""
-    list_display = ('user', 'title', 'comment', 'read_sum', 'created')
+    list_display = ('user', 'title', 'read_sum', 'created')
     search_fields = ['user__username', 'title']
     readonly_fields = ('created',)
 
 admin.site.register(NotePad, NotePadAdmin)
 
 
-class NoteHeartAdmin(admin.ModelAdmin):
-    """ 点赞列表"""
-    list_display = ('user', 'note_title', 'created', 'is_still')
-    search_fields = ['user__username', 'note__title']
-    readonly_fields = ('created',)
-
-    def note_title(self, obj):
-        return obj.note.title
-
-    note_title.allow_tags = True
-    note_title.short_description = u'便签标题'
-
-admin.site.register(NoteHeart, NoteHeartAdmin)
 

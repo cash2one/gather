@@ -8,9 +8,10 @@
             <li {% block account_li %}{% endblock %}><a href="{% url 'account' %}">我的账户</a></li>
             <li {% block bookmark_li %}{% endblock %}><a href="{% url 'bookmark' %}">收藏夹</a></li>
             <li {% block import_li %}{% endblock %}><a href="{% url 'import_bookmark' %}">导入书签</a></li>
-            <li {% block article_li %}{% endblock %}><a href="{% url 'article' %}">我的文章</a></li>
+            <li {% block article_li %}{% endblock %}><a href="{% url 'article' %}">我的分享</a></li>
             <li {% block upload_li %}{% endblock %}><a href="{% url 'head_pic_big' %}">上传头像</a></li>
             <li {% block share_li %}{% endblock %}><a href="{% url 'add_share' %}">分享点滴</a></li>
+            <li {% block about_li %}{% endblock %}><a href="{% url 'about_us' %}">关于我们</a></li>
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">

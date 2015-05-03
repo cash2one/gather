@@ -12,19 +12,19 @@
 /*
  * 显示评论
  */
- function show_comments(note_id){
+ function show_comments(obj_type, obj_id){
     $.ajax({
         type: 'get',
         dataType: "json",
-        url: '/comment/list/'+ note_id + '/',
+        url: '/comment/detail/'+ obj_type +'/'+ obj_id + '/',
         success: function(Data) {
           comment_html = '';
           reply_html = '';
           $("#read_sum").html(Data['read_sum']).show();
           $("#heart").attr('value', Data['id']);
           $("#special_care").attr("name", Data['user_id']);
-          $("#heart").html("&nbsp;" + Data['heart']).show();
-          if(parseInt(Data['heart']) > 0){
+          $("#heart").html("&nbsp;" + Data['heart_num']).show();
+          if(Data['is_heart']){
             $("#heart").css('color', 'red');
           }else{
             $("#heart").css('color', '');
@@ -36,7 +36,7 @@
             $("#special_care").html("已关心");
           }
           // 是自己的状态则不显示特别关心
-          if(Data['is_self_note']){
+          if(Data['is_self_action']){
             $("#special_care").hide();
           }else{
             $("#special_care").show();
@@ -49,7 +49,7 @@
               for(var a=0;a<Data['comments'][i]['replys'].length;a++){
                 var reply = Data['comments'][i]['replys'][a];
                 reply_html = reply_html + "<div style='border-top:1px solid #eee;margin-bottom:5px;'><div class='row top5'><div class='col-sm-note-1'><img src='" +
-                reply['url'] + "' alt='-_-' style='width:40px;height:40px' class='img-rounded'/></div><div class='col-sm-note-11'><label class='reply'><a href='javascript:;' class='commenter'>"+
+                reply['url'] + "' alt='...' style='width:40px;height:40px' class='img-rounded'/></div><div class='col-sm-note-11'><label class='reply'><a href='javascript:;' class='commenter'>"+
                 reply['username'] +"</a>&nbsp;回复&nbsp;<a href='javascript:;'>" +
                 reply['reply_to'] + "</a>:</label>&nbsp;" +
                 reply['comment'] + "<br><label class='reply-pubtime'>" + 
@@ -57,7 +57,7 @@
                 Data['comments'][i]['id'] + " value='"+ Data['id'] +"' onclick='answer_comment(this)'>&nbsp;回复</a></label></div></div></div>";
               }
               comment_html = comment_html + "<div class='row note_comment'><div class='col-sm-note-1'><img src='" +
-                Data['comments'][i]['url'] + "' alt='-_-' style='width:40px;height:40px' class='img-rounded'/></div><div class='col-sm-note-11'><div class='note-info'><label class='pubtime'>" +
+                Data['comments'][i]['url'] + "' alt='...' style='width:40px;height:40px' class='img-rounded'/></div><div class='col-sm-note-11'><div class='note-info'><label class='pubtime'>" +
                 Data['comments'][i]['created'] + "&nbsp;&nbsp;<a href='javascript:;' class='commenter'>" + 
                 Data['comments'][i]['username'] +"</a></label><label class='text-right reply'><a href='javascript:;' name='"+ 
                 Data['comments'][i]['id'] +"' value='"+ Data['id'] +"' onclick='answer_comment(this)'>回复</a></label></div><p class='note-comment'>" + 
@@ -68,7 +68,7 @@
         }
       });
      $("#comment_content").val("");
-     $("#say").attr("name", "comment:" + note_id);
+     $("#say").attr("name", "comment:" + obj_id);
  }
 
 /*
@@ -76,20 +76,21 @@
  */
   $(".note-a").click(function(){
     //点击时间后显示评论
-    show_comments($(this).attr('value'));
+    show_comments('note', $(this).attr('value'));
   });
 
   /*
    * 发表评论
    */
   $("#say").click(function(){
+    var obj_type = $(this).val();
     var say_name = $(this).attr("name").split(':');
     var comment_type = say_name[0];
     // 回复评论获取评论id, 发表评论获取标题id, id保存在say得name中
-    note_id = say_name[1];
+    obj_id = say_name[1];
     comment = $("#comment_content").val();
     _data = {};
-    _data['note_id'] = note_id;
+    _data['obj_id'] = obj_id;
     _data['comment'] = comment;
     _data['comment_type'] = comment_type;
     if(comment_type == 'answer'){
@@ -99,22 +100,22 @@
     $.ajax({
       type: 'post',
       dataType: "json",
-      url: '/comment/add/',
+      url: '/comment/add/' + obj_type + '/',
       data: _data,
       success: function(Data) {
         if(Data['result']){
           if(comment_type == 'comment'){
               comment_html = "<div class='row note_comment'><div class='col-sm-note-1'><img src='" + 
-              Data['url'] + "' alt='140*140' style='width:40px;height:40px' class='img-rounded'/></div><div class='col-sm-note-11'><div class='note-info'><label class='pubtime'>" + 
+              Data['url'] + "' alt='...' style='width:40px;height:40px' class='img-rounded'/></div><div class='col-sm-note-11'><div class='note-info'><label class='pubtime'>" + 
               Data['created'] + "&nbsp;&nbsp;<a href='javascript:;'' class='commenter'>" + 
               Data['username'] +"</a></label><label class='text-right reply'><a href='javascript:;' name='" + 
-              Data['id'] + "' onclick='answer_comment(this)'>回复</a></label></div><p class='note-comment'>" + 
+              Data['id'] + "' onclick='answer_comment(this)' value='"+ Data['parent_id'] +"'>回复</a></label></div><p class='note-comment'>" + 
               Data['comment'] + "</p></div></div>";
               $("#comment-body").html($("#comment-body").html() + comment_html).show();
           }else{
             // 回复评论后刷新评论
-            note_id = $("#myModalLabel").attr("name");
-            show_comments(note_id);
+            obj_id = $("#myModalLabel").attr("name");
+            show_comments(obj_type, obj_id);
           }
         }else{
             $("#myModal").css("display", "none");
@@ -132,13 +133,12 @@
  * 喜欢
  */
   $("#heart").click(function(){
-    _data = {};
-    _data['note_id'] = $(this).attr("value");
+    obj_id = $(this).attr("value");
+    obj_type = $(this).attr("name");
     $.ajax({
       type: 'post',
       dataType: "json",
-      url: '/note/heart/',
-      data: _data,
+      url: '/comment/heart/' + obj_type + '/' + obj_id + '/',
       success: function(Data) {
         if(Data['result']){
           if(Data['sign']){
@@ -149,7 +149,6 @@
             heart_sum = parseInt($("#heart").html().substring(6)) - 1;
             $("#heart").css('color', '');
             $("#heart").html('&nbsp;' + heart_sum);
-            
           }
         }else{
           $("#myModal").css("display", "none");

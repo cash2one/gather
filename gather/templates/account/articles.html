@@ -10,22 +10,14 @@
 {% block main %}
 <div class="no_nav account">
 
+{% for share in shares %}
 <div class="wrap">
-  <span class="horiz-flag noise "> <h1>冬日的下午</h1></span>
-   <div style="border-top:1px solid #eee;margin-top:50px;padding:5px;">
-         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam luctus consectetur dolor a porttitor. Curabitur id sem sed ante fringilla pulvinar et id lectus. Nullam justo ipsum, hendrerit ut commodo nec, pellentesque nec erat. Pellentesque pharetra.
+  <span class="horiz-flag noise"> <h1><a class="title" href="{% url 'detail_share' share.id %}">{{ share.title }}</a></h1></span>
+   <div style="border-top:1px solid #eee;margin-top:40px;">
+         {{ share.content|slice:'200'|safe }}
    </div> 
 </div>
-
-<div class="wrap">
-  <span class="horiz-flag noise "> <h1>北京的夜</h1></span>
-   <div style="border-top:1px solid #eee;margin-top:50px;padding:5px;">
-         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam luctus consectetur dolor a porttitor. Curabitur id sem sed ante fringilla pulvinar et id lectus. Nullam justo ipsum, hendrerit ut commodo nec, pellentesque nec erat. Pellentesque pharetra.
-   </div> 
-</div>
-
-
-
+{% endfor %}
     
 </div>
 {% endblock %}

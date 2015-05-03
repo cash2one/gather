@@ -22,6 +22,7 @@ class Help(models.Model):
     succ_time = models.DateTimeField('成功时间', blank=True, null=True)
     cancel_time = models.DateTimeField('撤销时间', blank=True, null=True)
     invalid_time = models.DateTimeField('失效时间', blank=True, null=True)
+    read_sum = models.IntegerField('点击次数', default=0)
 
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
     updated = models.DateTimeField('最后更新时间', auto_now=True)

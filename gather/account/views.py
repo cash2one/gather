@@ -19,7 +19,8 @@ from django.shortcuts import render
 from smtplib import SMTPRecipientsRefused
 
 from account.forms import RegistForm, LoginForm, UploadBigPicForm
-from config.models import IndexImg, IndexText, DevelopLog
+from bookmark.models import NotePad
+from share.models import Share
 
 from config.decorators import code_valid, unlogin_required
 from utils import get_decipher_username, get_encrypt_code, gen_info_msg, resize_avatar, crop_avatar
@@ -160,20 +161,19 @@ def resend_bind_email(request, template_name='account/email_verify.html'):
 @login_required
 def account(request, template_name="account/index.html"):
     """ 个人账户页"""
-    imgs = IndexImg.objects.filter(is_show=True).order_by('ordering')[:1]
-    texts = IndexText.objects.filter(is_show=True)[:1]
-    logs = DevelopLog.objects.all().order_by('-created')
+    shouts = NotePad.objects.filter(user=request.user).order_by('-created')
     return render(request, template_name, {
-        'imgs': imgs,
-        'texts': texts,
-        'logs': logs,
+        'shouts': shouts,
     })
 
 
 @login_required
 def article(request, template_name="account/articles.html"):
     """ 我的文章"""
-    return render(request, template_name)
+    shares = Share.objects.filter(user=request.user)
+    return render(request, template_name, {
+        'shares': shares,
+    })
 
 
 @login_required
@@ -200,7 +200,6 @@ def head_pic_big(request, form_class=UploadBigPicForm, template_name='account/up
             form = form_class()
     else:
         form = form_class()
-        
     return render(request, template_name, {
         'form': form,
         'profile': profile,

@@ -37,6 +37,22 @@ class UserProfile(models.Model):
         except:
             return None
 
+    def is_special_care(self, care=None):
+        """ 是否特别关心该用户"""
+        result = SpecialCare.objects.filter(user=self.user, care=care, is_valid=True).exists()
+        return result if result else False
+
+    def is_self_action(self, obj_modal=None, obj_id=None):
+        """ 是否是自己的状态"""
+        return obj_modal.objects.filter(user=self.user, pk=obj_id).exists()
+
+    def get_owner_photo(self):
+        """ 获取状态所有者的头像"""
+        try:
+            return self.big_photo.url
+        except:
+            return '/static/images/default_head.png'
+
 
 class LoginLog(models.Model):
     """ 用户登录信息"""
@@ -61,5 +77,21 @@ class ClickLog(models.Model):
     class Meta:
         verbose_name = '用户点击信息'
         verbose_name_plural = '用户点击信息列表'
+
+
+class SpecialCare(models.Model):
+    """ 特别关心对应关系"""
+    user = models.ForeignKey(User)
+    care = models.ForeignKey(User, related_name='cares')
+
+    is_valid = models.BooleanField('是否有效', default=False)
+
+    created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
+    updated = models.DateTimeField('最后更新时间', auto_now=True)
+
+    class Meta:
+        verbose_name = '特别关心信息'
+        verbose_name_plural = '特别关心列表'
+
 
 
