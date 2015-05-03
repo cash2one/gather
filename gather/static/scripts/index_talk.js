@@ -180,7 +180,7 @@
       $.ajax({
         type: 'post',
         dataType: "json",
-        url: '/note/special_care/',
+        url: '/comment/special_care/' + _data['user_id'] + '/',
         data: _data,
         success: function(Data) {
           if(Data['result']){

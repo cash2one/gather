@@ -14,7 +14,7 @@
 <div class="wrap">
   <span class="horiz-flag noise"> <h1><a class="title" href="{% url 'detail_share' share.id %}">{{ share.title }}</a></h1></span>
    <div style="border-top:1px solid #eee;margin-top:40px;">
-         {{ share.content|slice:'200'|safe }}
+         {{ share.content|slice:'100'|safe }}
    </div> 
 </div>
 {% endfor %}

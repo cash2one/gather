@@ -92,6 +92,3 @@ class SpecialCare(models.Model):
     class Meta:
         verbose_name = '特别关心信息'
         verbose_name_plural = '特别关心列表'
-
-
-
