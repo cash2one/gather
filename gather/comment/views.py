@@ -242,12 +242,11 @@ def heart(request, obj_type=None, obj_id=None):
 
 
 @csrf_exempt
-def special_care(request, obj_type=None, user_id=None):
+def special_care(request, user_id=None):
     """ 特别关心"""
     if request.user.is_authenticated:
         if request.is_ajax() and request.method == "POST":
             care_type = request.POST.get('care_type', None)
-            user_id = request.POST.get('user_id', None)
             # 自己不能关注自己
             if user_id != request.user.id:
                 try:
