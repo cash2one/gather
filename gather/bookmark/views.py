@@ -66,6 +66,7 @@ def note(request, template_name='bookmark/notes.html'):
                         note = NotePad(
                             user=request.user,
                             title=title,
+                            updated=datetime.datetime.now(),
                         )
                         note.save()
                         # 对关注者发送邮件提醒

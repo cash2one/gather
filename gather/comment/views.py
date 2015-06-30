@@ -166,6 +166,10 @@ def add_comment(request, obj_type):
                     big_photo = c.user.profile.big_photo.url
                 except:
                     big_photo = '/static/images/default_head.png'
+
+                # 更新便签的updated
+                obj.updated = datetime.datetime.now()
+                obj.save()
                 comment_json = {
                     'comment': c.comment,
                     'id': c.id,
