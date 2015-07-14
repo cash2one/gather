@@ -1,34 +1,107 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
-    <title>Tornado Chat Demo</title>
-    <link rel="stylesheet" href="{{ static_url("styles/chat.css") }}" type="text/css"/>
-    <link rel="stylesheet" href="{{ static_url("styles/bootstrp.min.css") }}" type="text/css"/>
-  </head>
-  <body>
-    <div id="body">
-      <div id="inbox">
-        {% for message in messages %}
-          {% module Template("message.html", message=message) %}
-        {% end %}
-      </div>
-      <div id="input">
-        <form action="/chat/message/new" method="post" id="messageform">
-          <table>
-            <tr>
-              <td><input name="body" id="message" style="width:500px"/></td>
-              <td style="padding-left:5px">
-                <input type="submit" value="{{ _("Post") }}"/>
-                <input type="hidden" name="next" value="{{ request.path }}"/>
-                {% module xsrf_form_html() %}
-              </td>
-            </tr>
-          </table>
-        </form>
-      </div>
+<html>
+<head>
+<link href='{{ static_url('styles/nifty.min.css') }}' rel='stylesheet' type='text/css'>
+<link href='{{ static_url('styles/chat.min.css') }}' rel='stylesheet' type='text/css'>
+</head>
+
+<body>
+<div class='panel'>
+    <div id='demo-chat-body' class='collapse in'>
+            <div class='nano' style='height:500px'>
+                <div class='nano-content pad-all'>
+                    <ul class='list-unstyled media-block' id='conversation'>
+                        <li class='mar-btm'>
+                            <div class='media-left'>
+                                <img src='{{ static_url('img/av1.png') }}' class='img-circle img-sm' alt='Profile Picture'>
+                            </div>
+                            <div class='media-body pad-hor'>
+                                <div class='speech'>
+                                    <a href='#' class='media-heading'>John Doe</a>
+                                    <p>Hello Lucy, how can I help you today ?</p>
+                                    <p class='speech-time'>
+                                    <i class='fa fa-clock-o fa-fw'></i>09:23AM
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class='mar-btm'>
+                            <div class='media-right'>
+                                <img src='{{ static_url('img/av4.png') }}' class='img-circle img-sm' alt='Profile Picture'>
+                            </div>
+                            <div class='media-body pad-hor speech-right'>
+                                <div class='speech'>
+                                    <a href='#' class='media-heading'>Lucy Doe</a>
+                                    <p>Hi, I want to buy a new shoes.</p>
+                                    <p class='speech-time'>
+                                        <i class='fa fa-clock-o fa-fw'></i> 09:23AM
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!--Chat widget footer-->
+            <div class='panel-footer'>
+                <div class='row'>
+                    <div class='col-xs-9'>
+                        <input type='text' placeholder='Enter your text' class='form-control chat-input' id='word'>
+                        <input type="hidden" value="init" id="cursor"/>
+                    </div>
+                    <div class='col-xs-3'>
+                        <button class='btn btn-primary btn-block' type='submit' id='say'>Send</button>
+                    </div>
+                </div>
+            </div>
+
     </div>
-    <script src="{{ static_url("scripts/jquery.min.js") }}" type="text/javascript"></script>
-    <script src="{{ static_url("scripts/chat.js") }}" type="text/javascript"></script>
-  </body>
+</div>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--End Chat Widget-->
+</body>
+
+<script src='{{ static_url('scripts/jquery.min.js') }}' type='text/javascript'></script>
+<script type='text/javascript'>
+
+        setTimeout(requestInventory, 100);
+
+        $('#say').click(function(event) {
+            jQuery.ajax({
+                url: '/chat/message/new',
+                type: 'POST',
+                data: {
+                    word: $('#word').val(),
+                },
+                dataType: 'json',
+                beforeSend: function(xhr, settings) {
+                    $(event.target).attr('disabled', 'disabled');
+                },
+                success: function(data, status, xhr) {
+                    /*var new_word_html = "<li class='mar-btm'><div class='media-right'><img src='{{ static_url('img/av1.png') }}' class='img-circle img-sm' alt='Profile Picture'></div><div class='media-body pad-hor speech-right'><div class='speech'><a href='#' class='media-heading'>John Doe</a><p>"+ $('#word').val() +"</p><p class='speech-time'><i class='fa fa-clock-o fa-fw'></i>09:23AM</p></div></div></li>";
+                    $('#conversation li:last-child').after(new_word_html);*/
+                    $(event.target).removeAttr('disabled');
+                }
+            });
+        });
+        
+        function requestInventory() {
+            jQuery.getJSON('/chat/message/updates', {'cursor': $("#cursor").val()},
+                function(data, status, xhr) {
+                    var word = data['messages'][0]['word'];
+                    var time = data['messages'][0]['time'];
+                    var username = data['messages'][0]['username'];
+                    var count = "img/av" + data['messages'][0]['count'] + ".png";
+                    var old = $("#cursor").val();
+
+                    var update_word_html = "<li class='mar-btm'><div class='media-left'><img src='/static/"+ count +"' class='img-circle img-sm' alt='Profile Picture'></div><div class='media-body pad-hor '><div class='speech'><a href='#' class='media-heading'>"+ username +"</a><p>"+ word +"</p><p class='speech-time'><i class='fa fa-clock-o fa-fw'></i>"+ time +"</p></div></div></li>";
+
+                    $('#conversation li:last-child').after(update_word_html);
+                    $("#cursor").val(data['messages'][0]['id']);
+                    setTimeout(requestInventory, 0);
+                }
+            );
+        }
+</script>
+
 </html>
