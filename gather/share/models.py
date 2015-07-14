@@ -4,6 +4,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+from utils import get_image_x_y
+
 
 class Share(models.Model):
     """ 分享信息"""
@@ -13,7 +15,7 @@ class Share(models.Model):
     photo = models.ImageField(upload_to='share/%Y/%m/%d', blank=True, null=True)
     content = models.TextField('分享的简介信息', blank=True, null=True)
     read_sum = models.IntegerField('点击次数', default=0)
-    
+   
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
     updated = models.DateTimeField('最后更新时间', auto_now=True)
 
@@ -31,6 +33,13 @@ class Share(models.Model):
             return False
         else:
             return True
+
+    def resize_photo(self):
+        """ 重新设置展示大小"""
+        xsize, ysize = get_image_x_y(self.photo)
+        if xsize > ysize:
+            if xsize > 400:
+                return (400, 400 * ysize / xsize)
 
 
 class IsRead(models.Model):

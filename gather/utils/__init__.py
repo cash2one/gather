@@ -153,6 +153,14 @@ def crop_avatar(request, profile):
     f.crop(box).save(path)
 
 
+def get_image_x_y(photo):
+    """ 获取图片的长宽"""
+    path = os.path.join(settings.MEDIA_ROOT, str(photo))
+    f = Image.open(path)
+    xsize, ysize = f.size
+    return xsize, ysize
+
+
 def get_encrypt_code(username):
     """ 对用户名加密"""
     signer = TimestampSigner()
