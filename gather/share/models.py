@@ -37,9 +37,8 @@ class Share(models.Model):
     def resize_photo(self):
         """ 重新设置展示大小"""
         xsize, ysize = get_image_x_y(self.photo)
-        if xsize > ysize:
-            if xsize > 400:
-                return (400, 400 * ysize / xsize)
+        if xsize > 600:
+            return (600, 600 * ysize / xsize)
 
 
 class IsRead(models.Model):
