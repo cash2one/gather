@@ -56,6 +56,14 @@ def gen_password(length=8):
     return ''.join(password)
 
 
+def gen_username(length=6):
+    """ 生成一个随机英文名"""
+    password = []
+    while len(password) < length:
+        password.append(choice(getattr(string, choice(['lowercase']))))
+    return ''.join(password)
+
+
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
     desc = cursor.description
