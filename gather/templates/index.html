@@ -1,31 +1,68 @@
 {% extends 'base.html'%}
 {% load staticfiles %}
 {% block title %}
-<title>Gather-聚</title>
+<title>jacsice-聚</title>
 {% endblock %}
 
 {% block extra_css%}
-<link href="{% static "styles/style.css" %}" rel="stylesheet" type="text/css">
-<link href="{% static "styles/font-awesome.css" %}" rel="stylesheet" type="text/css">
+<link href="{% static "styles/index/style.css" %}" rel="stylesheet" type="text/css">
+<link href="{% static "styles/index/demo.css" %}" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block header %}
 {% endblock %}
 
 {% block container %}
 <div class="container">
-    <div class="switch demo4" style="margin-left:150px;margin-top:180px;">
-        <input type="checkbox" class="index_btn" value="1"/>
-        <label><i class='icon-off'></i></label>
-        <h2 style="margin-left:30px"><span class="label label-info" >心情</span></h2>
-    </div>
-    <div class="switch demo4" style="margin-left:500px;margin-top:180px;">
-        <input type="checkbox" class="index_btn" value="2"/>
-        <label><i class='icon-off'></i></label>
-        <h2 style="margin-left:35px"><span class="label label-info">分享</span></h2>
-    </div>
-    <div class="switch demo4" style="margin-left:850px;margin-top:180px;">
-        <input type="checkbox" class="index_btn" value="3"/>
-        <label><i class='icon-off'></i></label>
-        <h2 style="margin-left:40px"><span class="label label-info">拜托</span></h2>
-    </div>
+    <div class="st-container">
+    
+        <input type="radio" name="radio-set" checked="checked" id="st-control-1"/>
+        <a href="#st-panel-1">jacsice</a>
+        <input type="radio" name="radio-set" id="st-control-2"/>
+        <a href="#st-panel-2">mood</a>
+        <input type="radio" name="radio-set" id="st-control-3"/>
+        <a href="#st-panel-3">share</a>
+        <input type="radio" name="radio-set" id="st-control-4"/>
+        <a href="#st-panel-4">help</a>
+        <input type="radio" name="radio-set" id="st-control-5"/>
+        <a href="#st-panel-5">chat</a>
+        
+        <div class="st-scroll">
+        
+            <section class="st-panel" id="st-panel-1">
+                <div class="st-deco" data-icon="H"></div>
+                <h2>Jacsice</h2>
+                <p>Do not waste time on doubts and fears!</p>
+            </section>
+            
+            <section class="st-panel st-color" id="st-panel-2">
+                <div class="st-deco" data-icon="2"></div>
+                <h2 value="mood">心情</h2>
+                <p>记录属于你的、属于我的、属于这个世界、不属于这个世界的所有的东西。</p>
+            </section>
+            
+            <section class="st-panel" id="st-panel-3">
+                <div class="st-deco" data-icon="B"></div>
+                <h2 value="share">分享</h2>
+                <p>希望能留住更多的美好与回忆,希望能与更多的人分享悲伤与快乐,希望这个世界会更好。</p>
+            </section>
+            
+            <section class="st-panel st-color" id="st-panel-4">
+                <div class="st-deco" data-icon="x"></div>
+                <h2 value="help">HELP</h2>
+                <p>总不能一直事事顺心, 总不能一直一个人旅游, 总不能一次面也不见, 发起你的HELP吧~</p>
+            </section>
+            
+            <section class="st-panel" id="st-panel-5">
+                <div class="st-deco" data-icon="Ç"></div>
+                <h2 value="chat">Chat</h2>
+                <p>匿名哦~随便发哦~</p>
+            </section>
+
+        </div><!-- // st-scroll -->
+        
+    </div><!-- // st-container -->
+    
 </div>
 {% endblock %}
 
@@ -40,5 +77,6 @@
 {% endblock %} 
 
 {% block extra_js %}
-<script type="text/javascript" src="{% static 'scripts/index.js'%}"></script>
+<script src="{% static "scripts/index/modernizr.custom.79639.js" %}"></script> 
+<script src="{% static "scripts/index/index.js" %}"></script> 
 {% endblock %}

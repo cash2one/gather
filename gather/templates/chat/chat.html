@@ -8,7 +8,7 @@
 <div class='panel'>
     <div id='demo-chat-body' class='collapse in'>
             <div class='nano' style='height:500px'>
-                <div class='nano-content pad-all'>
+                <div class='nano-content pad-all' id="all">
                     <ul class='list-unstyled media-block' id='conversation'>
                         <li class='mar-btm'>
                             <div class='media-left'>
@@ -98,6 +98,7 @@
 
                     $('#conversation li:last-child').after(update_word_html);
                     $("#cursor").val(data['messages'][0]['id']);
+                    $("#all").scrollTop($("#all")[0].scrollHeight);
                     setTimeout(requestInventory, 0);
                 }
             );
