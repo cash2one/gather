@@ -4,6 +4,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django.db import transaction
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -24,6 +25,7 @@ def share(request, template_name='share/share_list.html'):
         'page_numbers': page_numbers,
     })
 
+
 @login_required
 def add_share(request, form_class=ShareForm, template_name='share/add_share.html'):
     """ 分享"""
@@ -43,6 +45,9 @@ def detail_share(request, share_id, template_name='share/detail_share.html'):
     """ 分享内容展示"""
     try:
         share = Share.objects.get(id=share_id)
+        with transaction.atomic():
+            share.read_sum += 1
+            share.save()
     except Share.DoesNotExist:
         return HttpResponseRedirect(reverse('share.views.share'))
 
