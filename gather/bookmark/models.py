@@ -37,7 +37,7 @@ class Label(models.Model):
 class NotePad(models.Model):
     """ 便签"""
     user = models.ForeignKey(User, related_name='notes')
-    title = models.CharField('便签标题', max_length=50, null=True, blank=True)
+    title = models.CharField('便签标题', max_length=250, null=True, blank=True)
     read_sum = models.IntegerField('点击次数', default=0)
 
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)

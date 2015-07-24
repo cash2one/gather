@@ -53,6 +53,7 @@ INSTALLED_APPS = (
     'help',
     'share',
     'comment',
+    'chatting',
     'debug_toolbar',
     'djcelery'
 )
