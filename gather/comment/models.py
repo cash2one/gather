@@ -16,7 +16,7 @@ class Detail(models.Model):
 
     class Meta:
         abstract = True
-        
+
 
 class NoteComment(Detail):
     """ note上得评论"""
@@ -62,5 +62,3 @@ class Heart(models.Model):
     class Meta:
         verbose_name = '点赞信息'
         verbose_name_plural = '点赞列表'
-
-

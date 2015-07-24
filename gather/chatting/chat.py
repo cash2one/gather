@@ -1,39 +1,29 @@
 #!/usr/bin/env python
-#
-# Copyright 2009 Facebook
-#
-# Licensed under the Apache License, Version 2.0 (the "License"); you may
-# not use this file except in compliance with the License. You may obtain
-# a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-# License for the specific language governing permissions and limitations
-# under the License.
+#! -*- coding: utf-8 -*-
 
+import datetime
 import logging
+import tornadoredis
 import tornado.escape
 import tornado.ioloop
 import tornado.web
-import os.path
 import uuid
 
+import tornado.wsgi
+import tornado.httpserver
 from tornado.concurrent import Future
 from tornado import gen
-from tornado.options import define, options, parse_command_line
 
-define("port", default=8888, help="run on the given port", type=int)
-define("debug", default=False, help="run in debug mode")
+from chatting.models import ChatInfo
+
+from utils import gen_username
 
 
 class MessageBuffer(object):
     def __init__(self):
         self.waiters = set()
-        self.cache = []
-        self.cache_size = 200
+        self.cache = self.get_top_50_info()
+        self.cache_size = 50
 
     def wait_for_messages(self, cursor=None):
         # Construct a Future to return to our caller.  This allows
@@ -52,6 +42,19 @@ class MessageBuffer(object):
                 return result_future
         self.waiters.add(result_future)
         return result_future
+
+    def get_top_50_info(self):
+        chats = ChatInfo.objects.all().order_by('-created')[:50]
+        _cache = []
+        for chat in chats:
+            _cache.append({
+                'id': chat.uuid,
+                'word': chat.content,
+                'time': str(chat.created)[:19],
+                'username': chat.nickname,
+                'count': int(chat.photo)
+            })
+        return _cache
 
     def cancel_wait(self, future):
         self.waiters.remove(future)
@@ -74,19 +77,27 @@ global_message_buffer = MessageBuffer()
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render("index.html", messages=global_message_buffer.cache)
+        self.render("chat/chat.html", messages=global_message_buffer.cache)
 
 
 class MessageNewHandler(tornado.web.RequestHandler):
     def post(self):
+        word = self.get_argument("word")
         message = {
             "id": str(uuid.uuid4()),
-            "body": self.get_argument("body"),
+            "word": word,
+            "time": str(datetime.datetime.now())[:19],
+            "username": gen_username(),
+            "count": hash(word) % 4 + 1,
         }
+        ChatInfo(
+            uuid=message['id'],
+            nickname=message['username'],
+            content=message['word'],
+            photo=message['count'],
+        ).save()
         # to_basestring is necessary for Python 3's json encoder,
         # which doesn't accept byte strings.
-        message["html"] = tornado.escape.to_basestring(
-            self.render_string("message.html", message=message))
         if self.get_argument("next", None):
             self.redirect(self.get_argument("next"))
         else:
@@ -96,7 +107,7 @@ class MessageNewHandler(tornado.web.RequestHandler):
 
 class MessageUpdatesHandler(tornado.web.RequestHandler):
     @gen.coroutine
-    def post(self):
+    def get(self):
         cursor = self.get_argument("cursor", None)
         # Save the future returned by wait_for_messages so we can cancel
         # it in wait_for_messages
@@ -108,25 +119,3 @@ class MessageUpdatesHandler(tornado.web.RequestHandler):
 
     def on_connection_close(self):
         global_message_buffer.cancel_wait(self.future)
-
-
-def main():
-    parse_command_line()
-    app = tornado.web.Application(
-        [
-            (r"/chat", MainHandler),
-            (r"/chat/message/new", MessageNewHandler),
-            (r"/chat/message/updates", MessageUpdatesHandler),
-            ],
-        cookie_secret="q*a@dd=d-d^2p#+$%an3q#d^ww0i3csc)-ev4%nd+4(b72i70x",
-        template_path=os.path.join(os.path.dirname(__file__), "templates"),
-        static_path=os.path.join(os.path.dirname(__file__), "static"),
-        xsrf_cookies=True,
-        debug=options.debug,
-        )
-    app.listen(options.port)
-    tornado.ioloop.IOLoop.current().start()
-
-
-if __name__ == "__main__":
-    main()

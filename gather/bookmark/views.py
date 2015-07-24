@@ -59,7 +59,7 @@ def note(request, template_name='bookmark/notes.html'):
         if request.user.is_authenticated():
             if request.POST.get('note'):
                 title = request.POST.get('note')
-                if len(title) > 45:
+                if len(title) > 250:
                     messages.error(request, 'shout out内容过长!')
                 else:
                     if not NotePad.objects.filter(title=title).exists():

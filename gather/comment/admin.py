@@ -3,6 +3,7 @@
 
 from django.contrib import admin
 
+from bookmark.models import NotePad
 from comment.models import ShareComment, NoteComment, HelpComment, Heart
 
 
@@ -32,6 +33,7 @@ class HelpAdmin(admin.ModelAdmin):
 
 admin.site.register(HelpComment, HelpAdmin)
 
+
 class HeartAdmin(admin.ModelAdmin):
     """ 点赞列表"""
     list_display = ('user', 'note_title', 'created', 'is_still')
@@ -39,7 +41,9 @@ class HeartAdmin(admin.ModelAdmin):
     readonly_fields = ('created',)
 
     def note_title(self, obj):
-        return obj.note.title
+        if obj.heart_type == 'note':
+            note = NotePad.objects.get(pk=obj.heart_id)
+            return note.title
 
     note_title.allow_tags = True
     note_title.short_description = u'便签标题'
