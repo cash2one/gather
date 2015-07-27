@@ -35,8 +35,8 @@ class ShareForm(forms.ModelForm):
                 raise forms.ValidationError('必须上传一个图片。')
             if ext.lower() not in ['jpg', 'png', 'jpeg', 'bmp']:
                 raise forms.ValidationError('只允许上传图片格式，不支持gif格式')
-            if len(photo) / (1024 * 1024) > 2:
-                raise forms.ValidationError('请上传2M以下大小的图片')
+            if len(photo) / (1024 * 1024) > 5:
+                raise forms.ValidationError('请上传5M以下大小的图片')
         return self.cleaned_data['photo']
 
     def clean(self):
