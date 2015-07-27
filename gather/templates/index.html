@@ -26,6 +26,8 @@
         <a href="#st-panel-4">help</a>
         <input type="radio" name="radio-set" id="st-control-5"/>
         <a href="#st-panel-5">chat</a>
+        <input type="radio" name="radio-set" id="st-control-6"/>
+        <a href="#st-panel-6">photo</a>
         
         <div class="st-scroll">
         
@@ -45,6 +47,11 @@
                 <div class="st-deco" data-icon="B"></div>
                 <h2 value="share">分享</h2>
                 <p>希望能留住更多的美好与回忆,希望能与更多的人分享悲伤与快乐,希望这个世界会更好。</p>
+                <div style="margin-top:35%;margin-left:43%;">
+                    <a href="{% url 'photo_share' %}" class="btn btn-danger btn-lg">图片</a>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="{% url 'share' %}" class="btn btn-success btn-lg">文章</a>
+                </div>
             </section>
             
             <section class="st-panel st-color" id="st-panel-4">

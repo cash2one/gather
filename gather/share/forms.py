@@ -5,7 +5,7 @@ from django import forms
 
 from share.models import Share
 
-from utils import gen_photo_name
+from utils import gen_photo_name, get_image_x_y
 
 
 class ShareForm(forms.ModelForm):
@@ -21,14 +21,9 @@ class ShareForm(forms.ModelForm):
     def clean_title(self):
         if len(self.cleaned_data['title']) < 1:
             raise forms.ValidationError('标题过短')
-        elif len(self.cleaned_data['title']) > 25:
+        elif len(self.cleaned_data['title']) > 250:
             raise forms.ValidationError('标题过长')
         return self.cleaned_data['title']
-
-    def clean_content(self):
-        if len(self.cleaned_data['content']) < 15:
-            raise forms.ValidationError('请输入至少15个字的描述')
-        return self.cleaned_data['content']
 
     def clean_photo(self):
         if self.cleaned_data['photo'] is not None:
@@ -50,6 +45,10 @@ class ShareForm(forms.ModelForm):
     def save(self, commit=True):
         m = super(ShareForm, self).save(commit=False)
         m.user = self._request.user
+        m.save()
+        xsize, ysize = get_image_x_y(m.photo)
+        m.xsize = xsize
+        m.ysize = ysize
         m.save()
         return m
 

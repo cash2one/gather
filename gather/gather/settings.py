@@ -54,7 +54,7 @@ INSTALLED_APPS = (
     'share',
     'comment',
     'chatting',
-    'debug_toolbar',
+    # 'debug_toolbar',
     'djcelery'
 )
 

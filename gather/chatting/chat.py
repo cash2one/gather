@@ -3,20 +3,42 @@
 
 import datetime
 import logging
-import tornadoredis
+import uuid
+# import redis
+# import tornadoredis
+
 import tornado.escape
 import tornado.ioloop
 import tornado.web
-import uuid
-
 import tornado.wsgi
 import tornado.httpserver
+
 from tornado.concurrent import Future
 from tornado import gen
+from django.contrib.auth.models import User
 
 from chatting.models import ChatInfo
-
 from utils import gen_username
+
+# c = tornadoredis.Client()
+# c.connect()
+
+
+class BaseHandler(tornado.web.RequestHandler):
+    def __init__(self, *args, **kwargs):
+        tornado.web.RequestHandler.__init__(self, *args, **kwargs)
+
+    @property
+    def current_user(self):
+        from django.contrib.sessions.models import Session
+        sessionid = self.request.headers['Cookie'].split(";")[-1].split("=")[1]
+        try:
+            s = Session.objects.get(pk=sessionid)
+            user_id = s.get_decoded()['_auth_user_id']
+            user = User.objects.get(pk=user_id)
+            return user
+        except Session.DoesNotExist:
+            return None
 
 
 class MessageBuffer(object):
@@ -44,7 +66,7 @@ class MessageBuffer(object):
         return result_future
 
     def get_top_50_info(self):
-        chats = ChatInfo.objects.all().order_by('-created')[:50]
+        chats = ChatInfo.objects.all().order_by('created')[:50]
         _cache = []
         for chat in chats:
             _cache.append({
@@ -75,12 +97,12 @@ class MessageBuffer(object):
 global_message_buffer = MessageBuffer()
 
 
-class MainHandler(tornado.web.RequestHandler):
+class MainHandler(BaseHandler):
     def get(self):
         self.render("chat/chat.html", messages=global_message_buffer.cache)
 
 
-class MessageNewHandler(tornado.web.RequestHandler):
+class MessageNewHandler(BaseHandler):
     def post(self):
         word = self.get_argument("word")
         message = {
@@ -91,6 +113,7 @@ class MessageNewHandler(tornado.web.RequestHandler):
             "count": hash(word) % 4 + 1,
         }
         ChatInfo(
+            user=self.current_user,
             uuid=message['id'],
             nickname=message['username'],
             content=message['word'],
