@@ -20,6 +20,7 @@ from account.models import SpecialCare
 from gather.celery import async_send_html_email
 
 from utils import adjacent_paginator
+from soup import ParseHtml
 
 
 @login_required
