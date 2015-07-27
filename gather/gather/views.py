@@ -3,7 +3,8 @@
 
 from django.shortcuts import render
 
-from config.models import IndexImg, IndexText, DevelopLog
+from config.models import DevelopLog
+
 
 def index(request, template_name='index.html'):
     """ 主页显示"""

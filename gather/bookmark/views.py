@@ -19,7 +19,6 @@ from account.models import SpecialCare
 
 from gather.celery import async_send_html_email
 
-from soup import ParseHtml
 from utils import adjacent_paginator
 
 

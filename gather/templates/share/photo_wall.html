@@ -1,0 +1,73 @@
+{% extends 'base.html'%}
+{% load staticfiles %}
+{% block title %}
+<title>gather-照片墙</title>
+{% endblock %}
+
+{% block extra_css%}
+<link href="{% static "waterfall/mood/css/index.css" %}" rel="stylesheet" type="text/css">
+<link href="{% static "waterfall/mood/css/component.css" %}" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block container %}
+        <div style="margin-top:50px">
+            <div id="grid-gallery" class="grid-gallery">
+                <section class="grid-wrap">
+                    <ul class="grid">
+                        <li class="grid-sizer"></li><!-- for Masonry column width -->
+                        {% for wall in walls %}
+                        <li>
+                            <figure>
+                                <img src="/media/{{ wall.photo }}" alt="加载中..."/>
+                                <figcaption><p>{{ wall.title }}</p></figcaption>
+                            </figure>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </section><!-- // grid-wrap -->
+                <section class="slideshow" style="margin-top:50px;">
+                    <ul>
+                        {% for wall in walls %}
+                        <li>
+                            {% if wall.xsize < 300 %}
+                            <figure>
+                                <figcaption>
+                                    <p>{{ wall.title }}</p>
+                                </figcaption>
+                                <img src="/media/{{ wall.photo }}" alt="加载中..." style="width:{{ wall.ysize }}px;height:{{ wall.xsize }}px"/>
+                            </figure>
+                            {% else %}
+                            <figure {% if wall.is_scroll %}style="overflow-y:auto;"{% endif %}>
+                                <figcaption>
+                                    <p>{{ wall.title }}</p>
+                                </figcaption>
+                                <img src="/media/{{ wall.photo }}" alt="加载中..."/>
+                            </figure>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <nav>
+                        <span class="icon nav-prev"></span>
+                        <span class="icon nav-next"></span>
+                        <span class="icon nav-close"></span>
+                    </nav>
+                </section><!-- // slideshow -->
+                <div class="text-center" style="margin-bottom:50px;"><button class="btn btn-lg" id="loading">加载更多</button></div>
+                <input type="hidden" id="page_num" value="{{ page_num|default:1 }}"/>
+            </div><!-- // grid-gallery -->
+        </div>
+{% endblock %}
+        
+
+{% block extra_js %}
+    <script src="{% static "waterfall/mood/js/modernizr.custom.js" %}"></script> 
+    <script src="{% static "waterfall/mood/js/imagesloaded.pkgd.min.js" %}"></script> 
+    <script src="{% static "waterfall/mood/js/masonry.pkgd.min.js" %}"></script> 
+    <script src="{% static "waterfall/mood/js/classie.js" %}"></script> 
+    <script src="{% static "waterfall/mood/js/cbpgridgallery.js" %}"></script> 
+    <!--<script src="{% static "waterfall/mood/js/load.js" %}"></script> -->
+    <script>
+        new CBPGridGallery( document.getElementById( 'grid-gallery' ) );
+    </script>
+{% endblock %}

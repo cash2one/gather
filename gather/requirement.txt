@@ -5,3 +5,5 @@ djangocms-admin-style==0.2.2
 beautifulsoup4
 django-celery
 celery[redis]
+tornadoredis
+tornado

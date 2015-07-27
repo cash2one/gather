@@ -4,17 +4,17 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-from utils import get_image_x_y
-
 
 class Share(models.Model):
     """ 分享信息"""
     user = models.ForeignKey(User, related_name='shares')
 
-    title = models.CharField('标题', max_length=30)
+    title = models.CharField('标题', max_length=250)
     photo = models.ImageField(upload_to='share/%Y/%m/%d', blank=True, null=True)
     content = models.TextField('分享的简介信息', blank=True, null=True)
     read_sum = models.IntegerField('点击次数', default=0)
+    xsize = models.IntegerField('x长度', default=0)
+    ysize = models.IntegerField('y长度', default=0)
    
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
     updated = models.DateTimeField('最后更新时间', auto_now=True)
@@ -36,9 +36,15 @@ class Share(models.Model):
 
     def resize_photo(self):
         """ 重新设置展示大小"""
-        xsize, ysize = get_image_x_y(self.photo)
-        if xsize > 600:
-            return (600, 600 * ysize / xsize)
+        if self.xsize > 600:
+            return (600, 600 * self.ysize / self.xsize)
+
+    def is_scroll(self):
+        """ 是否需要滚轮"""
+        if self.xsize > self.ysize:
+            return False
+        else:
+            return True
 
 
 class IsRead(models.Model):
