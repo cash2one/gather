@@ -46,6 +46,12 @@ class Share(models.Model):
         else:
             return True
 
+    def short(self):
+        if len(self.title) > 20:
+            return u"{}...".format(self.title[:20])
+        else:
+            return self.title
+
 
 class IsRead(models.Model):
     """ 是否已阅读"""

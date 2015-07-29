@@ -64,7 +64,7 @@ def detail_share(request, share_id, template_name='share/detail_share.html'):
 def photo_share(request, template_name='share/photo_wall.html'):
     """ 照片墙"""
     #walls = get_photo_share(request)
-    walls = Share.objects.exclude(photo='')
+    walls = Share.objects.exclude(photo='').order_by('-created')
 
     return render(request, template_name, {
         'walls': walls,
