@@ -46,9 +46,10 @@ class ShareForm(forms.ModelForm):
         m = super(ShareForm, self).save(commit=False)
         m.user = self._request.user
         m.save()
-        xsize, ysize = get_image_x_y(m.photo)
-        m.xsize = xsize
-        m.ysize = ysize
-        m.save()
+        if self.cleaned_data['photo'] is not None:
+            xsize, ysize = get_image_x_y(m.photo)
+            m.xsize = xsize
+            m.ysize = ysize
+            m.save()
         return m
 
