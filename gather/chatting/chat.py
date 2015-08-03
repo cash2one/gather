@@ -37,7 +37,7 @@ class BaseHandler(tornado.web.RequestHandler):
             user_id = s.get_decoded()['_auth_user_id']
             user = User.objects.get(pk=user_id)
             return user
-        except Session.DoesNotExist:
+        except (Session.DoesNotExist, KeyError):
             return None
 
 
