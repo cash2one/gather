@@ -47,8 +47,8 @@ class Share(models.Model):
             return True
 
     def short(self):
-        if len(self.title) > 20:
-            return u"{}...".format(self.title[:20])
+        if len(self.title) > 10:
+            return u"{}...".format(self.title[:10])
         else:
             return self.title
 

@@ -26,7 +26,7 @@
         <div class="col-sm-8 blog-main">
           <ol class="breadcrumb">
             <li><a href="{% url 'share' %}">全部分享</a></li>
-            <li class="active">{{ share.title }}</li>
+            <li class="active">{{ share.short }}</li>
           </ol>
           <div class="row">
             <div class="col-md-10" >
@@ -40,7 +40,24 @@
               </div><!-- /.blog-post -->
             </div>
           </div>
-          <div class="text-right">
+
+          <nav>
+            <ul class="pager">
+              {% if pre %}
+              <li class="previous"><a href="{% url 'detail_share' pre.0.id %}">&larr; 上一篇{{ pre.title }}</a></li>
+              {% else %}
+              <li class="previous disabled"><a href="#">&larr; 没有啦</a></li>
+              {% endif %}
+              {% if next %}
+              <li class="next"><a href="{% url 'detail_share' next.0.id %}">下一篇 &rarr;{{ next.title }}</a></li>
+              {% else %}
+              <li class="next disabled"><a href="#">没有啦 &rarr;</a></li>
+              {% endif %}
+            </ul>
+          </nav>
+
+
+          <div class="text-right" style="display: none">
             {% if share.is_read %}
             <button class="btn btn-info btn-sm">
               <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>再次阅读
@@ -62,18 +79,9 @@
           <div class="sidebar-module">
             <h4>浏览最多</h4>
             <ol class="list-unstyled">
-              <li><a href="#">March 2014</a></li>
-              <li><a href="#">February 2014</a></li>
-              <li><a href="#">January 2014</a></li>
-              <li><a href="#">December 2013</a></li>
-              <li><a href="#">November 2013</a></li>
-              <li><a href="#">October 2013</a></li>
-              <li><a href="#">September 2013</a></li>
-              <li><a href="#">August 2013</a></li>
-              <li><a href="#">July 2013</a></li>
-              <li><a href="#">June 2013</a></li>
-              <li><a href="#">May 2013</a></li>
-              <li><a href="#">April 2013</a></li>
+              {% for max in clickes_maxs %}
+              <li><a href="{% url 'detail_share' max.id %}">{{ max.short }}&nbsp;&nbsp;&nbsp;{{ max.read_sum }}次</a></li>
+              {% endfor %}
             </ol>
           </div>
           <div class="sidebar-module">
