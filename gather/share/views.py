@@ -21,10 +21,13 @@ def share(request, template_name='share/share_list.html'):
     """ 分享展示"""
     share_list = Share.objects.exclude(content='').order_by("-created")
     shares, page_numbers = adjacent_paginator(share_list, request.GET.get('page', 1), page_num=10)
-    
+
+    # 浏览最多
+    clickes_maxs = Share.objects.exclude(content='').order_by('-read_sum')[:10]
     return render(request, template_name, {
         'shares': shares,
         'page_numbers': page_numbers,
+        'clickes_maxs': clickes_maxs,
     })
 
 
@@ -53,11 +56,22 @@ def detail_share(request, share_id, template_name='share/detail_share.html'):
         with transaction.atomic():
             share.read_sum += 1
             share.save()
+
+         # 上一篇、下一篇
+        pre = Share.objects.exclude(content='').filter(id__gt=share_id).order_by('id')[:1]
+        next = Share.objects.exclude(content='').filter(id__lt=share_id).order_by('id')[:1]
+
+        # 浏览最多
+        clickes_maxs = Share.objects.exclude(content='').order_by('-read_sum')[:10]
+
     except Share.DoesNotExist:
         return HttpResponseRedirect(reverse('share.views.share'))
 
     return render(request, template_name, {
         'share': share,
+        'next': next,
+        'pre': pre,
+        'clickes_maxs': clickes_maxs,
     })
 
 
