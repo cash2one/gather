@@ -46,9 +46,15 @@ class Share(models.Model):
         else:
             return True
 
-    def short(self):
-        if len(self.title) > 10:
-            return u"{}...".format(self.title[:10])
+    def article_short(self):
+        return self.short(10)
+
+    def image_short(self):
+        return self.short(30)
+
+    def short(self, length=10):
+        if len(self.title) > length:
+            return u"{}...".format(self.title[:length])
         else:
             return self.title
 
@@ -67,6 +73,3 @@ class IsRead(models.Model):
         verbose_name = '已查看信息'
         verbose_name_plural = '已查看信息列表'
 
-
-
-    
