@@ -27,7 +27,7 @@
           {% for share in shares %}
             <div class="col-md-10" >
               <div class="blog-post">
-                <h2 class="blog-post-title"><a href="{% url 'detail_share' share.id %}">{{ share.short }}</a></h2>
+                <h2 class="blog-post-title"><a href="{% url 'detail_share' share.id %}">{{ share.article_short }}</a></h2>
                 <p class="blog-post-meta">{{ share.created|date:'Y-m-d H:i:s' }} by <a href="#">{{ share.user.username }}</a></p>
                 {% if share.can_show_desc %}
                 <p>{{ share.content|slice:'200'|safe }}</p>
@@ -81,7 +81,7 @@
             <h4>浏览最多</h4>
             <ol class="list-unstyled">
               {% for max in clickes_maxs %}
-              <li><a href="{% url 'detail_share' max.id %}">{{ max.short }}&nbsp;&nbsp;&nbsp;{{ max.read_sum }}次</a></li>
+              <li><a href="{% url 'detail_share' max.id %}">{{ max.article_short }}&nbsp;&nbsp;&nbsp;{{ max.read_sum }}次</a></li>
               {% endfor %}
             </ol>
           </div>

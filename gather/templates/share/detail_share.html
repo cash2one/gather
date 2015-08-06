@@ -26,7 +26,7 @@
         <div class="col-sm-8 blog-main">
           <ol class="breadcrumb">
             <li><a href="{% url 'share' %}">全部分享</a></li>
-            <li class="active">{{ share.short }}</li>
+            <li class="active">{{ share.article_short }}</li>
           </ol>
           <div class="row">
             <div class="col-md-10" >
@@ -80,7 +80,7 @@
             <h4>浏览最多</h4>
             <ol class="list-unstyled">
               {% for max in clickes_maxs %}
-              <li><a href="{% url 'detail_share' max.id %}">{{ max.short }}&nbsp;&nbsp;&nbsp;{{ max.read_sum }}次</a></li>
+              <li><a href="{% url 'detail_share' max.id %}">{{ max.article_short }}&nbsp;&nbsp;&nbsp;{{ max.read_sum }}次</a></li>
               {% endfor %}
             </ol>
           </div>
