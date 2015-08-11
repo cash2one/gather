@@ -6,6 +6,8 @@
 
 {% block extra_css %}
 <link rel="stylesheet" type="text/css" href="{% static 'styles/share.css' %}">
+<link href="{% static "styles/index.css" %}" rel="stylesheet" type="text/css">
+
 {% endblock %}
 
 {% block container %}
@@ -40,6 +42,57 @@
               </div><!-- /.blog-post -->
             </div>
           </div>
+
+          <div id="comment-body" class="modal-body-comment note-scrollable">
+            <div class="row note_comment">
+              <div class="col-sm-note-1">
+                <img class="img-rounded" style="width:40px;height:40px" alt="..." src="/media/head/2015/04/21/1429624008937757133.png">
+              </div>
+              <div class="col-sm-note-11">
+              <div class="note-info">
+                <label class="pubtime">
+                  2015-08-06 19:43:18  
+                  <a class="commenter" href="javascript:;">413761980@qq.com</a>
+                </label>
+                <label class="text-right reply">
+                  <a onclick="answer_comment(this)" value="11" name="52" href="javascript:;">回复</a>
+                </label>
+              </div>
+              <p class="note-comment">12</p>
+              <div style="border-top:1px solid #eee;margin-bottom:5px;">
+                <div class="row top5">
+                  <div class="col-sm-note-1">
+                    <img class="img-rounded" style="width:40px;height:40px" alt="..." src="/media/head/2015/04/21/1429624008937757133.png">
+                  </div>
+                  <div class="col-sm-note-11">
+                    <label class="reply">
+                      <a class="commenter" href="javascript:;">413761980@qq.com</a>
+                       回复 
+                      <a href="javascript:;"></a>
+                      :
+                    </label>
+                     56
+                    <br>
+                      <label class="reply-pubtime">2015-08-06 19:43:24  </label>
+                      <label class="text-right reply">
+                      <a onclick="answer_comment(this)" value="11" name="52" href="javascript:;"> 回复</a>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              </div>
+            </div>
+        </div>
+
+        <div class="modal-footer-note">
+          <div class="form-inline">
+            <a href="javascript:;">
+            <span id="heart" class="glyphicon glyphicon-heart heart-left" name="note" value="11" style="padding: 5px; margin-right: 280px;"> 0</span>
+            </a>
+            <input id="comment_content" class="form-control input-md" type="text" name="comment">
+            <button id="say" class="btn btn-primary" value="note" name="comment:11" type="button">发表</button>
+          </div>
+        </div>
 
           <nav>
             <ul class="pager">

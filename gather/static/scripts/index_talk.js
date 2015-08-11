@@ -127,6 +127,8 @@
      // 重置name为node_id
      $("#say").attr("name", "comment:" + $("#myModalLabel").attr("name"));
      $("#comment_content").attr('placeholder', '');
+     // 滚动条保持在底部
+     $("#all").scrollTop($("#all")[0].scrollHeight);
   });
 
 /*
