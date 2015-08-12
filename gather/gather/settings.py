@@ -262,6 +262,11 @@ BROKER_URL = 'redis://localhost:6379/0'
 CELERY_DISABLE_RATE_LIMITS = True
 # celery worker --app=project.celery:app --loglevel=INFO
 
+# 七牛配置信息
+QN_AK = 'AVcYYJ313VYKHeBW5giWZ1WVXOEZIpB1kN7QlHUo'
+QN_SK = 'i5IfMz2kfMJcSVNmBpyBTebhojJcnY8Pf7fXdjt2'
+BUCKET_NAME = 'gather'
+
 try:
     from local_settings import *
 except ImportError:

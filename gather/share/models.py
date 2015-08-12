@@ -58,6 +58,9 @@ class Share(models.Model):
         else:
             return self.title
 
+    def photo_url(self):
+        return "http://7xkqb1.com1.z0.glb.clouddn.com/{}".format(self.photo.name)
+
 
 class IsRead(models.Model):
     """ 是否已阅读"""
