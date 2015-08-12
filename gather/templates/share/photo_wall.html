@@ -18,7 +18,7 @@
                         {% for wall in walls %}
                         <li>
                             <figure>
-                                <img src="/media/{{ wall.photo }}" alt="加载中..."/>
+                                <img src="{{ wall.photo_url }}" alt="加载中..."/>
                                 <figcaption><p>{{ wall.title }}</p></figcaption>
                             </figure>
                         </li>
@@ -34,7 +34,7 @@
                                 <figcaption>
                                     <p>{{ wall.title }}</p>
                                 </figcaption>
-                                <img src="/media/{{ wall.photo }}" alt="加载中..." style="width:{{ wall.ysize }}px;height:{{ wall.xsize }}px"/>
+                                <img src="/media/{{ wall.photo_url }}" alt="加载中..." style="width:{{ wall.ysize }}px;height:{{ wall.xsize }}px"/>
                             </figure>
                             {% else %}
                             <figure {% if wall.is_scroll %}style="overflow-y:auto;"{% endif %}>
