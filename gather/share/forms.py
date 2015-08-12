@@ -6,6 +6,7 @@ from django import forms
 from share.models import Share
 
 from utils import gen_photo_name, get_image_x_y
+from qn import Qiniu
 
 
 class ShareForm(forms.ModelForm):
@@ -26,7 +27,12 @@ class ShareForm(forms.ModelForm):
         return self.cleaned_data['title']
 
     def clean_photo(self):
-        if self.cleaned_data['photo'] is not None:
+        try:
+            q = Qiniu()
+            local_file = self._request.FILES['photo'].file
+            image_name = gen_photo_name() + "." + self._request.FILES['photo']._name.encode('utf-8').split(".")[-1]
+            q.upload_stream(image_name, local_file)
+            """
             photo = self.cleaned_data['photo']
             photo_name = photo.name[:photo.name.rfind('.')]
             ext = photo.name[photo.name.rfind('.') + 1:]
@@ -37,7 +43,10 @@ class ShareForm(forms.ModelForm):
                 raise forms.ValidationError('只允许上传图片格式，不支持gif格式')
             if len(photo) / (1024 * 1024) > 5:
                 raise forms.ValidationError('请上传5M以下大小的图片')
-        return self.cleaned_data['photo']
+            """
+        except KeyError:
+            image_name = ''
+        return image_name
 
     def clean(self):
         return self.cleaned_data
@@ -46,8 +55,9 @@ class ShareForm(forms.ModelForm):
         m = super(ShareForm, self).save(commit=False)
         m.user = self._request.user
         m.save()
-        if self.cleaned_data['photo'] is not None:
-            xsize, ysize = get_image_x_y(m.photo)
+        if m.photo:
+            q = Qiniu()
+            xsize, ysize = q.get_image_info(m.photo)
             m.xsize = xsize
             m.ysize = ysize
             m.save()
