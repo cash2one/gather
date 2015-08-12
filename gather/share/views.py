@@ -116,6 +116,5 @@ def get_photo_share(request):
     page_num = int(request.GET.get('page', 1))
     page_start = page_size * (page_num - 1)
     page_end = page_start + page_size
-    print page_start, page_end
     walls = Share.objects.filter(content='')[page_start:page_end]
     return walls

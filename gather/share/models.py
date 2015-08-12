@@ -10,7 +10,7 @@ class Share(models.Model):
     user = models.ForeignKey(User, related_name='shares')
 
     title = models.CharField('标题', max_length=250)
-    photo = models.ImageField(upload_to='share/%Y/%m/%d', blank=True, null=True)
+    photo = models.CharField(max_length=100, blank=True, null=True)
     content = models.TextField('分享的简介信息', blank=True, null=True)
     read_sum = models.IntegerField('点击次数', default=0)
     xsize = models.IntegerField('x长度', default=0)
@@ -59,7 +59,7 @@ class Share(models.Model):
             return self.title
 
     def photo_url(self):
-        return "http://7xkqb1.com1.z0.glb.clouddn.com/{}".format(self.photo.name)
+        return "http://7xkqb1.com1.z0.glb.clouddn.com/{}".format(self.photo)
 
 
 class IsRead(models.Model):
