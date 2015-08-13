@@ -9,6 +9,7 @@ from django.conf import settings
 
 from qiniu import Auth, BucketManager
 from qiniu import put_file, put_data
+from share.models import ip_proxy
 
 access_key = settings.QN_AK
 secret_key = settings.QN_SK
@@ -48,11 +49,18 @@ class Qiniu(object):
             return {'result': False}
 
     def get_image_info(self, image_name):
-        url = "http://7xkqb1.com1.z0.glb.clouddn.com/{}?imageInfo".format(image_name)
-        r = requests.get(url)
-        width = r.json()['width']
-        height = r.json()['height']
-        return width, height
+        ips = ip_proxy.objects.filter(status=1).order_by("-succ_count")
+        for ip in ips:
+            proxies = {
+                'http': 'http://{}:{}'.format(ip.ip, ip.port),
+                'https': 'http://{}:{}'.format(ip.ip, ip.port),
+            }
+            url = "http://7xkqb1.com1.z0.glb.clouddn.com/{}?imageInfo".format(image_name)
+            r = requests.get(url, proxies=proxies)
+            if r.status_code == 200:
+                width = r.json()['width']
+                height = r.json()['height']
+                return width, height
 
 
 if __name__ == "__main__":

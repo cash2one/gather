@@ -12,6 +12,8 @@ from django.conf import settings
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template import Context, loader
 
+from qn import Qiniu
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'gather.settings')
 
 app = Celery('gather')
@@ -49,3 +51,10 @@ def async_send_html_email(self, subject, recipient_list, template_name, context)
         self.retry(exc)
     except SMTPRecipientsRefused:
         return False, '邮箱不存在'
+
+
+@app.task(bind=True)
+def get_image_info(self, image_name):
+    q = Qiniu()
+    q.get_image_info(image_name)
+    return True
