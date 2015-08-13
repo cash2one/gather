@@ -76,3 +76,16 @@ class IsRead(models.Model):
         verbose_name = '已查看信息'
         verbose_name_plural = '已查看信息列表'
 
+
+class ip_proxy(models.Model):
+    """ 代理IP"""
+    ip = models.CharField('ip', max_length=250)
+    port = models.IntegerField('端口', max_length=250)
+    status = models.BooleanField('ip状态', max_length=250)
+    succ_count = models.IntegerField('成功次数', max_length=250)
+    fail_count = models.IntegerField('失败次数', max_length=250)
+    created = models.DatetimeField('创建时间', null=True)
+
+    class Meta:
+        db_table = 'ip_proxy'
+
