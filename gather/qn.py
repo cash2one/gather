@@ -51,16 +51,19 @@ class Qiniu(object):
     def get_image_info(self, image_name):
         ips = ip_proxy.objects.filter(status=1).order_by("-succ_count")
         for ip in ips:
-            proxies = {
-                'http': 'http://{}:{}'.format(ip.ip, ip.port),
-                'https': 'http://{}:{}'.format(ip.ip, ip.port),
-            }
-            url = "http://7xkqb1.com1.z0.glb.clouddn.com/{}?imageInfo".format(image_name)
-            r = requests.get(url, proxies=proxies)
-            if r.status_code == 200:
-                width = r.json()['width']
-                height = r.json()['height']
-                return width, height
+            try:
+                proxies = {
+                    'http': 'http://{}:{}'.format(ip.ip, ip.port),
+                    'https': 'http://{}:{}'.format(ip.ip, ip.port),
+                }
+                url = "http://7xkqb1.com1.z0.glb.clouddn.com/{}?imageInfo".format(image_name)
+                r = requests.get(url, proxies=proxies, timeout=1)
+                if r.status_code == 200:
+                    width = r.json()['width']
+                    height = r.json()['height']
+                    return width, height
+            except:
+                continue
 
 
 if __name__ == "__main__":
