@@ -7,7 +7,6 @@ from share.models import Share
 
 from utils import gen_photo_name, get_image_x_y
 from qn import Qiniu
-from gather.celery import get_image_info
 
 
 class ShareForm(forms.ModelForm):
@@ -57,7 +56,8 @@ class ShareForm(forms.ModelForm):
         m.user = self._request.user
         m.save()
         if m.photo:
-            xsize, ysize = get_image_info(m.photo)
+            q = Qiniu()
+            xsize, ysize = q.get_image_info(m.photo)
             m.xsize = xsize
             m.ysize = ysize
             m.save()

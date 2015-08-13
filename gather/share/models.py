@@ -84,7 +84,7 @@ class ip_proxy(models.Model):
     status = models.BooleanField('ip状态', max_length=250)
     succ_count = models.IntegerField('成功次数', max_length=250)
     fail_count = models.IntegerField('失败次数', max_length=250)
-    created = models.DatetimeField('创建时间', null=True)
+    created = models.DateTimeField('创建时间', null=True)
 
     class Meta:
         db_table = 'ip_proxy'
