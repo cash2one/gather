@@ -1,0 +1,19 @@
+@font-face {
+    font-family: "iconfont";
+    src:url('/static/fonts/iconfont.woff?v=1') format('woff'), /* chrome銆乫irefox */
+    url('/static/fonts/iconfont.ttf?v=1') format('truetype'), /* chrome銆乫irefox銆乷pera銆丼afari, Android, iOS 4.2+*/
+    url('/static/fonts/iconfont.svg#iconfont?v=1') format('svg'); /* iOS 4.1- */
+}
+
+.iconfont {
+    font-family:"iconfont" !important;
+    font-size:16px;
+    font-style:normal;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-stroke-width: 0.2px;
+    -moz-osx-font-smoothing: grayscale;
+}
+.icon-coupon:before { content: "\e600"; }
+.icon-address:before { content: "\e601"; }
+.icon-status:before { content: "\e602"; }
+.icon-smile:before { content: "\e603"; }
