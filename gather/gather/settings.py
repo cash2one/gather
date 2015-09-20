@@ -54,6 +54,8 @@ INSTALLED_APPS = (
     'share',
     'comment',
     'chatting',
+    'wash',
+    'wechat',
     # 'debug_toolbar',
     'djcelery'
 )
@@ -266,6 +268,10 @@ CELERY_DISABLE_RATE_LIMITS = True
 QN_AK = 'AVcYYJ313VYKHeBW5giWZ1WVXOEZIpB1kN7QlHUo'
 QN_SK = 'i5IfMz2kfMJcSVNmBpyBTebhojJcnY8Pf7fXdjt2'
 BUCKET_NAME = 'gather'
+
+# wechat
+APP_ID = 'wx307bbb641dbacf6d'
+APP_SECRET = 'fb1fc7739f1524fd1ca1025c06b1f0a'
 
 try:
     from local_settings import *

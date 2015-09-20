@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <meta name="applicable-device" content="mobile">
+    <meta content="telephone=no,email=no" name="format-detection"/>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Expires" content="0"/>
+
+    <title>我来洗衣</title>
+
+    <meta content="洗衣，o2o" name="keywords"/>
+    <meta content="一站式管家服务"
+          name="description"/>
+    <link rel="stylesheet" type="text/css" href="http://cdn.amazeui.org/amazeui/2.4.2/css/amazeui.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/wash/iconfont.css?v=1.0.0"/>
+    <link rel="stylesheet" type="text/css" href="/static/styles/wash/base.css"/>
+
+</head>
+<body class="page  am-with-topbar-fixed-top">
+
+<header class="am-topbar am-topbar-fixed-top am-force-show">
+    <a class="titlebar-btn titlebar-city">
+        <span class="current-city">北京</span>
+        <i class="am-icon-chevron-down"></i>
+        <ul class="city-list">
+            <li class="city-item">北京</li>
+            <li class="city-item">青岛</li>
+        </ul>
+    </a>
+    <img class="top-logo" src="/static/images/wash/top_logo.png" width="100">
+    <a class="titlebar-btn-right" href="/intro">服务流程</a>
+</header>
+
+<div class="main">
+    <div class="top-banner">
+        <div data-am-widget="slider" class="am-slider am-slider-a1" data-am-slider="{'directionNav':false}">
+            <ul class="am-slides">
+
+                <li>
+                    <img src="/static/images/wash/slider_1.jpg?_t=20150718" width="100%" height="100%">
+                </li>
+
+                <li>
+                    <img src="/static/images/wash/slider_3.jpg?_t=20150718">
+                </li>
+
+                <li>
+                    <img src="/static/images/wash/slider_2.jpg?_t=20150718">
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="order-now">
+        <a href="/order/add">
+            <b>一键下单</b>
+        </a>
+    </div>
+</div>
+
+<nav class="main-nav am-topbar am-topbar-fixed-bottom">
+    <ul class="am-avg-sm-3">
+        <li class=" on">
+            <a href="/" class="item">
+                <i class="am-icon-home am-icon-sm"></i><br/>
+                首页
+            </a>
+        </li>
+        <li class="  nav-middle">
+            <a href="/order/list" class="item ">
+                <i class="am-icon-reorder am-icon-sm"></i><br/>
+                订单</a>
+        </li>
+        <li class="">
+            <a href="/user/center" class="item">
+                <i class="am-icon-user am-icon-sm"></i><br>
+                我的
+            </a>
+        </li>
+    </ul>
+</nav>
+
+<script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.1.1-rc2/jquery.min.js"></script>
+<script type="text/javascript" src="http://cdn.amazeui.org/amazeui/2.4.2/js/amazeui.min.js"></script>
+<script type="text/javascript" src="/static/scripts/wash/utils.js"></script>
+<script type="text/javascript" src="/static/scripts/wash/tips.js"></script>
+
+<script>
+        (function(){
+            var city, $city = $('.titlebar-city');
+            var allow_city = ['北京', "青岛"];
+            $city.click(function(){
+                $('.city-list').toggle();
+            });
+            $('.city-list').on('click', '.city-item', function(e){
+                var city = $(this).text();
+                $city.find('.current-city').text(city);
+            });
+        })();
+
+</script>
+</body>
+</html>
