@@ -1,0 +1,43 @@
+{% extends 'wash/base.html' %}
+{% block extra_css %}
+<style>
+    .account_img{
+        width:50px;
+        height:50px;
+        margin-right:20px;
+    }
+    .label_img{
+        float:right;
+        margin-top:10px;
+    }
+</style>
+{% endblock %}
+{% block navbar %}{% endblock %}
+{% block content %}
+    <div class="list-group">
+        <div href="#" class="list-group-item">
+            <img class="account_img" src="/static/images/wash/head.png"/>
+            <a>登录</a>&nbsp;/&nbsp;<a>注册</a>
+       </div>
+    </div>
+    <div class="list-group">
+       <a href="#" class="list-group-item">
+          <img class="account_img" src="/static/images/wash/account.png"/>账户信息
+          <img class="label_img" src="/static/images/wash/label_right.png" />
+       </a>
+       <a href="#" class="list-group-item">
+          <img class="account_img" src="/static/images/wash/address.png"/>管理地址
+          <img class="label_img" src="/static/images/wash/label_right.png" />
+       </a>
+       <a href="#" class="list-group-item">
+          <img class="account_img" src="/static/images/wash/order.png"/>订单信息
+          <img class="label_img" src="/static/images/wash/label_right.png"/>
+       </a>
+        <a href="#" class="list-group-item">
+          <img class="account_img" src="/static/images/wash/discount.png"/>优惠券
+          <img class="label_img" src="/static/images/wash/label_right.png"/>
+       </a>
+    </div>
+{% endblock %}
+
+{% block account %}on{% endblock %}
