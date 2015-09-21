@@ -1,0 +1,31 @@
+{% extends 'wash/base.html' %}
+
+{% block content %}
+    {% block navbar %}
+    {% endblock %}
+   <div class="top-banner">
+        <div data-am-widget="slider" class="am-slider am-slider-a1" data-am-slider="{'directionNav':false}">
+            <ul class="am-slides">
+
+                <li>
+                    <img src="/static/images/wash/slider_1.jpg?_t=20150718" width="100%" height="100%">
+                </li>
+
+                <li>
+                    <img src="/static/images/wash/slider_3.jpg?_t=20150718">
+                </li>
+
+                <li>
+                    <img src="/static/images/wash/slider_2.jpg?_t=20150718">
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="order-now">
+        <a href="{% url 'wash_show' %}">
+            <b>一键下单</b>
+        </a>
+    </div>
+{% endblock %}
+
+{% block index %}on{% endblock %}
