@@ -41,7 +41,7 @@ class Emay(object):
 
 def test():
     emay = Emay()
-    emay.send(['15652191547', '18001296696'], "韩总是写代码的")
+    emay.send(['15652191547', '18001296696'], "韩总是写代码的d,iao,si")
 
 
 if __name__ == '__main__':

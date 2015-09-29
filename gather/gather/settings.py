@@ -273,6 +273,9 @@ BUCKET_NAME = 'gather'
 APP_ID = 'wx307bbb641dbacf6d'
 APP_SECRET = 'fb1fc7739f1524fd1ca1025c06b1f0a'
 
+# 验证码过期时间 2分钟
+VERIFY_CODE_EXPIRE = 120
+
 try:
     from local_settings import *
 except ImportError:

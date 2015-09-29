@@ -1,14 +1,17 @@
 #!/usr/bin/python
 #!-*- coding: UTF-8 -*-
 
+import datetime
+
 from django.db import models
 from django.contrib.auth.models import User
+from django.conf import settings
 
 
-class UserProfile(models.Model):
+class WashUserProfile(models.Model):
     """ 用户注册信息"""
-    user = models.OneToOneField(User, primary_key=True, related_name='wash_profile')
-    phone = models.IntegerField('电话')
+    user = models.OneToOneField(User, related_name='wash_profile')
+    phone = models.CharField('电话', max_length=11, unique=True)
     is_phone_verified = models.BooleanField('是否已经通过验证', default=False)
     phone_verified_date = models.DateTimeField('电话通过验证时间', blank=True, null=True)
 
@@ -17,16 +20,13 @@ class UserProfile(models.Model):
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
     updated = models.DateTimeField('最后更新时间', auto_now=True)
 
-    class Meta:
-        verbose_name = '用户详细信息'
-        verbose_name_plural = '用户详细信息列表'
-
-    def __unicode__(self):
-        return self.phone
-
     def get_mask_username(self):
         # 用户名保密
         return self.phone[:3] + "******"
+
+    @classmethod
+    def user_valid(cls, user):
+        return cls.objects.filter(user=user, is_phone_verified=True).exists()
 
 
 class Address(models.Model):
@@ -37,19 +37,43 @@ class Address(models.Model):
     street = models.CharField('街道', max_length=50, null=True)
 
 
+class WeToken(models.Model):
+    """ 微信Token"""
+    token = models.CharField('ServerToken', max_length=1024, null=True, blank=True)
+    expire_time = models.IntegerField('Expire_time', max_length=1024, null=True, blank=True)
+
+    created = models.DateTimeField('创建时间', auto_now_add=True, null=True, blank=True)
+    updated = models.DateTimeField('最后更新时间', auto_now=True)
+
+
 class VerifyCode(models.Model):
     """ 验证码"""
-    phone = models.IntegerField('手机号')
+    phone = models.CharField('手机号', max_length=11)
     code = models.CharField('验证码', max_length=4)
-    expire = models.DateTimeField('过期时间')
+    is_expire = models.BooleanField('是否过期', default=False)
 
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
     updated = models.DateTimeField('最后更新时间', auto_now=True)
 
+    @classmethod
+    def code_expire(cls, phone):
+        verify = VerifyCode.objects.get(phone=phone, is_expire=False)
+        if (datetime.datetime.today() - verify.created).seconds > settings.VERIFY_CODE_EXPIRE:
+            return True
+        else:
+            return False
+
+    @classmethod
+    def code_valid(cls, phone, code):
+        if VerifyCode.objects.filter(phone=phone, code=code, is_expire=False).exists():
+            return True
+        else:
+            return False
+
 
 class UserAddress(models.Model):
     """ 用户地址"""
-    user = models.ForeignKey(UserProfile, related_name='addresses')
+    user = models.ForeignKey(WashUserProfile, related_name='addresses')
     province = models.CharField('省份', max_length=20)
     city = models.CharField('城市', max_length=20)
     country = models.CharField('镇', max_length=20, null=True)
@@ -84,10 +108,14 @@ class WashType(models.Model):
     old_price = models.IntegerField('原价')
     measure = models.IntegerField('单位', choices=MEASURE, default=1)
     belong = models.IntegerField('所属', choices=WASH_TYPE, default=1)
-    mark = models.CharField('备注', max_length=255, null=True)
+    photo = models.CharField('图片', max_length=255)
+    mark = models.CharField('备注', max_length=255, blank=True, null=True)
 
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
     updated = models.DateTimeField('最后更新时间', auto_now=True)
+
+    def get_photo_url(self):
+        return "http://7xkqb1.com1.z0.glb.clouddn.com/{}".format(self.photo)
 
 
 class Discount(models.Model):
@@ -118,7 +146,7 @@ STATUS = (
 
 class Order(models.Model):
     """ 订单概览"""
-    user = models.ForeignKey(UserProfile, related_name='orders')
+    user = models.ForeignKey(WashUserProfile, related_name='orders')
     address = models.ForeignKey(UserAddress, related_name='order_address')
     discount = models.ForeignKey(Discount, related_name='order_discount', null=True)
     mark = models.CharField('备注', max_length=255, null=True)

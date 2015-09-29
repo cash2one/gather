@@ -56,6 +56,14 @@ def gen_password(length=8):
     return ''.join(password)
 
 
+def gen_verify_code(length=4):
+    """ 生成一个随机验证码"""
+    password = []
+    while len(password) < length:
+        password.append(choice(getattr(string, choice(['digits']))))
+    return ''.join(password)
+
+
 def gen_username(length=6):
     """ 生成一个随机英文名"""
     password = []

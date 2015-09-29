@@ -44,9 +44,10 @@ class Qiniu(object):
         try:
             token = self.get_token(image_name)['token']
             ret, info = put_data(token, image_name, localfile)
+            return ret, info
         except Exception:
             ERROR_LOG.error(traceback.format_exc())
-            return {'result': False}
+            return {'result': False}, ''
 
     def get_image_info(self, image_name):
         ips = ip_proxy.objects.filter(status=1).order_by("-succ_count")
