@@ -4,7 +4,7 @@
 <ul class="breadcrumb">
     <li>
         <i class="icon-cog"></i>
-        <a href="#">洗刷类型</a>
+        <a href="#">优惠券</a>
     </li>
     <li class="active">列表</li>
 </ul><!-- .breadcrumb -->
@@ -16,20 +16,11 @@
 
         <div class="row text-left">
             <div class="col-xs-1">
-                <a class="btn btn-primary btn-sm" href="{% url 'manage_wash_type_add' %}">
+                <a class="btn btn-primary btn-sm" href="{% url 'manage_discount_add' %}">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                     新增
                 </a>
             </div>
-            <!--<div class="col-xs-9">
-               <form action=".">
-                    <span class="input-icon">
-                        <input id="nav-search-input" class="nav-search-input" type="text" autocomplete="off" placeholder="搜索">
-                        <i class="icon-search nav-search-icon"></i>
-                    </span>
-                    <button class="btn btn-info btn-sm">搜索</button>
-                </form>
-            </div>-->
         </div>
 
         <div class="table-responsive" style="margin-top:10px;">
@@ -37,13 +28,13 @@
                 <thead>
                 <tr>
                     <th class="center">序号</th>
-                    <th>名称</th>
-                    <th>现价(元)</th>
-                    <th>原价(元)</th>
-                    <th>单位</th>
-                    <th>所属</th>
-                    <th>图片</th>
-                    <th>备注</th>
+                    <th>优惠券名称</th>
+                    <th>优惠规格</th>
+                    <th>优惠对象</th>
+                    <th>优惠类型</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                    <th>是否有效</th>
                     <th>
                         <i class="icon-time bigger-110"></i>
                         创建日期
@@ -52,23 +43,23 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for type in wash_types %}
+                {% for discount in discounts %}
                 <tr>
-                    <td>{{ type.id }}</td>
-                    <td>{{ type.name }}</td>
-                    <td>{{ type.new_price }}</td>
-                    <td>{{ type.old_price }}</td>
-                    <td>{{ type.get_measure_display }}</td>
-                    <td>{{ type.get_belong_display }}</td>
-                    <td><img src="{{ type.get_photo_url }}" style="width:80px;height:100px;"/></td>
-                    <td>{{ type.mark }}</td>
-                    <td>{{ type.created|date:'Y-m-d H:i:s' }}</td>
+                    <td>{{ discount.id }}</td>
+                    <td>{{ discount.name }}</td>
+                    <td>{{ discount.price }}</td>
+                    <td>{{ discount.get_wash_type_display }}</td>
+                    <td>{{ discount.get_discount_type_display }}</td>
+                    <td>{{ discount.begin|date:'Y-m-d H:i:s' }}</td>
+                    <td>{{ discount.end|date:'Y-m-d H:i:s' }}</td>
+                    <td>{{ discount.is_valid }}</td>
+                    <td>{{ discount.created|date:'Y-m-d H:i:s' }}</td>
                     <td class="hidden-480">
                         <div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
-                            <a class="btn btn-xs btn-info" href="{% url 'manage_wash_type_update' type.id %}">
+                            <a class="btn btn-xs btn-info" href="{% url 'manage_discount_update' discount.id %}">
                                 <i class="icon-edit bigger-120"></i>
                             </a>
-                            <a class="btn btn-xs btn-danger" href="{% url 'manage_model_del' 'wash_type' type.id %}">
+                            <a class="btn btn-xs btn-danger" href="{% url 'manage_model_del' 'discount' discount.id %}">
                                 <i class="icon-trash bigger-120"></i>
                             </a>
                         </div>
@@ -78,26 +69,27 @@
                 </tbody>
             </table>
 
-            {% if wash_types %}
+
+            {% if discounts %}
             <nav class="margin-right">
                 <ul class="pagination">
-                    {% if wash_types.has_previous %}
+                    {% if discounts.has_previous %}
                     <li>
-                        <a href="?page={{ wash_types.previous_page_number }}" aria-label="Previous">
+                        <a href="?page={{ discounts.previous_page_number }}" aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
                     {% endif %}
                     {% for num in page_numbers %}
-                    {% if num ==  wash_types.number %}
+                    {% if num ==  discounts.number %}
                     <li class="active"><a href="#">{{ num }}</a></li>
                     {% else %}
                     <li><a href="?page={{ num }}">{{ num }}</a></li>
                     {% endif %}
                     {% endfor %}
-                    {% if wash_types.has_next %}
+                    {% if discounts.has_next %}
                     <li>
-                        <a href="?page={{ wash_types.next_page_number }}" aria-label="Next">
+                        <a href="?page={{ discounts.next_page_number }}" aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>
                         </a>
                     </li>
@@ -105,7 +97,6 @@
                 </ul>
             </nav>
             {% endif %}
-
         </div>
     </div>
 </div>

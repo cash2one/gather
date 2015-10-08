@@ -6,7 +6,7 @@
         <i class="icon-cog"></i>
         <a href="{% url 'manage_wash_type' %}">洗刷类型</a>
     </li>
-    <li class="active">新增</li>
+    <li class="active">修改</li>
 </ul><!-- .breadcrumb -->
 {% endblock %}
 
@@ -41,12 +41,13 @@
                     <tr>
                         <td>照片</td>
                         <td>
+                            <img src="{{ type.get_photo_url }}" style="width:80px;height:100px;"/>
                            <input type="file" name="photo" id="upload_file"/>
                         </td>
                     </tr>
                     <tr>
                         <td>备注</td>
-                        <td><input type="text" value="无" name="mark"/></td>
+                        <td><input type="text" value="{{ type.mark }}" name="mark"/></td>
                     </tr>
 
                     </tbody>

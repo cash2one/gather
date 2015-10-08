@@ -92,6 +92,7 @@ class WashType(models.Model):
         (2, u'双'),
         (3, u'件'),
         (4, u'套'),
+        (5, u'条')
     )
 
     WASH_TYPE = (
@@ -115,7 +116,9 @@ class WashType(models.Model):
     updated = models.DateTimeField('最后更新时间', auto_now=True)
 
     def get_photo_url(self):
-        return "http://7xkqb1.com1.z0.glb.clouddn.com/{}".format(self.photo)
+        if self.photo:
+            return "http://7xkqb1.com1.z0.glb.clouddn.com/{}".format(self.photo)
+        return "/static/img/av1.png"
 
 
 class Discount(models.Model):
@@ -128,20 +131,32 @@ class Discount(models.Model):
     price = models.CharField('折扣值', max_length=50)
     begin = models.DateTimeField('开始时间')
     end = models.DateTimeField('结束时间')
-    wash_type = models.ForeignKey(WashType, related_name='discount_wash_type')
+    wash_type = models.IntegerField('优惠对象', choices=WashType.WASH_TYPE, default=7)
     discount_type = models.IntegerField('折扣类型', choices=DISCOUNT_TYPE, default=1)
+    is_valid = models.BooleanField('是否有效', default=True)
 
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
     updated = models.DateTimeField('最后更新时间', auto_now=True)
 
+    def delete(self):
+        self.is_valid = False
+        self.save()
+
 
 STATUS = (
-    (0, u'未处理'),
-    (1, u'已处理, 取货中'),
-    (2, u'清洗中'),
-    (3, u'清洗完毕, 派送中'),
-    (4, u'交易结束'),
-    (5, u'交易失败'),
+    (0, u'未付款'),
+    (1, u'已付款,未处理'),
+    (2, u'已处理, 取货中'),
+    (3, u'清洗中'),
+    (4, u'清洗完毕, 派送中'),
+    (5, u'交易结束'),
+    (6, u'交易失败'),
+    (7, u'已过期'),
+)
+
+PAY = (
+    (0, '微信'),
+    (1, '货到付款')
 )
 
 class Order(models.Model):
@@ -154,6 +169,7 @@ class Order(models.Model):
     pay_method = models.IntegerField('付款方式', choices=STATUS, default=1)
     service_begin = models.DateTimeField('服务开始时间', blank=True, null=True)
     service_end = models.DateTimeField('服务结束时间', blank=True, null=True)
+    pay_date = models.DateTimeField('付款日期', blank=True, null=True)
     status = models.IntegerField('订单状态', choices=STATUS, default=1)
 
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)

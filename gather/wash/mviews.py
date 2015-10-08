@@ -14,11 +14,11 @@ from django.shortcuts import render
 from django.conf import settings
 from django.contrib.auth import login, authenticate
 
-from wash.models import WashType
+from wash.models import WashType, WashUserProfile, Discount, Order, OrderDetail
 from account.models import LoginLog
-from wash.forms import RegistForm, WashTypeForm
+from wash.forms import RegistForm, WashTypeForm, DiscountForm
 from CCPRestSDK import REST
-from utils import gen_verify_code
+from utils import gen_verify_code, adjacent_paginator
 
 
 def manage_login(request, template_name="wash/manage/login.html"):
@@ -57,6 +57,14 @@ def manage_index(request, template_name="wash/manage/base.html"):
 
 
 @login_required(login_url='/wash/manage/')
+def user_list(request, template_name="wash/manage/user_list.html"):
+    user_list = WashUserProfile.objects.all()
+    return render(request, template_name, {
+        'user_list': user_list,
+    })
+
+
+@login_required(login_url='/wash/manage/')
 def wash_type(request, template_name="wash/manage/wash_type.html"):
     """
     洗刷类型清单
@@ -64,9 +72,12 @@ def wash_type(request, template_name="wash/manage/wash_type.html"):
     :param template_name:
     :return:
     """
-    wash_types = WashType.objects.all()
+    wash_list = WashType.objects.all()
+    wash_types, page_numbers = adjacent_paginator(wash_list, page=request.GET.get('page', 1))
     return render(request, template_name, {
-        'wash_types': wash_types
+        'wash_types': wash_types,
+        'page_numbers': page_numbers
+
     })
 
 
@@ -82,6 +93,7 @@ def wash_type_add(request, form_class=WashTypeForm, template_name="wash/manage/w
         form = form_class(request, data=request.POST, files=request.FILES)
         if form.is_valid():
             form.save()
+            return HttpResponseRedirect(reverse("wash.mviews.wash_type"))
     form = form_class()
     return render(request, template_name, {
         'measures': WashType.MEASURE,
@@ -91,17 +103,150 @@ def wash_type_add(request, form_class=WashTypeForm, template_name="wash/manage/w
 
 
 @login_required(login_url='/wash/manage/')
-def wash_type_update(request, type_id, template_name="wash/manage/wash_type_add.html"):
+def wash_type_update(request, type_id, form_class=WashTypeForm, template_name="wash/manage/wash_type_update.html"):
     """
-    洗刷类型添加
+    洗刷类型修改
     :param request:
     :param template_name:
     :return:
     """
     try:
         wash_type = WashType.objects.get(id=type_id)
-        messages.info(request, u"修改成功")
 
+        if request.method == "POST":
+            form = form_class(request, instance=wash_type, data=request.POST, files=request.FILES)
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect(reverse("wash.mviews.wash_type"))
+        form = form_class(instance=wash_type)
+        messages.info(request, u"修改成功")
+        return render(request, template_name, {
+            'form': form,
+            'type': wash_type,
+        })
     except WashType.DoesNotExist:
         messages.error(request, u"类型不存在")
     return HttpResponseRedirect(reverse("wash.mviews.wash_type"))
+
+
+@login_required(login_url='/wash/manage/')
+def model_del(request, model_type, type_id):
+    """
+    类型删除
+    :param request:
+    :return:
+    """
+    try:
+
+        if model_type == 'wash_type':
+            model = WashType
+        m = model.objects.get(id=type_id)
+        m.delete()
+        return HttpResponseRedirect(reverse("wash.mviews.wash_type"))
+    except model.DoesNotExist:
+        messages.error(request, u"类型不存在")
+    return HttpResponseRedirect(reverse("wash.mviews.wash_type"))
+
+
+@login_required(login_url='/wash/manage/')
+def discount(request, template_name="wash/manage/discount.html"):
+    """
+    优惠券列表
+    :param request:
+    :param template_name:
+    :return:
+    """
+    discounts_list = Discount.objects.all()
+    discounts, page_numbers = adjacent_paginator(discounts_list, page=request.GET.get('page', 1))
+
+    return render(request, template_name, {
+        'discounts': discounts,
+        'page_numbers': page_numbers
+    })
+
+
+@login_required(login_url='/wash/manage/')
+def discount_add(request, form_class=DiscountForm, template_name="wash/manage/discount_add.html"):
+    """
+    优惠券添加
+    :param request:
+    :param template_name:
+    :return:
+    """
+    if request.method == "POST":
+        form = form_class(request, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("wash.mviews.discount"))
+    form = form_class()
+    return render(request, template_name, {
+        'form': form,
+    })
+
+
+@login_required(login_url='/wash/manage/')
+def discount_update(request, discount_id, form_class=DiscountForm, template_name="wash/manage/discount_update.html"):
+    """
+    优惠券修改
+    :param request:
+    :param template_name:
+    :return:
+    """
+    try:
+        discount = Discount.objects.get(id=discount_id)
+
+        if request.method == "POST":
+            form = form_class(request, instance=discount, data=request.POST)
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect(reverse("wash.mviews.discount"))
+        form = form_class(instance=discount)
+        messages.info(request, u"修改成功")
+        return render(request, template_name, {
+            'form': form,
+            'discount': discount,
+        })
+    except WashType.DoesNotExist:
+        messages.error(request, u"类型不存在")
+    return HttpResponseRedirect(reverse("wash.mviews.discount"))
+
+
+@login_required(login_url='/wash/manage/')
+def order(request, template_name="wash/manage/order.html"):
+    """
+    订单概览列表
+    :param request:
+    :param template_name:
+    :return:
+    """
+    if request.method == "POST":
+        pass
+    orders = Order.objects.all()
+    order_list, page_numbers = adjacent_paginator(orders, page=request.GET.get('page', 1))
+
+    return render(request, template_name, {
+        'order_list': order_detail,
+        'page_number': page_numbers,
+    })
+
+
+@login_required(login_url='/wash/manage/')
+def order_detail(request, order_id='0', template_name="wash/manage/order.html"):
+    """
+    订单概览列表
+    :param request:
+    :param template_name:
+    :return:
+    """
+    if request.method == "POST":
+        pass
+    if order_id == '0':
+        details = OrderDetail.objects.all()
+    else:
+        details = OrderDetail.objects.filter(order_id=order_id)
+
+    detail_list, page_numbers = adjacent_paginator(details, page=request.GET.get('page', 1))
+
+    return render(request, template_name, {
+        'detail_list': detail_list,
+    })

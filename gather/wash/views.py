@@ -13,10 +13,10 @@ from django.shortcuts import render
 from django.conf import settings
 from django.contrib.auth import login, authenticate
 
-from wash.models import VerifyCode, WashUserProfile
+from wash.models import VerifyCode, WashUserProfile, WashType
 from wash.forms import RegistForm
 from CCPRestSDK import REST
-from utils import gen_verify_code
+from utils import gen_verify_code, adjacent_paginator
 
 
 def auto_login(func):
@@ -40,7 +40,30 @@ def index(request, template_name='wash/index.html'):
 
 
 def show(request, template_name='wash/show.html'):
-    return render(request, template_name)
+    wash_arr = get_show_info(request)
+    if request.is_ajax():
+        return HttpResponse(json.dumps({'status': True, 'result': wash_arr}))
+
+    return render(request, template_name, {
+        'wash_arr': wash_arr
+    })
+
+
+def get_show_info(request):
+    belong = request.GET.get('belong', '2')
+    wash_list = WashType.objects.filter(belong=belong)
+    washes, page_numbers = adjacent_paginator(wash_list, page=request.GET.get('page', 1))
+    wash_arr = []
+    for wash in washes:
+        w = {}
+        w['name'] = wash.name
+        w['new_price'] = wash.new_price
+        w['old_price'] = wash.old_price
+        w['measure'] = wash.get_measure_display()
+        w['belong'] = wash.get_belong_display()
+        w['photo'] = wash.get_photo_url()
+        wash_arr.append(w)
+    return wash_arr
 
 
 def regist(request, form_class=RegistForm, template_name='wash/regist.html'):
@@ -82,12 +105,12 @@ def verify_code(request):
     return render(request)
 
 
-@auto_login
+#@auto_login
 def account(request, template_name='wash/account.html'):
     user = request.user
-    profile = WashUserProfile.objects.get(user=user)
+    #profile = WashUserProfile.objects.get(user=user)
     return render(request, template_name, {
-        'profile', profile
+        #'profile', profile
     })
 
 

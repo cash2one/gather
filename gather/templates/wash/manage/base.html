@@ -10,7 +10,7 @@
 		<link rel="stylesheet" href="/static/backend/css/ace.min.css" />
 		<link rel="stylesheet" href="/static/backend/css/ace-rtl.min.css" />
 		<link rel="stylesheet" href="/static/backend/css/ace-skins.min.css" />
-		<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:400,300" />
+		<!--<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:400,300" />-->
         {% block extra_css %}
         {% endblock %}
 	</head>
@@ -87,7 +87,7 @@
 							</a>
 						</li>
 						<li>
-							<a href="typography.html">
+							<a href="{% url 'manage_user_list' %}">
 								<i class="icon-group"></i>
 								<span class="menu-text"> 用户管理 </span>
 							</a>
@@ -101,28 +101,32 @@
 						</li>
 
 						<li>
-							<a href="typography.html">
+							<a href="{% url 'manage_discount' %}">
 								<i class="icon-gift"></i>
 								<span class="menu-text"> 优惠券 </span>
 							</a>
 						</li>
-
 						<li>
 							<a href="{% url 'manage_wash_type' %}">
-								<i class="icon-cog"></i>
+								<i class="icon-gift"></i>
 								<span class="menu-text"> 洗刷清单 </span>
 							</a>
 						</li>
-
-						<li>
-							<a href="#" class="dropdown-toggle">
+						<!--<li>
+							<a href="" class="dropdown-toggle">
 								<i class="icon-book"></i>
-								<span class="menu-text">产品清单 </span>
+								<span class="menu-text">洗刷清单 </span>
 
 								<b class="arrow icon-angle-down"></b>
 							</a>
 
 							<ul class="submenu">
+								<li>
+									<a href="{% url 'manage_wash_type' %}">
+										<i class="icon-double-angle-right"></i>
+										全部
+									</a>
+								</li>
 								<li>
 									<a href="elements.html">
 										<i class="icon-double-angle-right"></i>
@@ -148,7 +152,7 @@
 									</a>
 								</li>
 							</ul>
-						</li>
+						</li>-->
 
 						<li>
 							<a href="#" class="dropdown-toggle">
@@ -158,15 +162,15 @@
 								<b class="arrow icon-angle-down"></b>
 							</a>
 
-							<ul class="submenu">
+							<ul class="submenu" {% block order_menu %}{% endblock %}>
 								<li>
-									<a href="elements.html">
+									<a href="{% url 'manage_order' %}">
 										<i class="icon-double-angle-right"></i>
 										订单概览
 									</a>
 								</li>
 								<li>
-									<a href="elements.html">
+									<a href="{% url 'manage_order_detail' 0 %}">
 										<i class="icon-double-angle-right"></i>
 										订单详情
 									</a>
