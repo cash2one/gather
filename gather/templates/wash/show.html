@@ -89,10 +89,9 @@
                     $(".wash_div").css("display", "none");
                     $("#wash_"+belong).css("display", "");
                     $("#wash_"+belong).attr("name", "true");
-                    var html = "";
                     for(i=0;i<Data['result'].length;i++){
                         var d = Data['result'][i];
-                        html = html + "<div class='container-fluid' style='border-bottom:solid 1px #CCCCCC;margin-top:10px;'>"+
+                        var html = "<div class='container-fluid' style='border-bottom:solid 1px #CCCCCC;margin-top:10px;'>"+
                                         "<div clss='row'>"+
                                             "<div class='col-xs-3 text-left'>"+
                                                 "<a href='#'><img class='order-img' src='"+ d['photo'] +"' alt='...'></a>"+
@@ -109,8 +108,8 @@
                                                   "<span class='glyphicon glyphicon-minus' aria-hidden='true'></span>"+
                                                  " </button><label id='wash_count_"+ d['id'] +"'>0</label><button type='button' class='btn btn-default btn-sm add' style='margin-left:4px;' onclick='order_add("+ d['id'] +")'>"+
                                                  "<span class='glyphicon glyphicon-plus' aria-hidden='true'></span></button></div></div>";
+                        $("#wash_"+belong).append(html);
                     }
-                    $("#wash_"+belong).append(html);
                 } else {
                     alert("error");
                 }
