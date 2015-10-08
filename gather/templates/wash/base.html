@@ -15,7 +15,7 @@
     <meta content="洗衣，o2o" name="keywords"/>
     <meta content="一站式管家服务"
           name="description"/>
-    <link rel="stylesheet" type="text/css" href="http://cdn.amazeui.org/amazeui/2.4.2/css/amazeui.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/wash/amazeui.min.css">
     <link rel="stylesheet" type="text/css" href="/static/styles/wash/iconfont.css?v=1.0.0"/>
     <link rel="stylesheet" type="text/css" href="/static/styles/wash/base.css"/>
     <link rel="stylesheet" type="text/css" href="/static/styles/bootstrap.min.css"/>
@@ -35,13 +35,6 @@
 
 <div class="main">
     {% block navbar %}
-    <ul class="nav nav-tabs text-center">
-        <li role="presentation" class="active"><a href="#">上衣</a></li>
-        <li role="presentation"><a href="#">裤子</a></li>
-        <li role="presentation"><a href="#">鞋</a></li>
-        <li role="presentation"><a href="#">床上用品</a></li>
-        <li role="presentation"><a href="#">其他</a></li>
-    </ul>
     {% endblock %}
     {% block content %}
     {% endblock %}
@@ -58,7 +51,10 @@
         <li class="nav-middle {% block show %}{% endblock %}">
             <a href="{% url 'wash_show' %}" class="item ">
                 <i class="am-icon-reorder am-icon-sm"></i><br/>
-                订单</a>
+                订单
+                            <span class="badge" style="position:absolute;background-color:red;margin-right:80%">14</span>
+
+            </a>
         </li>
         <li class="{% block account %}{% endblock %}">
             <a href="{% url 'wash_account' %}" class="item">
@@ -69,17 +65,13 @@
     </ul>
 </nav>
 
-<script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.1.1-rc2/jquery.min.js"></script>
-<script type="text/javascript" src="http://cdn.amazeui.org/amazeui/2.4.2/js/amazeui.min.js"></script>
+<script type="text/javascript" src="/static/scripts/wash/jquery2.1.1.min.js"></script>
+<script type="text/javascript" src="/static/scripts/wash/amazeui.min.js"></script>
 <script type="text/javascript" src="/static/scripts/wash/utils.js"></script>
 <script type="text/javascript" src="/static/scripts/wash/tips.js"></script>
 <script type="text/javascript" src="/static/scripts/bootstrap.min.js"></script>
 
-<script>
-    $(".nav li").click(function(){
-        $(".nav li").removeClass("active");
-        $(this).addClass("active");
-    });
-</script>
+{% block extra_js %}
+{% endblock %}
 </body>
 </html>

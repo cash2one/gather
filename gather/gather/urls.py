@@ -18,6 +18,7 @@ urlpatterns = patterns('',
     url(r'^comment/', include('comment.urls')),
     url(r'^wechat/', include('wechat.urls')),
     url(r'^wash/', include('wash.urls')),
+    url(r'^wash/manage/', include('wash.murls')),
     url(r'^abount_us/', 'gather.views.about_us', name='about_us'),
 )
 

@@ -1,0 +1,103 @@
+{% extends 'wash/manage/base.html' %}
+
+{% block nav_bar %}
+<ul class="breadcrumb">
+    <li>
+        <i class="icon-cog"></i>
+        <a href="#">优惠券</a>
+    </li>
+    <li class="active">列表</li>
+</ul><!-- .breadcrumb -->
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xs-12">
+
+        <div class="row text-left">
+            <div class="col-xs-1">
+                <a class="btn btn-primary btn-sm" href="{% url 'manage_discount_add' %}">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                    新增
+                </a>
+            </div>
+        </div>
+
+        <div class="table-responsive" style="margin-top:10px;">
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                <tr>
+                    <th class="center">序号</th>
+                    <th>优惠券名称</th>
+                    <th>优惠规格</th>
+                    <th>优惠对象</th>
+                    <th>优惠类型</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                    <th>是否有效</th>
+                    <th>
+                        <i class="icon-time bigger-110"></i>
+                        创建日期
+                    </th>
+                    <th class="hidden-480">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for discount in discounts %}
+                <tr>
+                    <td>{{ discount.id }}</td>
+                    <td>{{ discount.name }}</td>
+                    <td>{{ discount.price }}</td>
+                    <td>{{ discount.get_wash_type_display }}</td>
+                    <td>{{ discount.get_discount_type_display }}</td>
+                    <td>{{ discount.begin|date:'Y-m-d H:i:s' }}</td>
+                    <td>{{ discount.end|date:'Y-m-d H:i:s' }}</td>
+                    <td>{{ discount.is_valid }}</td>
+                    <td>{{ discount.created|date:'Y-m-d H:i:s' }}</td>
+                    <td class="hidden-480">
+                        <div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
+                            <a class="btn btn-xs btn-info" href="{% url 'manage_discount_update' discount.id %}">
+                                <i class="icon-edit bigger-120"></i>
+                            </a>
+                            <a class="btn btn-xs btn-danger" href="{% url 'manage_model_del' 'discount' discount.id %}">
+                                <i class="icon-trash bigger-120"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+
+            {% if discounts %}
+            <nav class="margin-right">
+                <ul class="pagination">
+                    {% if discounts.has_previous %}
+                    <li>
+                        <a href="?page={{ discounts.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% for num in page_numbers %}
+                    {% if num ==  discounts.number %}
+                    <li class="active"><a href="#">{{ num }}</a></li>
+                    {% else %}
+                    <li><a href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                    {% endfor %}
+                    {% if discounts.has_next %}
+                    <li>
+                        <a href="?page={{ discounts.next_page_number }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

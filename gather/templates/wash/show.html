@@ -7,110 +7,111 @@
         }
     </style>
 {% endblock %}
+
+    {% block navbar %}
+    <ul class="nav nav-tabs text-center">
+        <li role="presentation" class="active" value="2"><a href="#">上衣</a></li>
+        <li role="presentation" value="3"><a href="#">裤子</a></li>
+        <li role="presentation" value="1"><a href="#">鞋</a></li>
+        <li role="presentation" value="5"><a href="#">床上用品</a></li>
+        <li role="presentation" value="6"><a href="#">其他</a></li>
+    </ul>
+    {% endblock %}
+
 {% block content %}
+<div id="wash_2" class="wash_div" name="true">
+    {% for wash in wash_arr %}
     <div class="container-fluid" style="border-bottom:solid 1px #CCCCCC;margin-top:10px;">
         <div clss="row">
             <div class="col-xs-3 text-left">
                 <a href="#">
-                    <img class="order-img" src="/static/img/av1.png" alt="...">
+                    <img class="order-img" src="{{ wash.photo }}" alt="...">
                 </a>
             </div>
             <div class="col-xs-4">
-                <h4 class="media-heading text-left">衬衫</h4>
-                <label class="media-heading">商务休闲长短</label>
+                <h4 class="media-heading text-left">{{ wash.belong }}</h4>
+                <label class="media-heading">{{ wash.name }}</label>
                 <h4>
-                    <label style="color:red">￥</label><label class="media-heading">20</label>元
+                    <label style="color:red">￥</label><label class="media-heading">{{ wash.new_price }}</label>元({{ wash.measure }})
                 </h4>
             </div>
             <div class="col-xs-5 text-right">
                 <button type="button" class="btn btn-default btn-sm">
                   <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
                 </button>
-                  3
-                <button type="button" class="btn btn-default btn-sm">
-                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                </button>
-            </div>
-        </div>
-    </div>
 
-    <div class="container-fluid" style="border-bottom:solid 1px #CCCCCC;margin-top:10px;">
-        <div clss="row">
-            <div class="col-xs-3 text-left">
-                <a href="#">
-                    <img class="order-img" src="/static/img/av2.png" alt="...">
-                </a>
-            </div>
-            <div class="col-xs-4">
-                <h4 class="media-heading text-left">衬衫</h4>
-                <label class="media-heading">商务休闲长短</label>
-                <h4>
-                    <label style="color:red">￥</label><label class="media-heading">20</label>元
-                </h4>
-            </div>
-            <div class="col-xs-5 text-right">
-                <button type="button" class="btn btn-default btn-sm">
-                  <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
-                </button>
-                  3
+                  0
                 <button type="button" class="btn btn-default btn-sm">
                   <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                 </button>
             </div>
         </div>
     </div>
+    {% endfor %}
+</div>
+<div id="wash_1" class="wash_div"></div>
+<div id="wash_3" class="wash_div"></div>
+<div id="wash_5" class="wash_div"></div>
+<div id="wash_6" class="wash_div"></div>
 
-    <div class="container-fluid" style="border-bottom:solid 1px #CCCCCC;margin-top:10px;">
-        <div clss="row">
-            <div class="col-xs-3 text-left">
-                <a href="#">
-                    <img class="order-img" src="/static/img/av3.png" alt="...">
-                </a>
-            </div>
-            <div class="col-xs-4">
-                <h4 class="media-heading text-left">衬衫</h4>
-                <label class="media-heading">商务休闲长短</label>
-                <h4>
-                    <label style="color:red">￥</label><label class="media-heading">20</label>元
-                </h4>
-            </div>
-            <div class="col-xs-5 text-right">
-                <button type="button" class="btn btn-default btn-sm">
-                  <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
-                </button>
-                  3
-                <button type="button" class="btn btn-default btn-sm">
-                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div class="container-fluid" style="border-bottom:solid 1px #CCCCCC;margin-top:10px;">
-        <div clss="row">
-            <div class="col-xs-3 text-left">
-                <a href="#">
-                    <img class="order-img" src="/static/img/av4.png" alt="...">
-                </a>
-            </div>
-            <div class="col-xs-4">
-                <h4 class="media-heading text-left">衬衫</h4>
-                <label class="media-heading">商务休闲长短</label>
-                <h4>
-                    <label style="color:red">￥</label><label class="media-heading">20</label>元
-                </h4>
-            </div>
-            <div class="col-xs-5 text-right">
-                <button type="button" class="btn btn-default btn-sm">
-                  <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
-                </button>
-                  3
-                <button type="button" class="btn btn-default btn-sm">
-                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                </button>
-            </div>
-        </div>
-    </div>
 {% endblock %}
 
 {% block show %}on{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(".nav li").click(function(){
+        $(".nav li").removeClass("active");
+        $(this).addClass("active");
+        var belong = $(this).attr("value");
+        var value = $("#wash_"+belong).attr("name");
+        if(value != 'true'){
+            get_show_info(belong);
+        }else{
+            $(".wash_div").css("display", "none");
+            $("#wash_"+belong).css("display", "");
+        }
+    });
+
+    function get_show_info(belong){
+        var _data = {};
+        $.ajax({
+            type: 'get',
+            dataType: "json",
+            url: "{% url 'wash_show'%}",
+            data: {'belong': belong},
+            success: function(Data) {
+                if (Data['status']) {
+                    $(".wash_div").css("display", "none");
+                    $("#wash_"+belong).css("display", "");
+                    $("#wash_"+belong).attr("name", "true");
+                    var html = "";
+                    for(i=0;i<Data['result'].length;i++){
+                        var d = Data['result'][i];
+                        html = html + "<div class='container-fluid' style='border-bottom:solid 1px #CCCCCC;margin-top:10px;'>"+
+                                        "<div clss='row'>"+
+                                            "<div class='col-xs-3 text-left'>"+
+                                                "<a href='#'><img class='order-img' src='"+ d['photo'] +"' alt='...'></a>"+
+                                            "</div>"+
+                                            "<div class='col-xs-4'>"+
+                                               "<h4 class='media-heading text-left'>"+ d['belong'] +"</h4>"+
+                                                "<label class='media-heading'>"+ d['name'] +"</label>"+
+                                                "<h4>"+
+                                                    "<label style='color:red'>￥</label><label class='media-heading'>"+ d['new_price'] +"</label>元("+ d['measure'] +")"+
+                                                "</h4>"+
+                                            "</div>"+
+                                            "<div class='col-xs-5 text-right'>"+
+                                                "<button type='button' class='btn btn-default btn-sm' style='margin-right:4px;'>"+
+                                                  "<span class='glyphicon glyphicon-minus' aria-hidden='true'></span>"+
+                                                 " </button>0<button type='button' class='btn btn-default btn-sm' style='margin-left:4px;'>"+
+                                                 "<span class='glyphicon glyphicon-plus' aria-hidden='true'></span></button></div></div>";
+                    }
+                    $("#wash_"+belong).append(html);
+                } else {
+                    alert("error");
+                }
+            }
+        });
+    };
+</script>
+{% endblock %}
