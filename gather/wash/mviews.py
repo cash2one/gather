@@ -119,7 +119,7 @@ def wash_type_update(request, type_id, form_class=WashTypeForm, template_name="w
                 form.save()
                 return HttpResponseRedirect(reverse("wash.mviews.wash_type"))
         form = form_class(instance=wash_type)
-        messages.info(request, u"修改成功")
+        #messages.info(request, u"修改成功")
         return render(request, template_name, {
             'form': form,
             'type': wash_type,
