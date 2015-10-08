@@ -37,13 +37,13 @@
                 </h4>
             </div>
             <div class="col-xs-5 text-right">
-                <button type="button" class="btn btn-default btn-sm minus" value="{{ wash.id }}">
+                <button type="button" class="btn btn-default btn-sm" onclick="order_minus({{ wash.id }})">
                   <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
                 </button>
-                <div id="wash_count_{{ wash.id }}">
+                <label id="wash_count_{{ wash.id }}">
                     0
-                </div>
-                <button type="button" class="btn btn-default btn-sm add" value="{{ wash.id }}">
+                </label>
+                <button type="button" class="btn btn-default btn-sm" onclick="order_add({{ wash.id }})">
                   <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                 </button>
             </div>
@@ -105,9 +105,9 @@
                                                 "</h4>"+
                                             "</div>"+
                                             "<div class='col-xs-5 text-right'>"+
-                                                "<button type='button' class='btn btn-default btn-sm minus' style='margin-right:4px;' value='"+ d['id'] +"'>"+
+                                                "<button type='button' class='btn btn-default btn-sm' style='margin-right:4px;' onclick='order_minus("+ d['id'] +")'>"+
                                                   "<span class='glyphicon glyphicon-minus' aria-hidden='true'></span>"+
-                                                 " </button>0<button type='button' class='btn btn-default btn-sm add' style='margin-left:4px;' value='"+ d['id'] +"'>"+
+                                                 " </button><label id='wash_count_"+ d['id'] +"'>0</label><button type='button' class='btn btn-default btn-sm add' style='margin-left:4px;' onclick='order_add("+ d['id'] +")'>"+
                                                  "<span class='glyphicon glyphicon-plus' aria-hidden='true'></span></button></div></div>";
                     }
                     $("#wash_"+belong).append(html);
@@ -119,8 +119,7 @@
     };
 
     // 数量增加一
-    $(".add").click(function(){
-        var wash_id = $(this).attr("value");
+    function order_add(wash_id){
         var d = $("#order_count_str").val();
         update_order_json(d, "wash"+wash_id, true)
 
@@ -128,11 +127,10 @@
         $("#order_count").html(parseInt($("#order_count").html())+1);
         var wash_count = $("#wash_count_"+wash_id).html();
         $("#wash_count_"+wash_id).html(parseInt(wash_count)+1);
-    });
+    }
 
     // 数量减一
-    $(".minus").click(function(){
-        var wash_id = $(this).attr("value");
+    function order_minus(wash_id){
         var wash_count = parseInt($("#wash_count_"+wash_id).html());
         var order_count = parseInt($("#order_count").html());
         if(wash_count>0){
@@ -148,7 +146,7 @@
             var d = $("#order_count_str").val();
             update_order_json(d, "wash"+wash_id, false)
         }
-    });
+    }
 
     // 订单信息修改
     function update_order_json(d, key, flag){
@@ -163,7 +161,6 @@
             }
         }
         var order_str = JSON.stringify(_d);
-        //$("#order_count_str").val(order_str.substring(1, order_str.length-1));
         $("#order_count_str").val(order_str);
     }
 
