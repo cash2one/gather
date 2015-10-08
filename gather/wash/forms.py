@@ -97,7 +97,7 @@ class WashTypeForm(forms.ModelForm):
             q = Qiniu()
             local_file = self._request.FILES['photo'].file
             image_name = gen_photo_name() + "." + self._request.FILES['photo']._name.encode('utf-8').split(".")[-1]
-            #q.upload_stream(image_name, local_file)
+            q.upload_stream(image_name, local_file)
         except KeyError:
             image_name = ''
 
