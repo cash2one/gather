@@ -19,6 +19,7 @@
     {% endblock %}
 
 {% block content %}
+<input type="hidden" id="order_count_str" value="{}"/>
 <div id="wash_2" class="wash_div" name="true">
     {% for wash in wash_arr %}
     <div class="container-fluid" style="border-bottom:solid 1px #CCCCCC;margin-top:10px;">
@@ -36,12 +37,13 @@
                 </h4>
             </div>
             <div class="col-xs-5 text-right">
-                <button type="button" class="btn btn-default btn-sm">
+                <button type="button" class="btn btn-default btn-sm minus" value="{{ wash.id }}">
                   <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
                 </button>
-
-                  0
-                <button type="button" class="btn btn-default btn-sm">
+                <div id="wash_count_{{ wash.id }}">
+                    0
+                </div>
+                <button type="button" class="btn btn-default btn-sm add" value="{{ wash.id }}">
                   <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                 </button>
             </div>
@@ -60,6 +62,7 @@
 
 {% block extra_js %}
 <script>
+    // tab切换
     $(".nav li").click(function(){
         $(".nav li").removeClass("active");
         $(this).addClass("active");
@@ -73,6 +76,7 @@
         }
     });
 
+    // 获取tab下内容
     function get_show_info(belong){
         var _data = {};
         $.ajax({
@@ -94,16 +98,16 @@
                                                 "<a href='#'><img class='order-img' src='"+ d['photo'] +"' alt='...'></a>"+
                                             "</div>"+
                                             "<div class='col-xs-4'>"+
-                                               "<h4 class='media-heading text-left'>"+ d['belong'] +"</h4>"+
-                                                "<label class='media-heading'>"+ d['name'] +"</label>"+
+                                               "<h4 class='media-heading text-left'>"+ d['name'] +"</h4>"+
+                                                "<label class='media-heading'>"+ d['belong'] +"</label>"+
                                                 "<h4>"+
                                                     "<label style='color:red'>￥</label><label class='media-heading'>"+ d['new_price'] +"</label>元("+ d['measure'] +")"+
                                                 "</h4>"+
                                             "</div>"+
                                             "<div class='col-xs-5 text-right'>"+
-                                                "<button type='button' class='btn btn-default btn-sm' style='margin-right:4px;'>"+
+                                                "<button type='button' class='btn btn-default btn-sm minus' style='margin-right:4px;' value='"+ d['id'] +"'>"+
                                                   "<span class='glyphicon glyphicon-minus' aria-hidden='true'></span>"+
-                                                 " </button>0<button type='button' class='btn btn-default btn-sm' style='margin-left:4px;'>"+
+                                                 " </button>0<button type='button' class='btn btn-default btn-sm add' style='margin-left:4px;' value='"+ d['id'] +"'>"+
                                                  "<span class='glyphicon glyphicon-plus' aria-hidden='true'></span></button></div></div>";
                     }
                     $("#wash_"+belong).append(html);
@@ -113,5 +117,55 @@
             }
         });
     };
+
+    // 数量增加一
+    $(".add").click(function(){
+        var wash_id = $(this).attr("value");
+        var d = $("#order_count_str").val();
+        update_order_json(d, "wash"+wash_id, true)
+
+        $("#order_count").css("display", "");
+        $("#order_count").html(parseInt($("#order_count").html())+1);
+        var wash_count = $("#wash_count_"+wash_id).html();
+        $("#wash_count_"+wash_id).html(parseInt(wash_count)+1);
+    });
+
+    // 数量减一
+    $(".minus").click(function(){
+        var wash_id = $(this).attr("value");
+        var wash_count = parseInt($("#wash_count_"+wash_id).html());
+        var order_count = parseInt($("#order_count").html());
+        if(wash_count>0){
+            $("#wash_count_"+wash_id).html(parseInt(wash_count)-1);
+        }
+        if (order_count-1==0){
+            $("#order_count").css("display", "none");
+        }else if(order_count>0){
+            $("#order_count").html(parseInt($("#order_count").html())-1);
+        }
+
+        if(wash_count > 0 && order_count>0){
+            var d = $("#order_count_str").val();
+            update_order_json(d, "wash"+wash_id, false)
+        }
+    });
+
+    // 订单信息修改
+    function update_order_json(d, key, flag){
+        var _d = eval('('+d+')');
+        if(_d[key] == undefined){
+            _d[key] = '1';
+        }else{
+            if(flag){
+               _d[key] = (parseInt(_d[key]) + 1).toString();
+            }else{
+               _d[key] = (parseInt(_d[key]) - 1).toString();
+            }
+        }
+        var order_str = JSON.stringify(_d);
+        //$("#order_count_str").val(order_str.substring(1, order_str.length-1));
+        $("#order_count_str").val(order_str);
+    }
+
 </script>
 {% endblock %}

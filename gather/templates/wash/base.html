@@ -41,6 +41,8 @@
 </div>
 
 <nav class="main-nav am-topbar am-topbar-fixed-bottom">
+    <span class="badge" id="order_count" style="z-index:100;display:none;position:absolute;background-color:red;">0</span>
+
     <ul class="am-avg-sm-3">
         <li class="{% block index %}{% endblock %}">
             <a href="{% url 'wash_index' %}" class="item">
@@ -50,11 +52,15 @@
         </li>
         <li class="nav-middle {% block show %}{% endblock %}">
             <a href="{% url 'wash_show' %}" class="item ">
-                <i class="am-icon-reorder am-icon-sm"></i><br/>
+                <i class="am-icon-reorder am-icon-sm">
+                </i>
+
+                <br/>
                 订单
-                <!--<span class="badge" style="position:absolute;background-color:red;margin-right:80%">-->14</span>
             </a>
+
         </li>
+
         <li class="{% block account %}{% endblock %}">
             <a href="{% url 'wash_account' %}" class="item">
                 <i class="am-icon-user am-icon-sm"></i><br>

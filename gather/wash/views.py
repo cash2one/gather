@@ -56,6 +56,7 @@ def get_show_info(request):
     wash_arr = []
     for wash in washes:
         w = {}
+        w['id'] = wash.id
         w['name'] = wash.name
         w['new_price'] = wash.new_price
         w['old_price'] = wash.old_price

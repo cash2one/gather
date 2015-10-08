@@ -99,7 +99,7 @@ class WashTypeForm(forms.ModelForm):
             image_name = gen_photo_name() + "." + self._request.FILES['photo']._name.encode('utf-8').split(".")[-1]
             q.upload_stream(image_name, local_file)
         except KeyError:
-            image_name = ''
+            image_name = m.photo
 
         m.photo = image_name
         m.save()
