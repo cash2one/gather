@@ -15,8 +15,9 @@ from django.conf import settings
 from django.contrib.auth import login, authenticate
 
 from wash.models import WashType, WashUserProfile, Discount, Order, OrderDetail
+from wash.models import IndexBanner
 from account.models import LoginLog
-from wash.forms import RegistForm, WashTypeForm, DiscountForm
+from wash.forms import RegistForm, WashTypeForm, DiscountForm, IndexForm
 from CCPRestSDK import REST
 from utils import gen_verify_code, adjacent_paginator
 
@@ -62,6 +63,62 @@ def user_list(request, template_name="wash/manage/user_list.html"):
     return render(request, template_name, {
         'user_list': user_list,
     })
+
+
+@login_required(login_url='/wash/manage/')
+def wash_img(request, template_name='wash/manage/index_imgs.html'):
+    img_list = IndexBanner.objects.all()
+    imgs, page_numbers = adjacent_paginator(img_list, page=request.GET.get('page', 1))
+
+    return render(request, template_name, {
+        'imgs': imgs,
+        'page_numbers': page_numbers
+    })
+
+
+@login_required(login_url='/wash/manage/')
+def wash_img_add(request, form_class=IndexForm, template_name="wash/manage/index_img_add.html"):
+    """
+    轮播图添加
+    :param request:
+    :param template_name:
+    :return:
+    """
+    if request.method == "POST":
+        form = form_class(request, data=request.POST, files=request.FILES)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("wash.mviews.wash_img"))
+    form = form_class()
+    return render(request, template_name, {
+        'form': form,
+    })
+
+
+@login_required(login_url='/wash/manage/')
+def wash_img_update(request, img_id=0, form_class=IndexForm, template_name="wash/manage/index_img_update.html"):
+    """
+    轮播图修改
+    :param request:
+    :param template_name:
+    :return:
+    """
+    try:
+        img = IndexBanner.objects.get(id=img_id)
+        if request.method == "POST":
+            form = form_class(request, instance=img, data=request.POST, files=request.FILES)
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect(reverse("wash.mviews.wash_img"))
+        form = form_class(instance=img)
+
+        return render(request, template_name, {
+            'form': form,
+            'img': img,
+        })
+    except IndexBanner.DoesNotExist:
+        return HttpResponseRedirect(reverse("wash.mviews.wash_img"))
+
 
 
 @login_required(login_url='/wash/manage/')

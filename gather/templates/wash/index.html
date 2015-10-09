@@ -4,18 +4,11 @@
    <div class="top-banner">
         <div data-am-widget="slider" class="am-slider am-slider-a1" data-am-slider="{'directionNav':false}">
             <ul class="am-slides">
-
+                {% for img in imgs %}
                 <li>
-                    <img src="/static/images/wash/slider_1.jpg?_t=20150718" width="100%" height="100%">
+                    <img src="{{ img.get_photo_url }}"/>
                 </li>
-
-                <li>
-                    <img src="/static/images/wash/slider_3.jpg?_t=20150718">
-                </li>
-
-                <li>
-                    <img src="/static/images/wash/slider_2.jpg?_t=20150718">
-                </li>
+                {% endfor %}
             </ul>
         </div>
     </div>
