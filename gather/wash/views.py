@@ -13,7 +13,7 @@ from django.shortcuts import render
 from django.conf import settings
 from django.contrib.auth import login, authenticate
 
-from wash.models import VerifyCode, WashUserProfile, WashType
+from wash.models import VerifyCode, WashUserProfile, WashType, IndexBanner
 from wash.forms import RegistForm
 from CCPRestSDK import REST
 from utils import gen_verify_code, adjacent_paginator
@@ -36,7 +36,13 @@ def auto_login(func):
 
 
 def index(request, template_name='wash/index.html'):
-    return render(request, template_name)
+    img_list = IndexBanner.objects.filter(is_show=True)
+    imgs, page_numbers = adjacent_paginator(img_list, page=request.GET.get('page', 1))
+
+    return render(request, template_name, {
+        'imgs': imgs,
+        'page_numbers': page_numbers
+    })
 
 
 def show(request, template_name='wash/show.html'):

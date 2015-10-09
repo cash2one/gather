@@ -18,6 +18,11 @@ urlpatterns = patterns('wash.mviews',
     url(r'^type/add/$', 'wash_type_add', name='manage_wash_type_add'),
     url(r'^type/update/(?P<type_id>\d+)/$', 'wash_type_update', name='manage_wash_type_update'),
 
+    # 首页轮播图
+    url(r'^img/$', 'wash_img', name='manage_wash_img'),
+    url(r'^img/add/$', 'wash_img_add', name='manage_wash_img_add'),
+    url(r'^img/update/(?P<img_id>\d+)/$', 'wash_img_update', name='manage_wash_img_update'),
+
     # 优惠券
     url(r'^discount/$', 'discount', name='manage_discount'),
     url(r'^discount/add/$', 'discount_add', name='manage_discount_add'),

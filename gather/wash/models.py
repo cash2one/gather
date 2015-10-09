@@ -37,6 +37,19 @@ class Address(models.Model):
     street = models.CharField('街道', max_length=50, null=True)
 
 
+class IndexBanner(models.Model):
+    """ 首页轮播图"""
+    photo = models.CharField('url', max_length=255)
+    index = models.IntegerField('排序')
+    is_show = models.BooleanField('是否显示', default=True)
+
+    created = models.DateTimeField('创建时间', auto_now_add=True, null=True, blank=True)
+    updated = models.DateTimeField('最后更新时间', auto_now=True)
+
+    def get_photo_url(self):
+        return "http://7xkqb1.com1.z0.glb.clouddn.com/{}".format(self.photo)
+
+
 class WeToken(models.Model):
     """ 微信Token"""
     token = models.CharField('ServerToken', max_length=1024, null=True, blank=True)

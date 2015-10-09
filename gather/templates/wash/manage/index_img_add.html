@@ -1,0 +1,45 @@
+{% extends 'wash/manage/base.html' %}
+
+{% block nav_bar %}
+<ul class="breadcrumb">
+    <li>
+        <i class="icon-cog"></i>
+        <a href="{% url 'manage_wash_img' %}">轮播图列表</a>
+    </li>
+    <li class="active">新增</li>
+</ul><!-- .breadcrumb -->
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xs-12">
+        <div class="table-responsive" style="margin-top:10px;">
+            <form action="." method="post" enctype='multipart/form-data'>
+                {% csrf_token %}
+                <table class="table table-striped table-bordered table-hover">
+                    <tbody>
+                    <tr>
+                        <td>照片</td>
+                        <td>
+                           <input type="file" name="photo" id="upload_file"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>顺序(从小到大排序)</td>
+                        <td>{{ form.index }}</td>
+                    </tr>
+                    <tr>
+                        <td>是否显示</td>
+                        <td>{{ form.is_show }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <button class="btn btn-primary radius-4" type="submit">
+                    <i class="icon-save"></i>
+                    保存
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
