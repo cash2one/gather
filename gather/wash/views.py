@@ -14,6 +14,7 @@ from django.conf import settings
 from django.contrib.auth import login, authenticate
 
 from wash.models import VerifyCode, WashUserProfile, WashType, IndexBanner
+from wash.models import Basket
 from wash.forms import RegistForm
 from CCPRestSDK import REST
 from utils import gen_verify_code, adjacent_paginator
@@ -36,7 +37,7 @@ def auto_login(func):
 
 
 def index(request, template_name='wash/index.html'):
-    img_list = IndexBanner.objects.filter(is_show=True)
+    img_list = IndexBanner.objects.filter(is_show=True).order_by("index")
     imgs, page_numbers = adjacent_paginator(img_list, page=request.GET.get('page', 1))
 
     return render(request, template_name, {
@@ -46,12 +47,13 @@ def index(request, template_name='wash/index.html'):
 
 
 def show(request, template_name='wash/show.html'):
-    wash_arr = get_show_info(request)
+    wash_arr, total = get_show_info(request)
     if request.is_ajax():
-        return HttpResponse(json.dumps({'status': True, 'result': wash_arr}))
+        return HttpResponse(json.dumps({'status': True, 'total': total, 'result': wash_arr}))
 
     return render(request, template_name, {
-        'wash_arr': wash_arr
+        'wash_arr': wash_arr,
+        'total': total,
     })
 
 
@@ -60,6 +62,11 @@ def get_show_info(request):
     wash_list = WashType.objects.filter(belong=belong)
     washes, page_numbers = adjacent_paginator(wash_list, page=request.GET.get('page', 1))
     wash_arr = []
+
+    sessionid = request.session.session_key
+    basket_list = Basket.get_list(sessionid)
+    total = sum(basket_list.values())
+
     for wash in washes:
         w = {}
         w['id'] = wash.id
@@ -69,8 +76,9 @@ def get_show_info(request):
         w['measure'] = wash.get_measure_display()
         w['belong'] = wash.get_belong_display()
         w['photo'] = wash.get_photo_url()
+        w['count'] = basket_list.get(wash.id, 0)
         wash_arr.append(w)
-    return wash_arr
+    return wash_arr, total
 
 
 def regist(request, form_class=RegistForm, template_name='wash/regist.html'):
@@ -119,6 +127,34 @@ def account(request, template_name='wash/account.html'):
     return render(request, template_name, {
         #'profile', profile
     })
+
+
+# 待续
+@csrf_exempt
+def order_update(request):
+    if request.method == "POST" and request.is_ajax():
+        wash_id = request.POST.get('key')
+        flag = request.POST.get('flag')
+        sessionid = request.session.session_key
+        if Basket.is_sessionid_exist(sessionid):
+            if Basket.is_wash_exist(sessionid, wash_id):
+                Basket.update(sessionid, wash_id, flag)
+            else:
+                Basket(sessionid=sessionid, wash_id=wash_id, count=1).save()
+
+        else:
+            Basket(sessionid=sessionid, wash_id=wash_id, count=1).save()
+    return HttpResponse(json.dumps(True))
+
+
+@csrf_exempt
+def order(request):
+    data = request.POST
+    try:
+        print request.session['order']
+    except:
+        pass
+    return HttpResponse(json.dumps(True))
 
 
 

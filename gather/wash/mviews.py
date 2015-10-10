@@ -66,6 +66,32 @@ def user_list(request, template_name="wash/manage/user_list.html"):
 
 
 @login_required(login_url='/wash/manage/')
+def model_del(request, model_type, type_id):
+    """
+    类型删除
+    :param request:
+    :return:
+    """
+    try:
+
+        if model_type == 'wash_type':
+            model = WashType
+            url = "wash.mviews.wash_type"
+        elif model_type == 'img':
+            model = IndexBanner
+            url = "wash.mviews.wash_img"
+        elif model_type == 'discount':
+            model = Discount
+            url = "wash.mviews.discount"
+        m = model.objects.get(id=type_id)
+        m.delete()
+        return HttpResponseRedirect(reverse(url))
+    except model.DoesNotExist:
+        messages.error(request, u"类型不存在")
+    return HttpResponseRedirect(reverse(url))
+
+
+@login_required(login_url='/wash/manage/')
 def wash_img(request, template_name='wash/manage/index_imgs.html'):
     img_list = IndexBanner.objects.all()
     imgs, page_numbers = adjacent_paginator(img_list, page=request.GET.get('page', 1))
@@ -182,25 +208,6 @@ def wash_type_update(request, type_id, form_class=WashTypeForm, template_name="w
             'type': wash_type,
         })
     except WashType.DoesNotExist:
-        messages.error(request, u"类型不存在")
-    return HttpResponseRedirect(reverse("wash.mviews.wash_type"))
-
-
-@login_required(login_url='/wash/manage/')
-def model_del(request, model_type, type_id):
-    """
-    类型删除
-    :param request:
-    :return:
-    """
-    try:
-
-        if model_type == 'wash_type':
-            model = WashType
-        m = model.objects.get(id=type_id)
-        m.delete()
-        return HttpResponseRedirect(reverse("wash.mviews.wash_type"))
-    except model.DoesNotExist:
         messages.error(request, u"类型不存在")
     return HttpResponseRedirect(reverse("wash.mviews.wash_type"))
 
