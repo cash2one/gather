@@ -172,6 +172,47 @@ PAY = (
     (1, '货到付款')
 )
 
+class Basket(models.Model):
+    """ 购物车"""
+    sessionid = models.CharField('sessionid', max_length=255, null=True)
+    wash_id = models.IntegerField()
+    count = models.IntegerField('数量', default=0)
+    is_valid = models.BooleanField('是否有效', default=True)
+
+    created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
+    updated = models.DateTimeField('最后更新时间', auto_now=True)
+
+    @classmethod
+    def is_sessionid_exist(cls, sessionid):
+        return cls.objects.filter(sessionid=sessionid).exists()
+
+    @classmethod
+    def is_wash_exist(cls, sessionid, wash_id):
+        return cls.objects.filter(sessionid=sessionid, wash_id=wash_id).exists()
+
+    @classmethod
+    def update(cls, sessionid, wash_id, flag='add'):
+        if cls.is_wash_exist(sessionid, wash_id):
+            basket = Basket.objects.get(sessionid=sessionid, wash_id=wash_id)
+            if flag == 'add':
+                basket.count += 1
+            else:
+                if basket.count > 0:
+                    basket.count -= 1
+            basket.save()
+
+    @classmethod
+    def get_list(cls, sessionid):
+        if cls.is_sessionid_exist(sessionid):
+            baskets = cls.objects.filter(sessionid=sessionid)
+            basket_dict = {}
+            for basket in baskets:
+                basket_dict[basket.wash_id] = basket.count
+            return basket_dict
+        else:
+            return {}
+
+
 class Order(models.Model):
     """ 订单概览"""
     user = models.ForeignKey(WashUserProfile, related_name='orders')

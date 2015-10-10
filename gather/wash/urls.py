@@ -11,4 +11,6 @@ urlpatterns = patterns('wash.views',
     url(r'^verify/$', 'verify_code', name='wash_verify'),
 
     url(r'^account/$', 'account', name='wash_account'),
+    url(r'^order/$', 'order', name='wash_order'),
+    url(r'^order/update/$', 'order_update', name='wash_order_update'),
 )
