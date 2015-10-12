@@ -28,21 +28,26 @@
 <header class="am-topbar am-topbar-fixed-top am-force-show">
     <div class="row">
         <div class="col-xs-4">
+            {% block title_left %}
                 <span class="current-city">北京</span>
+            {% endblock %}
         </div>
         <div class="col-xs-4">
+            {% block title_center %}
             <img class="top-logo" src="{% static 'images/wash/top_logo.png' %}" width="100">
+            {% endblock %}
         </div>
         <div class="col-xs-4 text-center">
-                <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
-                {% if total == 0 %}
-                <span class="badge" id="order_count" style="z-index:100;display:none;position:absolute;background-color:red;">0</span>
-                {% else %}
-                <span class="badge btn-sm" id="order_count" style="z-index:100;position:absolute;background-color:red;margin-top:5px;margin-left: -30px">{{ total }}</span>
-                {% endif %}
+            <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
+            <a href="{% url 'wash_basket' %}">
+            {% if total == 0 %}
+            <span class="badge" id="order_count" style="z-index:100;display:none;position:absolute;background-color:red;margin-top:5px;margin-left:-30px">0</span>
+            {% else %}
+            <span class="badge btn-sm" id="order_count" style="z-index:100;position:absolute;background-color:red;margin-top:5px;margin-left:-30px">{{ total }}</span>
+            {% endif %}
+            </a>
         </div>
     </div>
-
 </header>
 
 <div class="main">
@@ -52,6 +57,7 @@
     {% endblock %}
 </div>
 
+{% block bottom %}
 <nav class="main-nav am-topbar am-topbar-fixed-bottom">
     <ul class="am-avg-sm-3">
         <li class="{% block index %}{% endblock %}">
@@ -61,9 +67,6 @@
             </a>
         </li>
         <li class="nav-middle {% block show %}{% endblock %}">
-<!--
-            <input type="hidden" id="order_count_str" value="{}"/>
--->
             <a href="{% url 'wash_show' %}" class="item" id="order_submit">
                 <i class="am-icon-reorder am-icon-sm">
                 </i>
@@ -80,6 +83,7 @@
         </li>
     </ul>
 </nav>
+{% endblock %}
 
 <script type="text/javascript" src="/static/scripts/wash/jquery2.1.1.min.js"></script>
 <script type="text/javascript" src="/static/scripts/wash/amazeui.min.js"></script>

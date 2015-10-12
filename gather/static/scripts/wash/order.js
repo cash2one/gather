@@ -42,7 +42,7 @@ function get_show_info(belong){
                                         "<div class='col-xs-5 text-right'>"+
                                             "<button type='button' class='btn btn-default btn-sm' style='margin-right:4px;' onclick='order_minus("+ d['id'] +")'>"+
                                               "<span class='glyphicon glyphicon-minus' aria-hidden='true'></span>"+
-                                             " </button><label id='wash_count_"+ d['id'] +"'>"+ d['count'] +"</label><button type='button' class='btn btn-default btn-sm add' style='margin-left:4px;' onclick='order_add("+ d['id'] +")'>"+
+                                             " </button><label id='wash_count_"+ d['id'] +"'>"+ d['count']+"</label><button type='button' class='btn btn-default btn-sm add' style='margin-left:4px;' onclick='order_add("+ d['id'] +")'>"+
                                              "<span class='glyphicon glyphicon-plus' aria-hidden='true'></span></button></div></div>";
                     $("#wash_"+belong).append(html);
                 }
@@ -55,14 +55,13 @@ function get_show_info(belong){
 
 // 数量增加一
 function order_add(wash_id){
-    //var d = $("#order_count_str").val();
-    //update_order_json(d, "wash"+wash_id, true)
     update_order_ajax(wash_id, 'add')
 
     $("#order_count").css("display", "");
     $("#order_count").html(parseInt($("#order_count").html())+1);
     var wash_count = $("#wash_count_"+wash_id).html();
     $("#wash_count_"+wash_id).html(parseInt(wash_count)+1);
+    price_sum();
 }
 
 // 数量减一
@@ -74,18 +73,18 @@ function order_minus(wash_id){
     }
     if (order_count-1==0){
         $("#order_count").css("display", "none");
+        $("#order_count").html(parseInt($("#order_count").html())-1);
     }else if(order_count>0){
         $("#order_count").html(parseInt($("#order_count").html())-1);
     }
 
     if(wash_count > 0 && order_count>0){
-        //var d = $("#order_count_str").val();
-        //update_order_json(d, "wash"+wash_id, false)
-        update_order_ajax(d, wash_id, 'minus')
+        update_order_ajax(wash_id, 'minus')
     }
+    price_sum();
 }
 
-// 订单信息修改
+// 购物车信息修改1
 function update_order_json(d, key, flag){
     var _d = eval('('+d+')');
     if(_d[key] == undefined){
@@ -101,16 +100,26 @@ function update_order_json(d, key, flag){
     $("#order_count_str").val(order_str);
 }
 
+// 购物车信息修改2
 function update_order_ajax(key, flag){
     $.ajax({
         type: 'post',
         dataType: "json",
-        url: "/wash/order/update/",
+        url: "/wash/basket/update/",
         data: { key: key, flag: flag},
         success: function(Data) {
-
+            // do sth
         }
     });
 }
+
+function price_sum(){
+    var sum = 0;
+    $("label[name='price']").each(function(){
+        sum += parseInt($(this).html()) * parseInt($("#wash_count_"+$(this).attr("value")).html());
+    });
+    $("#price_total").html(sum).show();
+}
+
 
 

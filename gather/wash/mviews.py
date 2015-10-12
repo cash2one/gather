@@ -21,6 +21,7 @@ from wash.forms import RegistForm, WashTypeForm, DiscountForm, IndexForm
 from CCPRestSDK import REST
 from utils import gen_verify_code, adjacent_paginator
 
+WASH_MURL = settings.WASH_MURL
 
 def manage_login(request, template_name="wash/manage/login.html"):
     if request.method == "POST":
@@ -44,7 +45,7 @@ def manage_login(request, template_name="wash/manage/login.html"):
     return render(request, template_name)
 
 
-@login_required(login_url='/wash/manage/')
+@login_required(login_url=WASH_MURL)
 def manage_logout(request):
     from django.contrib.auth import logout
     logout(request)
@@ -52,12 +53,12 @@ def manage_logout(request):
     return HttpResponseRedirect(reverse("wash.mviews.manage_login"))
 
 
-@login_required(login_url='/wash/manage/')
+@login_required(login_url=WASH_MURL)
 def manage_index(request, template_name="wash/manage/base.html"):
     return render(request, template_name)
 
 
-@login_required(login_url='/wash/manage/')
+@login_required(login_url=WASH_MURL)
 def user_list(request, template_name="wash/manage/user_list.html"):
     user_list = WashUserProfile.objects.all()
     return render(request, template_name, {
@@ -65,7 +66,7 @@ def user_list(request, template_name="wash/manage/user_list.html"):
     })
 
 
-@login_required(login_url='/wash/manage/')
+@login_required(login_url=WASH_MURL)
 def model_del(request, model_type, type_id):
     """
     类型删除
@@ -91,7 +92,7 @@ def model_del(request, model_type, type_id):
     return HttpResponseRedirect(reverse(url))
 
 
-@login_required(login_url='/wash/manage/')
+@login_required(login_url=WASH_MURL)
 def wash_img(request, template_name='wash/manage/index_imgs.html'):
     img_list = IndexBanner.objects.all()
     imgs, page_numbers = adjacent_paginator(img_list, page=request.GET.get('page', 1))
@@ -102,7 +103,7 @@ def wash_img(request, template_name='wash/manage/index_imgs.html'):
     })
 
 
-@login_required(login_url='/wash/manage/')
+@login_required(login_url=WASH_MURL)
 def wash_img_add(request, form_class=IndexForm, template_name="wash/manage/index_img_add.html"):
     """
     轮播图添加
@@ -121,7 +122,7 @@ def wash_img_add(request, form_class=IndexForm, template_name="wash/manage/index
     })
 
 
-@login_required(login_url='/wash/manage/')
+@login_required(login_url=WASH_MURL)
 def wash_img_update(request, img_id=0, form_class=IndexForm, template_name="wash/manage/index_img_update.html"):
     """
     轮播图修改
@@ -147,7 +148,7 @@ def wash_img_update(request, img_id=0, form_class=IndexForm, template_name="wash
 
 
 
-@login_required(login_url='/wash/manage/')
+@login_required(login_url=WASH_MURL)
 def wash_type(request, template_name="wash/manage/wash_type.html"):
     """
     洗刷类型清单
@@ -164,7 +165,7 @@ def wash_type(request, template_name="wash/manage/wash_type.html"):
     })
 
 
-@login_required(login_url='/wash/manage/')
+@login_required(login_url=WASH_MURL)
 def wash_type_add(request, form_class=WashTypeForm, template_name="wash/manage/wash_type_add.html"):
     """
     洗刷类型添加
@@ -185,7 +186,7 @@ def wash_type_add(request, form_class=WashTypeForm, template_name="wash/manage/w
     })
 
 
-@login_required(login_url='/wash/manage/')
+@login_required(login_url=WASH_MURL)
 def wash_type_update(request, type_id, form_class=WashTypeForm, template_name="wash/manage/wash_type_update.html"):
     """
     洗刷类型修改
@@ -212,7 +213,7 @@ def wash_type_update(request, type_id, form_class=WashTypeForm, template_name="w
     return HttpResponseRedirect(reverse("wash.mviews.wash_type"))
 
 
-@login_required(login_url='/wash/manage/')
+@login_required(login_url=WASH_MURL)
 def discount(request, template_name="wash/manage/discount.html"):
     """
     优惠券列表
@@ -229,7 +230,7 @@ def discount(request, template_name="wash/manage/discount.html"):
     })
 
 
-@login_required(login_url='/wash/manage/')
+@login_required(login_url=WASH_MURL)
 def discount_add(request, form_class=DiscountForm, template_name="wash/manage/discount_add.html"):
     """
     优惠券添加
@@ -248,7 +249,7 @@ def discount_add(request, form_class=DiscountForm, template_name="wash/manage/di
     })
 
 
-@login_required(login_url='/wash/manage/')
+@login_required(login_url=WASH_MURL)
 def discount_update(request, discount_id, form_class=DiscountForm, template_name="wash/manage/discount_update.html"):
     """
     优惠券修改
@@ -275,7 +276,7 @@ def discount_update(request, discount_id, form_class=DiscountForm, template_name
     return HttpResponseRedirect(reverse("wash.mviews.discount"))
 
 
-@login_required(login_url='/wash/manage/')
+@login_required(login_url=WASH_MURL)
 def order(request, template_name="wash/manage/order.html"):
     """
     订单概览列表
@@ -294,7 +295,7 @@ def order(request, template_name="wash/manage/order.html"):
     })
 
 
-@login_required(login_url='/wash/manage/')
+@login_required(login_url=WASH_MURL)
 def order_detail(request, order_id='0', template_name="wash/manage/order.html"):
     """
     订单概览列表

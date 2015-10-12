@@ -31,6 +31,8 @@ TEMPLATE_DEBUG = DEBUG
 ALLOWED_HOSTS = ['*']
 
 LOGIN_URL = '/account/login/'
+WASH_MURL = '/wash/manage/'
+WASH_URL = '/wash/regist/'
 
 ADMINS = (
     ('zhangbo', '413761980@qq.com'),
@@ -79,6 +81,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.static",
     "django.core.context_processors.tz",
     "django.contrib.messages.context_processors.messages",
+    "common.context_processors.basket",
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -252,6 +255,9 @@ LOGGING = {
         },
     }
 }
+
+SESSION_ENGINE = 'utils.session_backend'
+
 # admin页面时间格式
 DATETIME_FORMAT = 'Y-m-d'
 
