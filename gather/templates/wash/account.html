@@ -1,4 +1,6 @@
 {% extends 'wash/base.html' %}
+{% load staticfiles %}
+
 {% block extra_css %}
 <style>
     .account_img{
@@ -12,6 +14,11 @@
     }
 </style>
 {% endblock %}
+
+{% block title_center %}
+<img class="top-logo" src="{% static 'images/wash/account_title.png' %}" width="100">
+{% endblock %}
+
 {% block content %}
     <div class="list-group">
         <div href="#" class="list-group-item">

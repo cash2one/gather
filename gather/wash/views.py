@@ -78,14 +78,13 @@ def order(request, template_name="wash/order.html"):
     :param request:
     :return:
     """
-    print request.user.username
-    profile = request.user.wash_profile
+    #profile = request.user.wash_profile
     wash_list = basket_info(request)
     price_sum = reduce(lambda x, y: x+y, [wash['count']*wash['new_price']for wash in wash_list])
     address = UserAddress.objects.filter(user=profile, is_default=True)
     return render(request, template_name, {
         'address': address,
-        'profile': profile,
+        #'profile': profile,
         'wash_list': wash_list,
         'price_sum': price_sum,
     })
@@ -158,7 +157,7 @@ def verify_code(request):
                 user = authenticate(remote_user=phone)
                 user.backend = 'django.contrib.auth.backends.ModelBackend'
                 login(request, user)
-                return HttpResponse(json.dumps({"result": True, 'msg': u'success'}))
+                return HttpResponse(json.dumps({"result": True, 'msg': 'login'}))
             else:
                 rest = REST()
                 if VerifyCode.objects.filter(phone=phone, is_expire=False).exists():

@@ -63,6 +63,7 @@
             $("#send_err").css("display", "block");
         }else{
             $("#verify_code").addClass("disabled");
+            $("#verify_code").html("发送中...");
         }
         $.ajax({
             type: 'post',
@@ -72,6 +73,7 @@
             success: function(data) {
                 if(data['result']){
                     $("#send_succ").css("display", "block");
+                    location.href = '/wash/';
                 }else{
                     $("#send_err").html(data['msg']);
                     $("#send_err").css("display", "block");
