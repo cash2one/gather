@@ -36,6 +36,10 @@ class UserRestrictMiddleware(object):
 class ClickLogMiddleWare(object):
     def process_request(self, request):
         """ 用户点击纪录"""
+        # 增加sessionid
+        if not request.session.get('has_session'):
+            request.session['has_session'] = True
+
         if request.user.is_authenticated():
             username = request.user.username
             ClickLog(

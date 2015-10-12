@@ -6,6 +6,7 @@ import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.db.models import Sum
 
 
 class WashUserProfile(models.Model):
@@ -184,16 +185,16 @@ class Basket(models.Model):
 
     @classmethod
     def is_sessionid_exist(cls, sessionid):
-        return cls.objects.filter(sessionid=sessionid).exists()
+        return cls.objects.filter(sessionid=sessionid, is_valid=True).exists()
 
     @classmethod
     def is_wash_exist(cls, sessionid, wash_id):
-        return cls.objects.filter(sessionid=sessionid, wash_id=wash_id).exists()
+        return cls.objects.filter(sessionid=sessionid, wash_id=wash_id, is_valid=True).exists()
 
     @classmethod
     def update(cls, sessionid, wash_id, flag='add'):
         if cls.is_wash_exist(sessionid, wash_id):
-            basket = Basket.objects.get(sessionid=sessionid, wash_id=wash_id)
+            basket = Basket.objects.get(sessionid=sessionid, wash_id=wash_id, is_valid=True)
             if flag == 'add':
                 basket.count += 1
             else:
@@ -204,7 +205,7 @@ class Basket(models.Model):
     @classmethod
     def get_list(cls, sessionid):
         if cls.is_sessionid_exist(sessionid):
-            baskets = cls.objects.filter(sessionid=sessionid)
+            baskets = cls.objects.filter(sessionid=sessionid, is_valid=True, count__gt=0)
             basket_dict = {}
             for basket in baskets:
                 basket_dict[basket.wash_id] = basket.count
@@ -212,6 +213,14 @@ class Basket(models.Model):
         else:
             return {}
 
+    @classmethod
+    def total(cls, sessionid):
+        t = cls.objects.filter(sessionid=sessionid, is_valid=True).aggregate(Sum('count'))['count__sum']
+        return t if t is not None else 0
+
+    @classmethod
+    def submit(cls, user, sessionid):
+        pass
 
 class Order(models.Model):
     """ 订单概览"""

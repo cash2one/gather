@@ -12,5 +12,10 @@ urlpatterns = patterns('wash.views',
 
     url(r'^account/$', 'account', name='wash_account'),
     url(r'^order/$', 'order', name='wash_order'),
-    url(r'^order/update/$', 'order_update', name='wash_order_update'),
+    url(r'^basket/$', 'basket', name='wash_basket'),
+    url(r'^basket/update/$', 'basket_update', name='wash_basket_update'),
+
+    url(r'^user/address/$', 'user_address', name='wash_user_address'),
+    url(r'^user/address/add/$', 'user_address_add', name='wash_user_address_add'),
+    url(r'^user/address/update/(?P<address_id>\d+)/$', 'user_address_update', name='wash_user_address_update'),
 )

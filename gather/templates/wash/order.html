@@ -1,0 +1,93 @@
+{% extends 'wash/base.html' %}
+{% block extra_css %}
+    <style>
+        .order-img{
+            height:90px;
+            width:80px;
+        }
+        .bs-callout-danger {
+            border-left-color: #ce4844;
+        }
+        .bs-callout {
+            -moz-border-bottom-colors: none;
+            -moz-border-left-colors: none;
+            -moz-border-right-colors: none;
+            -moz-border-top-colors: none;
+            border-color: #eee;
+            border-image: none;
+            border-radius: 3px;
+            border-style: solid;
+            border-width: 1px 1px 1px 5px;
+            margin: 20px 0;
+            padding: 10px;
+        }
+    </style>
+{% endblock %}
+
+{% block title_left %}
+    <a href="{% url 'wash_basket' %}"><img class="label_img" src="/static/images/wash/label_left.png" /></a>
+{% endblock %}
+
+{% block content %}
+    <div class="panel panel-default">
+      <div class="bs-callout bs-callout-danger">
+        <div class="media">
+            <div class="media-left">
+                <span class="glyphicon glyphicon-map-marker" aria-hidden="true" style="margin-top:15px;"></span>
+            </div>
+            <div class="media-body">
+                <table>
+                    <tr>
+                        <td>收货人：张博</td>
+                        <td class="text-right">15866109318</td>
+                    </tr>
+                    <tr colspan="2">
+                        <td>收货地址：山东菏泽曹县鼓楼家园</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="media-right text-right">
+                <a href="{% url 'wash_user_address' %}"><img class="label_img" src="/static/images/wash/label_right.png"  style="margin-top:10px;"/></a>
+            </div>
+        </div>
+      </div>
+    </div>
+    {% for wash in wash_list %}
+    <div class="container-fluid" style="border-bottom:solid 1px #CCCCCC;margin-top:10px;">
+        <div clss="row well">
+            <div class="col-xs-3 text-left">
+                <a href="#">
+                    <img class="order-img" src="{{ wash.photo }}" alt="...">
+                </a>
+            </div>
+            <div class="col-xs-4">
+                <h4 class="media-heading text-left">{{ wash.belong }}</h4>
+                <label class="media-heading">{{ wash.name }}</label>
+                <h4>
+                    <label style="color:red">￥</label><label class="media-heading" name="price" value="{{ wash.id }}">{{ wash.new_price }}</label>元({{ wash.measure }})
+                </h4>
+            </div>
+            <div class="col-xs-5 text-right" style="margin-top:20%">
+                x{{ wash.count }}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    <div class="text-right" style="margin:20px;">
+        <h4>合计:<span class="label label-danger">{{ price_sum }}</span>元</h4>
+    </div>
+
+{% endblock %}
+
+{% block bottom %}
+<nav class="main-nav am-topbar am-topbar-fixed-bottom">
+    <div class="text-center">
+        <h4 style="color:green">
+             下单<span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
+        </h4>
+    </div>
+
+</nav>
+{% endblock %}
+
+{% block show %}on{% endblock %}

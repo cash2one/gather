@@ -24,7 +24,7 @@ class RegistForm(forms.Form):
         super(RegistForm, self).__init__(*args, **kwargs)
         self._request = request
 
-    phone = forms.CharField(label='手机号', max_length=11, widget=forms.TextInput(attrs={'placeholder': '请输入手机号', 'class': 'form-control'}), error_messages={'required': '请输入手机号'})
+    phone = forms.IntegerField(label='手机号', widget=forms.TextInput(attrs={'placeholder': '请输入手机号', 'class': 'form-control'}), error_messages={'required': '请输入手机号'})
     code = forms.CharField(label='密码', widget=forms.PasswordInput(render_value=False), error_messages={'required': '请输入验证码'})
 
     def clean_phone(self):

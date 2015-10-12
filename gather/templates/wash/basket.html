@@ -1,0 +1,60 @@
+{% extends 'wash/base.html' %}
+{% block extra_css %}
+    <style>
+        .order-img{
+            height:90px;
+            width:80px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    {% for wash in wash_arr %}
+    <div class="container-fluid" style="border-bottom:solid 1px #CCCCCC;margin-top:10px;">
+        <div clss="row">
+            <div class="col-xs-3 text-left">
+                <a href="#">
+                    <img class="order-img" src="{{ wash.photo }}" alt="...">
+                </a>
+            </div>
+            <div class="col-xs-4">
+                <h4 class="media-heading text-left">{{ wash.belong }}</h4>
+                <label class="media-heading">{{ wash.name }}</label>
+                <h4>
+                    <label style="color:red">￥</label><label class="media-heading" name="price" value="{{ wash.id }}">{{ wash.new_price }}</label>元({{ wash.measure }})
+                </h4>
+            </div>
+            <div class="col-xs-5 text-right">
+                <button type="button" class="btn btn-default btn-sm" onclick="order_minus({{ wash.id }})">
+                  <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+                </button>
+                <label id="wash_count_{{ wash.id }}">
+                    {{ wash.count }}
+                </label>
+                <button type="button" class="btn btn-default btn-sm" onclick="order_add({{ wash.id }})">
+                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    <div class="row" style="margin:20px;">
+        <div class="col-xs-9 text-right">
+            <h4>合计<span class="label label-danger" id="price_total">0</span>元</h4>
+        </div>
+        <div class="col-xs-3 text-left">
+            <a href="{% url 'wash_order' %}" class="btn btn-success btn-lg">提交</a>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block show %}on{% endblock %}
+
+{% block extra_js %}
+<script src="/static/scripts/wash/order.js"></script>
+<script>
+price_sum()
+</script>
+{% endblock %}

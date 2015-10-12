@@ -10,13 +10,13 @@
         {% csrf_token %}
         <div class="row-fluid">
             <div class="col-xs-12">
-                {{ form.phone }}
+                <input type="number" placeholder="请输入手机号" name="phone" id="id_phone" class="form-control">
             </div>
         </div>
         <br>
         <div class="row-fluid" style="margin-top:20px;">
            <div class="col-xs-8">
-              <input class="form-control" name="code" id="input_code" type="text" placeholder="验证码">
+              <input class="form-control" name="code" id="input_code" type="number" placeholder="验证码">
            </div>
             <div class="col-xs-4">
               <button type="button" class="btn btn-info" id="verify_code">获取验证码</button>
