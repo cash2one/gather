@@ -1,4 +1,5 @@
 {% extends 'wash/base.html' %}
+{% load staticfiles %}
 {% block extra_css %}
     <style>
         .order-img{
@@ -22,6 +23,10 @@
             padding: 10px;
         }
     </style>
+{% endblock %}
+
+{% block title_center %}
+<img class="top-logo" src="{% static 'images/wash/basket.png' %}" width="100">
 {% endblock %}
 
 {% block title_left %}
