@@ -1,0 +1,140 @@
+{% extends 'wash/base.html' %}
+
+{% block extra_css %}
+<style>
+    .form-control {
+        position: relative;
+        height: auto;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        padding: 10px;
+        font-size: 16px;
+    }
+    .form-control:focus {
+        z-index: 2;
+    }
+    input {
+        margin-bottom: -1px;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    </style>
+{% endblock %}
+
+{% block title_center %}
+<img class="top-logo" src="/static/images/wash/basket.png" width="100">
+{% endblock %}
+
+{% block title_left %}
+    <a href="{% url 'wash_order' %}"><img class="label_img" src="/static/images/wash/label_left.png" /></a>
+{% endblock %}
+
+{% block content %}
+<form action="." method="post" id="address_form">
+    {% csrf_token %}
+    <table width="100%" class="table">
+        <tr>
+            <td>
+                <input type="text" placeholder="收货人姓名" name="name" id="id_name" class="form-control"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="number" placeholder="手机号码" name="phone" id="id_phone" class="form-control"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <select name="province">
+                    <option value="北京">北京</option>
+                </select>
+                <select name="city">
+                    <option value="北京">北京</option>
+                </select>
+                <select name="country" id="id_country">
+                    {% for c in countrys %}
+                    <option value="{{ c.id }}">{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+                <select name="street" id="id_street">
+                    {% for s in streets %}
+                    <option value="{{ s.name }}">{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <textarea name="mark" class="form-control" id="id_mark" rows="3" placeholder="详细地址"></textarea>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<div class="alert alert-danger text-center" role="alert" style="display:none" id="err">
+        网络错误, 请重试!
+</div>
+{% endblock %}
+
+{% block show %}on{% endblock %}
+
+{% block bottom %}
+<nav class="main-nav am-topbar am-topbar-fixed-bottom" style="background-color:#FF6600 ">
+    <div class="text-center">
+        <h4 style="color:white;margin-top:15px;" onclick="order()">
+             保存
+        </h4>
+    </div>
+
+</nav>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function order(){
+        $("#err").css('display', 'none');
+        var name = $("#id_name").val();
+        var phone = $("#id_phone").val();
+        var mark = $("#id_mark").val();
+        if(name.length == 0){
+            $("#err").css('display', '');
+            $("#err").html('请输入姓名');
+        }else if(isNaN(phone) || phone.length != 11){
+            $("#err").css('display', '');
+            $("#err").html('手机格式错误');
+        }else if(mark.length == 0){
+            $("#err").css('display', '');
+            $("#err").html('请输入详细地址');
+        }else{
+            $("#address_form").submit();
+        }
+    };
+
+    $("#id_country").change(function(){
+        var pid = $(this).val();
+        $.ajax({
+            type: 'get',
+            dataType: "json",
+            url: "{% url 'wash_address_street'%}?pid="+pid,
+            success: function(data) {
+                if(data['result']){
+                    var html = "";
+                    for(var i=0;i<data['info'].length;i++){
+                        html += "<option value='"+ data['info'][i] +"'>"+ data['info'][i] +"</option>"
+                    }
+                    $("#id_street").html(html);
+                }else{
+                    $("#err").css("display", "block");
+                }
+            },
+            error: function(){
+                $("#err").css("display", "block");
+            }
+        });
+    });
+</script>
+{% endblock %}
+
+

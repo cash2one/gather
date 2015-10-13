@@ -17,5 +17,6 @@ urlpatterns = patterns('wash.views',
 
     url(r'^user/address/$', 'user_address', name='wash_user_address'),
     url(r'^user/address/add/$', 'user_address_add', name='wash_user_address_add'),
+    url(r'^address/street/$', 'address_street', name='wash_address_street'),
     url(r'^user/address/update/(?P<address_id>\d+)/$', 'user_address_update', name='wash_user_address_update'),
 )

@@ -32,10 +32,15 @@ class WashUserProfile(models.Model):
 
 class Address(models.Model):
     """ 省市县"""
-    province = models.CharField('省份', max_length=20)
-    city = models.CharField('城市', max_length=20)
-    country = models.CharField('镇', max_length=20, null=True)
-    street = models.CharField('街道', max_length=50, null=True)
+    pid = models.IntegerField('省份')
+    name = models.CharField('名称', max_length=255)
+
+    @classmethod
+    def get_name(cls, id):
+        try:
+            return cls.objects.get(pk=id).name
+        except:
+            return ''
 
 
 class IndexBanner(models.Model):
@@ -88,16 +93,31 @@ class VerifyCode(models.Model):
 class UserAddress(models.Model):
     """ 用户地址"""
     user = models.ForeignKey(WashUserProfile, related_name='addresses')
-    province = models.CharField('省份', max_length=20)
-    city = models.CharField('城市', max_length=20)
-    country = models.CharField('镇', max_length=20, null=True)
-    street = models.CharField('街道', max_length=50, null=True)
-    mark = models.CharField('备注', max_length=100, null=True)
+    name = models.CharField('姓名', max_length=255)
+    phone = models.CharField('电话', max_length=20)
+    province = models.CharField('省份', max_length=100)
+    city = models.CharField('城市', max_length=100)
+    country = models.CharField('镇', max_length=100, null=True)
+    street = models.CharField('街道', max_length=255, null=True)
+    mark = models.CharField('详细地址', max_length=255, null=True)
     is_default = models.BooleanField('是否是默认地址', default=False)
 
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
     updated = models.DateTimeField('最后更新时间', auto_now=True)
 
+    def detail(self):
+        return u"{} {} {} {} {}".format(self.province, self.city, self.country, self.street, self.mark)
+
+    @classmethod
+    def has_default(cls, user):
+        return cls.objects.filter(user=user, is_default=True).exists()
+
+    @classmethod
+    def get_default(cls, user):
+        try:
+            return cls.objects.get(user=user, is_default=True)
+        except:
+            return None
 
 class WashType(models.Model):
     """ 洗刷类型"""
@@ -224,6 +244,11 @@ class Basket(models.Model):
 
 class Order(models.Model):
     """ 订单概览"""
+    SERVICE_TIME_CHOICE = (
+        (0, '上午'),
+        (1, '下午')
+    )
+
     user = models.ForeignKey(WashUserProfile, related_name='orders')
     address = models.ForeignKey(UserAddress, related_name='order_address')
     discount = models.ForeignKey(Discount, related_name='order_discount', null=True)
@@ -232,6 +257,8 @@ class Order(models.Model):
     pay_method = models.IntegerField('付款方式', choices=STATUS, default=1)
     service_begin = models.DateTimeField('服务开始时间', blank=True, null=True)
     service_end = models.DateTimeField('服务结束时间', blank=True, null=True)
+    service_time = models.DateTimeField('要求服务时间', blank=True, null=True)
+    am_pm = models.IntegerField('时间段', choices=SERVICE_TIME_CHOICE, default=0)
     pay_date = models.DateTimeField('付款日期', blank=True, null=True)
     status = models.IntegerField('订单状态', choices=STATUS, default=1)
 
