@@ -35,7 +35,7 @@
                 <input type="number" placeholder="请输入手机号" name="phone" id="id_phone" class="form-control">
             </div>
         </div>
-        <br>
+        <br><br>
         <div class="row-fluid" style="margin-top:20px;">
            <div class="col-xs-8">
               <input class="form-control" name="code" id="input_code" type="number" placeholder="验证码">
@@ -95,7 +95,9 @@
             success: function(data) {
                 if(data['result']){
                     $("#send_succ").css("display", "block");
-                    location.href = '/wash/';
+                    if(data['msg'] == 'login'){
+                        location.href = '/wash/';
+                    }
                 }else{
                     $("#send_err").html(data['msg']);
                     $("#send_err").css("display", "block");
