@@ -15,24 +15,22 @@ VOICE_LOG = logging.getLogger('voice_verify')
 
 
 class REST:
-    
-    #online
-    #AccountSid='8a48b5514700da2f01471919c13c0618'
-    #AccountToken='40d4cbc29e7a4a55a548c685993fa7cc'
-    #AppId='8a48b55148874bfb01488c85bec101f4'
 
-    #test
+    if settings.DEBUG:
+        # test
+        ServerIP = 'sandboxapp.cloopen.com'
+    else:
+        # online
+        ServerIP = 'app.cloopen.com'
+
+    AppId = 'aaf98f894fd44d15014fd59e8a1202f9'
     AccountSid = '8a48b5514fd49643014fd59022a804c9'
     AccountToken = '8de3a7195bd14fd991b320eb771fead9'
-    AppId = 'aaf98f894fd44d15014fd59e8a1202f9'
-    
     SubAccountSid=''
     SubAccountToken=''
     VoIPAccount=''
     VoIPPassword=''
-    #ServerIP='app.cloopen.com'
 
-    ServerIP = 'sandboxapp.cloopen.com'
     ServerPort = '8883'
     SoftVersion = '2013-12-26'
     Iflog = True #是否打印日志

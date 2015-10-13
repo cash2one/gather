@@ -1,0 +1,55 @@
+{% extends 'wash/base.html' %}
+
+{% block title_center %}
+<img class="top-logo" src="/static/images/wash/basket.png" width="100">
+{% endblock %}
+
+{% block title_left %}
+    <a href="{% url 'wash_order' %}"><img class="label_img" src="/static/images/wash/label_left.png" /></a>
+{% endblock %}
+
+{% block content %}
+<div class="list-group">
+    {% for address in addresses %}
+      <div class="list-group-item {% if address.is_default %}disabled{% endif %}">
+          <div class="row">
+              <div class="col-xs-10">
+                  <table>
+                        <tr>
+                            <td width="80px;">收货人：</td>
+                            <td>{{ address.name }}</td>
+                            <td class="text-right">{{ address.phone }}</td>
+                        </tr>
+                        <tr>
+                            <td>收货地址：</td>
+                            <td colspan="2">
+                                {% if address.is_default %}[默认]{% endif %}{{ address.detail }}
+                            </td>
+                        </tr>
+                  </table>
+              </div>
+              {% if address.is_default %}
+              <div class="col-xs-2">
+                  <span class="glyphicon glyphicon-ok-sign" aria-hidden="true" style="margin-top:10px;"></span>
+              </div>
+              {% endif %}
+          </div>
+      </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block show %}on{% endblock %}
+
+{% block bottom %}
+<nav class="main-nav am-topbar am-topbar-fixed-bottom">
+    <div class="text-center">
+        <h4 style="color:green">
+             <a href="{% url 'wash_user_address_add' %}"><span class="label label-danger">新增地址</span></a>
+        </h4>
+    </div>
+
+</nav>
+{% endblock %}
+
+

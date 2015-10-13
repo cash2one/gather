@@ -70,6 +70,12 @@ class RegistForm(forms.Form):
 
         return self.cleaned_data
 
+    def login(self):
+        phone = self.cleaned_data['phone']
+        user = authenticate(remote_user=phone)
+        user.backend = 'django.contrib.auth.backends.ModelBackend'
+        login(self._request, user)
+
 
 class WashTypeForm(forms.ModelForm):
     """ 洗刷添加表单"""

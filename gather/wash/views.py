@@ -14,7 +14,7 @@ from django.conf import settings
 from django.contrib.auth import login, authenticate
 
 from wash.models import VerifyCode, WashUserProfile, WashType, IndexBanner
-from wash.models import Basket, UserAddress
+from wash.models import Basket, UserAddress, Address
 from wash.forms import RegistForm
 from CCPRestSDK import REST
 from utils import gen_verify_code, adjacent_paginator
@@ -36,6 +36,50 @@ def auto_login(func):
         wrapped.__doc__ = func.__doc__
         wrapped.__name__ = func.__name__
     return wrapped
+
+
+def regist(request, form_class=RegistForm, template_name='wash/regist.html'):
+    if request.method == "POST":
+        form = form_class(request, data=request.POST)
+        if form.is_valid():
+            form.login()
+            return HttpResponseRedirect(reverse('wash.views.index'))
+    else:
+        form = form_class()
+    return render(request, template_name, {
+        'form': form
+    })
+
+
+@csrf_exempt
+def verify_code(request):
+    if request.is_ajax():
+        phone = request.POST.get('phone', '')
+        if len(phone) == 11:
+            if WashUserProfile.objects.filter(phone=phone, is_phone_verified=True).exists():
+                # 临时
+                user = authenticate(remote_user=phone)
+                user.backend = 'django.contrib.auth.backends.ModelBackend'
+                login(request, user)
+                return HttpResponse(json.dumps({"result": True, 'msg': 'login'}))
+            else:
+                rest = REST()
+                if VerifyCode.objects.filter(phone=phone, is_expire=False).exists():
+                    verify = VerifyCode.objects.get(phone=phone, is_expire=False)
+                    if (datetime.datetime.today() - verify.created).seconds > settings.VERIFY_CODE_EXPIRE:
+                        verify_code = gen_verify_code()
+                        verify.is_expire = True
+                        verify.save()
+                        VerifyCode(phone=phone, code=verify_code).save()
+                    else:
+                        verify_code = verify.code
+                else:
+                    verify_code = gen_verify_code()
+                    VerifyCode(phone=phone, code=verify_code).save()
+                result = rest.voice_verify(verify_code, phone)
+                return HttpResponse(json.dumps({'result': result}))
+        return HttpResponse(json.dumps({"result": False, 'msg': u'手机号格式错误'}))
+    return render(request)
 
 
 def index(request, template_name='wash/index.html'):
@@ -78,15 +122,16 @@ def order(request, template_name="wash/order.html"):
     :param request:
     :return:
     """
-    #profile = request.user.wash_profile
+    profile = request.user.wash_profile
     wash_list = basket_info(request)
     price_sum = reduce(lambda x, y: x+y, [wash['count']*wash['new_price']for wash in wash_list])
-    address = UserAddress.objects.filter(user=profile, is_default=True)
+    address = UserAddress.get_default(profile)
     return render(request, template_name, {
         'address': address,
-        #'profile': profile,
+        'profile': profile,
         'wash_list': wash_list,
         'price_sum': price_sum,
+        'today': datetime.datetime.now(),
     })
 
 
@@ -135,47 +180,59 @@ def basket_info(request, washes=None):
     return wash_arr
 
 
-def regist(request, form_class=RegistForm, template_name='wash/regist.html'):
-    if request.method == "POST":
-        form = form_class(data=request.POST)
-        if form.is_valid():
-            return HttpResponseRedirect(reverse('wash.views.index'))
-    else:
-        form = form_class()
+@login_required(login_url=WASH_URL)
+def user_address(request, template_name="wash/address.html"):
+    addresses = UserAddress.objects.all()
     return render(request, template_name, {
-        'form': form
+        'addresses': addresses,
     })
 
 
-@csrf_exempt
-def verify_code(request):
-    if request.is_ajax():
+@login_required(login_url=WASH_URL)
+def user_address_add(request, template_name="wash/address_add.html"):
+    countrys = Address.objects.filter(pid=1101)
+    streets = Address.objects.filter(pid=110101)
+    if request.method == 'POST':
+        country_id = request.POST.get('country', '')
+        country = Address.get_name(country_id)
+        street = request.POST.get('street', '')
+        mark = request.POST.get('mark', '')
+        name = request.POST.get('name', '')
         phone = request.POST.get('phone', '')
-        if len(phone) == 11:
-            if WashUserProfile.objects.filter(phone=phone, is_phone_verified=True).exists():
-                # 临时
-                user = authenticate(remote_user=phone)
-                user.backend = 'django.contrib.auth.backends.ModelBackend'
-                login(request, user)
-                return HttpResponse(json.dumps({"result": True, 'msg': 'login'}))
-            else:
-                rest = REST()
-                if VerifyCode.objects.filter(phone=phone, is_expire=False).exists():
-                    verify = VerifyCode.objects.get(phone=phone, is_expire=False)
-                    if (datetime.datetime.today() - verify.created).seconds > settings.VERIFY_CODE_EXPIRE:
-                        verify_code = gen_verify_code()
-                        verify.is_expire = True
-                        verify.save()
-                        VerifyCode(phone=phone, code=verify_code).save()
-                    else:
-                        verify_code = verify.code
-                else:
-                    verify_code = gen_verify_code()
-                    VerifyCode(phone=phone, code=verify_code).save()
-                result = rest.voice_verify(verify_code, phone)
-                return HttpResponse(json.dumps({'result': result}))
-        return HttpResponse(json.dumps({"result": False, 'msg': u'手机号格式错误'}))
-    return render(request)
+
+        if UserAddress.has_default(request.user.wash_profile):
+            is_default = False
+        else:
+            is_default = True
+        UserAddress(user=request.user.wash_profile,
+                    province=u'北京',
+                    city=u'北京',
+                    name=name,
+                    phone=phone,
+                    country=country,
+                    street=street,
+                    mark=mark,
+                    is_default=is_default).save()
+        return HttpResponseRedirect(reverse('wash.views.user_address'))
+    return render(request, template_name, {
+        'countrys': countrys,
+        'streets': streets,
+    })
+
+
+def address_street(request):
+    if request.is_ajax():
+        pid = request.GET.get('pid', 0)
+        streets = Address.objects.filter(pid=pid)
+        street_arr = []
+        for street in streets:
+            street_arr.append(street.name)
+        return HttpResponse(json.dumps({'result': True, 'info': street_arr}))
+
+
+@login_required(login_url=WASH_URL)
+def user_address_update(request, template_name="wash/address_update.html"):
+    return render(request, template_name)
 
 
 #@auto_login
@@ -185,21 +242,6 @@ def account(request, template_name='wash/account.html'):
     return render(request, template_name, {
         #'profile', profile
     })
-
-
-def user_address(request, template_name="address.html"):
-    return render(request, template_name)
-
-
-def user_address_add(request, template_name="address_add.html"):
-    return render(request, template_name)
-
-
-def user_address_update(request, template_name="address_update.html"):
-    return render(request, template_name)
-
-
-
 
 
 

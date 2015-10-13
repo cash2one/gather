@@ -1,5 +1,27 @@
 {% extends 'wash/base.html' %}
 
+{% block extra_css %}
+<style>
+    .form-control {
+        position: relative;
+        height: auto;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        padding: 10px;
+        font-size: 16px;
+    }
+    .form-control:focus {
+        z-index: 2;
+    }
+    input {
+        margin-bottom: -1px;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+    </style>
+{% endblock %}
+
 {% block content %}
     <div class="list-group">
         <div href="#" class="list-group-item text-center">
@@ -19,13 +41,13 @@
               <input class="form-control" name="code" id="input_code" type="number" placeholder="验证码">
            </div>
             <div class="col-xs-4">
-              <button type="button" class="btn btn-info" id="verify_code">获取验证码</button>
+              <button type="button" class="btn btn-info" id="verify_code" style="margin-top:5px;">获取验证码</button>
            </div>
         </div>
         <br>
         <div class="row-fluid" style="margin-top:40px;margin-bottom:100px;">
            <div class="col-xs-12">
-               <button type="submit" class="btn btn-success btn-lg btn-block">注册</button>
+               <button type="submit" class="btn btn-success btn-lg btn-block">登录</button>
            </div>
         </div>
     </form>

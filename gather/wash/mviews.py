@@ -60,7 +60,7 @@ def manage_index(request, template_name="wash/manage/base.html"):
 
 @login_required(login_url=WASH_MURL)
 def user_list(request, template_name="wash/manage/user_list.html"):
-    user_list = WashUserProfile.objects.all()
+    user_list = WashUserProfile.objects.all().order_by("-updated")
     return render(request, template_name, {
         'user_list': user_list,
     })
@@ -94,7 +94,7 @@ def model_del(request, model_type, type_id):
 
 @login_required(login_url=WASH_MURL)
 def wash_img(request, template_name='wash/manage/index_imgs.html'):
-    img_list = IndexBanner.objects.all()
+    img_list = IndexBanner.objects.all().order_by("-updated")
     imgs, page_numbers = adjacent_paginator(img_list, page=request.GET.get('page', 1))
 
     return render(request, template_name, {
@@ -156,7 +156,7 @@ def wash_type(request, template_name="wash/manage/wash_type.html"):
     :param template_name:
     :return:
     """
-    wash_list = WashType.objects.all()
+    wash_list = WashType.objects.all().order_by("-updated")
     wash_types, page_numbers = adjacent_paginator(wash_list, page=request.GET.get('page', 1))
     return render(request, template_name, {
         'wash_types': wash_types,
@@ -221,7 +221,7 @@ def discount(request, template_name="wash/manage/discount.html"):
     :param template_name:
     :return:
     """
-    discounts_list = Discount.objects.all()
+    discounts_list = Discount.objects.all().order_by("-updated")
     discounts, page_numbers = adjacent_paginator(discounts_list, page=request.GET.get('page', 1))
 
     return render(request, template_name, {
@@ -286,7 +286,7 @@ def order(request, template_name="wash/manage/order.html"):
     """
     if request.method == "POST":
         pass
-    orders = Order.objects.all()
+    orders = Order.objects.all().order_by("-updated")
     order_list, page_numbers = adjacent_paginator(orders, page=request.GET.get('page', 1))
 
     return render(request, template_name, {
