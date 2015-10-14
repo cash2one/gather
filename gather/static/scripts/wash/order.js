@@ -32,14 +32,14 @@ function get_show_info(belong){
                                         "<div class='col-xs-3 text-left'>"+
                                             "<a href='#'><img class='order-img' src='"+ d['photo'] +"' alt='...'></a>"+
                                         "</div>"+
-                                        "<div class='col-xs-4'>"+
+                                        "<div class='col-xs-5'>"+
                                            "<h4 class='media-heading text-left'>"+ d['name'] +"</h4>"+
                                             "<label class='media-heading'>"+ d['belong'] +"</label>"+
                                             "<h4>"+
                                                 "<label style='color:red'>￥</label><label class='media-heading'>"+ d['new_price'] +"</label>元("+ d['measure'] +")"+
                                             "</h4>"+
                                         "</div>"+
-                                        "<div class='col-xs-5 text-right'>"+
+                                        "<div class='col-xs-4 text-right'>"+
                                             "<button type='button' class='btn btn-default btn-sm' style='margin-right:4px;' onclick='order_minus("+ d['id'] +")'>"+
                                               "<span class='glyphicon glyphicon-minus' aria-hidden='true'></span>"+
                                              " </button><label id='wash_count_"+ d['id'] +"'>"+ d['count']+"</label><button type='button' class='btn btn-default btn-sm add' style='margin-left:4px;' onclick='order_add("+ d['id'] +")'>"+

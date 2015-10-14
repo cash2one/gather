@@ -22,16 +22,21 @@
 {% block content %}
     <div class="list-group">
         <div href="#" class="list-group-item">
-            <img class="account_img" src="/static/images/wash/head.png"/>
-            <a>登录</a>&nbsp;/&nbsp;<a>注册</a>
+            {% if profile %}
+                <img class="img-circle" src="/static/img/av1.png" style="width: 64px; height: 64px;"/>
+                <label>{{ profile.phone }}</label>
+            {% else %}
+                <img class="account_img" src="/static/images/wash/head.png"/>
+                <a href="{% url 'wash_regist' %}">登录</a>&nbsp;/&nbsp;<a href="{% url 'wash_regist' %}">注册</a>
+            {% endif %}
        </div>
     </div>
     <div class="list-group">
-       <a href="#" class="list-group-item">
+       <!--<a href="#" class="list-group-item">
           <img class="account_img" src="/static/images/wash/account.png"/>账户信息
           <img class="label_img" src="/static/images/wash/label_right.png" />
-       </a>
-       <a href="#" class="list-group-item">
+       </a>-->
+       <a href="{% url 'wash_user_address'%}" class="list-group-item">
           <img class="account_img" src="/static/images/wash/address.png"/>管理地址
           <img class="label_img" src="/static/images/wash/label_right.png" />
        </a>
@@ -43,6 +48,19 @@
           <img class="account_img" src="/static/images/wash/discount.png"/>优惠券
           <img class="label_img" src="/static/images/wash/label_right.png"/>
        </a>
+    </div>
+
+    <div class="list-group">
+        <div class="list-group-item">
+          <div class="media text-center">
+                <span class="glyphicon glyphicon-phone-alt" aria-hidden="true" style="margin-top:12px;"></span>
+                咨询电话:18510912695
+          </div>
+        </div>
+    </div>
+
+    <div class="text-center" style="margin-top:50px;">
+        <label style="bold;color:grey">北京兰香丽洁&nbsp;&nbsp;版权所有</label>
     </div>
 {% endblock %}
 

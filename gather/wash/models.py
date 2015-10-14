@@ -113,9 +113,12 @@ class UserAddress(models.Model):
         return cls.objects.filter(user=user, is_default=True).exists()
 
     @classmethod
-    def get_default(cls, user):
+    def get_default(cls, user, choose=None):
         try:
-            return cls.objects.get(user=user, is_default=True)
+            if choose is None:
+                return cls.objects.get(user=user, is_default=True)
+            else:
+                return cls.objects.get(user=user, id=choose)
         except:
             return None
 
@@ -177,22 +180,6 @@ class Discount(models.Model):
         self.save()
 
 
-STATUS = (
-    (0, u'未付款'),
-    (1, u'已付款,未处理'),
-    (2, u'已处理, 取货中'),
-    (3, u'清洗中'),
-    (4, u'清洗完毕, 派送中'),
-    (5, u'交易结束'),
-    (6, u'交易失败'),
-    (7, u'已过期'),
-)
-
-PAY = (
-    (0, '微信'),
-    (1, '货到付款')
-)
-
 class Basket(models.Model):
     """ 购物车"""
     sessionid = models.CharField('sessionid', max_length=255, null=True)
@@ -239,8 +226,26 @@ class Basket(models.Model):
         return t if t is not None else 0
 
     @classmethod
-    def submit(cls, user, sessionid):
-        pass
+    def submit(cls, sessionid):
+        cls.objects.filter(sessionid=sessionid).update(is_valid=False)
+
+
+PAY = (
+    (0, '微信'),
+    (1, '货到付款')
+)
+
+STATUS = (
+    (0, u'未付款'),
+    (1, u'已付款,未处理'),
+    (2, u'已处理, 取货中'),
+    (3, u'清洗中'),
+    (4, u'清洗完毕, 派送中'),
+    (5, u'交易结束'),
+    (6, u'交易失败'),
+    (7, u'已过期'),
+)
+
 
 class Order(models.Model):
     """ 订单概览"""
