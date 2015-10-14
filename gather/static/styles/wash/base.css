@@ -1,5 +1,4 @@
 html, body, .main {
-        background: #f2f2f2;
         }
 
         a:focus,
@@ -153,7 +152,6 @@ html, body, .main {
         left: 0;
         top: 51px;
         bottom: 51px;
-        overflow: hidden;
         }
         .main .order-now{
         position: absolute;

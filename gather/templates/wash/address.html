@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block title_left %}
-    <a href="{% url 'wash_order' %}"><img class="label_img" src="/static/images/wash/label_left.png" /></a>
+    <a href="{% url 'wash_account' %}"><img class="label_img" src="/static/images/wash/label_left.png" /></a>
 {% endblock %}
 
 {% block content %}
@@ -45,7 +45,7 @@
 <nav class="main-nav am-topbar am-topbar-fixed-bottom">
     <div class="text-center">
         <h4 style="color:green">
-             <a href="{% url 'wash_user_address_add' %}"><span class="label label-danger">新增地址</span></a>
+             <a href="{% url 'wash_user_address_add' %}?place=account"><span class="label label-danger">新增地址</span></a>
         </h4>
     </div>
 

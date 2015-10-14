@@ -14,7 +14,7 @@ from django.conf import settings
 from django.contrib.auth import login, authenticate
 
 from wash.models import VerifyCode, WashUserProfile, WashType, IndexBanner
-from wash.models import Basket, UserAddress, Address
+from wash.models import Basket, UserAddress, Address, Order, OrderDetail
 from wash.forms import RegistForm
 from CCPRestSDK import REST
 from utils import gen_verify_code, adjacent_paginator
@@ -85,7 +85,6 @@ def verify_code(request):
 def index(request, template_name='wash/index.html'):
     img_list = IndexBanner.objects.filter(is_show=True).order_by("index")
     imgs, page_numbers = adjacent_paginator(img_list, page=request.GET.get('page', 1))
-
     return render(request, template_name, {
         'imgs': imgs,
         'page_numbers': page_numbers
@@ -125,7 +124,24 @@ def order(request, template_name="wash/order.html"):
     profile = request.user.wash_profile
     wash_list = basket_info(request)
     price_sum = reduce(lambda x, y: x+y, [wash['count']*wash['new_price']for wash in wash_list])
-    address = UserAddress.get_default(profile)
+
+    if request.method == "POST":
+        address_id = request.POST.get('address_id')
+        service_time = request.POST.get('service_time')
+        am_pm = request.POST.get('am_pm')
+        mark = request.POST.get('mark')
+
+        order = Order(user=profile, address_id=address_id, mark=mark,
+                      money=price_sum, service_time=service_time, am_pm=am_pm)
+        order.save()
+        for wash in wash_list:
+            OrderDetail(order=order, wash_type_id=wash['id'],
+                        count=wash['count'], price=wash['new_price']).save()
+        Basket.submit(request.session.session_key)
+        return HttpResponseRedirect(reverse('wash.views.user_order'))
+    else:
+        choose = request.GET.get('choose', None)
+        address = UserAddress.get_default(profile, choose)
     return render(request, template_name, {
         'address': address,
         'profile': profile,
@@ -152,6 +168,7 @@ def basket_update(request):
 
 
 def get_show_info(request):
+    # 洗刷清单页
     belong = request.GET.get('belong', '2')
     wash_list = WashType.objects.filter(belong=belong)
     washes, page_numbers = adjacent_paginator(wash_list, page=request.GET.get('page', 1))
@@ -159,9 +176,9 @@ def get_show_info(request):
 
 
 def basket_info(request, washes=None):
+    # 组装预购数据, 同时可用来反馈用户选择了哪些商品
     sessionid = request.session.session_key
     basket_list = Basket.get_list(sessionid)
-
     if washes is None:
         washes = WashType.objects.filter(id__in=basket_list.keys())
 
@@ -189,9 +206,15 @@ def user_address(request, template_name="wash/address.html"):
 
 
 @login_required(login_url=WASH_URL)
+def user_address_select(request, template_name="wash/address_select.html"):
+    addresses = UserAddress.objects.all()
+    return render(request, template_name, {
+        'addresses': addresses,
+    })
+
+
+@login_required(login_url=WASH_URL)
 def user_address_add(request, template_name="wash/address_add.html"):
-    countrys = Address.objects.filter(pid=1101)
-    streets = Address.objects.filter(pid=110101)
     if request.method == 'POST':
         country_id = request.POST.get('country', '')
         country = Address.get_name(country_id)
@@ -214,13 +237,19 @@ def user_address_add(request, template_name="wash/address_add.html"):
                     mark=mark,
                     is_default=is_default).save()
         return HttpResponseRedirect(reverse('wash.views.user_address'))
+    else:
+        countrys = Address.objects.filter(pid=1101)
+        streets = Address.objects.filter(pid=110101)
+        place = request.GET.get('place')
     return render(request, template_name, {
         'countrys': countrys,
         'streets': streets,
+        'place': place,
     })
 
 
 def address_street(request):
+    # ajax获取街道信息
     if request.is_ajax():
         pid = request.GET.get('pid', 0)
         streets = Address.objects.filter(pid=pid)
@@ -238,11 +267,21 @@ def user_address_update(request, template_name="wash/address_update.html"):
 #@auto_login
 def account(request, template_name='wash/account.html'):
     user = request.user
-    #profile = WashUserProfile.objects.get(user=user)
+    if user.is_authenticated():
+        profile = WashUserProfile.objects.get(user=user)
+    else:
+        profile = None
     return render(request, template_name, {
-        #'profile', profile
+        'profile': profile
     })
 
 
+@login_required(login_url=WASH_URL)
+def user_order(request, template_name="my_order.html"):
+    return render(request, template_name)
 
+
+@login_required(login_url=WASH_URL)
+def user_discount(request, template_name="my_order.html"):
+    return render(request, template_name)
 

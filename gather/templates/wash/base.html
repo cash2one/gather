@@ -34,7 +34,9 @@
         </div>
         <div class="col-xs-4">
             {% block title_center %}
-            <img class="top-logo" src="{% static 'images/wash/top_logo.png' %}" width="100">
+            <a href="{% url 'wash_show' %}">
+                <img class="top-logo" src="{% static 'images/wash/top_logo.png' %}" width="100">
+            </a>
             {% endblock %}
         </div>
         <div class="col-xs-4 text-center">
@@ -55,6 +57,9 @@
     {% endblock %}
     {% block content %}
     {% endblock %}
+    <br>
+    <br>
+    <br>
 </div>
 
 {% block bottom %}

@@ -16,7 +16,12 @@ urlpatterns = patterns('wash.views',
     url(r'^basket/update/$', 'basket_update', name='wash_basket_update'),
 
     url(r'^user/address/$', 'user_address', name='wash_user_address'),
+    url(r'^user/address/select/$', 'user_address_select', name='wash_user_address_select'),
     url(r'^user/address/add/$', 'user_address_add', name='wash_user_address_add'),
     url(r'^address/street/$', 'address_street', name='wash_address_street'),
     url(r'^user/address/update/(?P<address_id>\d+)/$', 'user_address_update', name='wash_user_address_update'),
+
+    url(r'^user/order/$', 'user_order', name='wash_user_order'),
+    url(r'^user/discount/$', 'user_discount', name='wash_user_discount'),
+
 )

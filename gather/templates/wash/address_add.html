@@ -28,7 +28,11 @@
 {% endblock %}
 
 {% block title_left %}
-    <a href="{% url 'wash_order' %}"><img class="label_img" src="/static/images/wash/label_left.png" /></a>
+    {% if place == 'select' %}
+    <a href="{% url 'wash_user_address_select' %}"><img class="label_img" src="/static/images/wash/label_left.png" /></a>
+    {% else %}
+    <a href="{% url 'wash_user_address' %}"><img class="label_img" src="/static/images/wash/label_left.png" /></a>
+    {% endif %}
 {% endblock %}
 
 {% block content %}
