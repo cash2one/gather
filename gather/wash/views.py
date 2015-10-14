@@ -199,7 +199,7 @@ def basket_info(request, washes=None):
 
 @login_required(login_url=WASH_URL)
 def user_address(request, template_name="wash/address.html"):
-    addresses = UserAddress.objects.all()
+    addresses = UserAddress.objects.filter(user=request.user.wash_profile)
     return render(request, template_name, {
         'addresses': addresses,
     })
@@ -207,7 +207,7 @@ def user_address(request, template_name="wash/address.html"):
 
 @login_required(login_url=WASH_URL)
 def user_address_select(request, template_name="wash/address_select.html"):
-    addresses = UserAddress.objects.all()
+    addresses = UserAddress.objects.filter(user=request.user.wash_profile)
     return render(request, template_name, {
         'addresses': addresses,
     })
