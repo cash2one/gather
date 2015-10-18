@@ -6,6 +6,8 @@ from django.conf.urls import patterns, url
 
 urlpatterns = patterns('wash.views',
     url(r'^$', 'index', name='wash_index'),
+    url(r'^code/$', 'verify_code_img', name='verify_code_img'),
+    url(r'^check_code/$', 'verify_code_check', name='verify_code_check'),
     url(r'^show/$', 'show', name='wash_show'),
     url(r'^regist/$', 'regist', name='wash_regist'),
     url(r'^verify/$', 'verify_code', name='wash_verify'),

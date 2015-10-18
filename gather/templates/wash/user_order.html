@@ -1,0 +1,69 @@
+{% extends 'wash/base.html' %}
+{% load staticfiles %}
+
+{% block extra_css %}
+<style>
+    body, .main{
+        background-color: #DDDDDD ;
+    }
+</style>
+{% endblock %}
+
+{% block title_left %}
+    <a href="{% url 'wash_account' %}"><img class="label_img" src="/static/images/wash/label_left.png" /></a>
+{% endblock %}
+
+{% block title_center %}
+    <a href="{% url 'wash_show' %}">
+        <img class="top-logo" src="{% static 'images/wash/basket.png' %}" width="100">
+    </a>
+{% endblock %}
+
+{% block content %}
+{% if orders %}
+    {% for order in orders %}
+    <ul class="list-group">
+      <li class="list-group-item">
+          <div class="row">
+              <div class="col-xs-6 text-left">
+                  {{ order.created|date:'Y年m月d日'}}
+              </div>
+              <div class="col-xs-6 text-right">
+                  <label style="color:red">{{ order.status }}</label>
+              </div>
+          </div>
+      </li>
+      <li class="list-group-item">
+          {% for wash in order.detail %}
+            <div class="container-fluid" style="margin-top:10px;border-bottom:1px solid #CCCCCC">
+                <div clss="row">
+                    <div class="col-xs-3 text-left">
+                        <a href="#">
+                            <img class="order-img" src="{{ wash.photo }}" alt="...">
+                        </a>
+                    </div>
+                    <div class="col-xs-6">
+                        <h4 class="media-heading text-left">{{ wash.name }}</h4>
+                        <label class="media-heading">{{ wash.belong }}</label>
+                        <h4>
+                            <label style="color:red">￥</label><label class="media-heading" name="price" value="{{ wash.id }}">{{ wash.price }}</label>元({{ wash.measure }})
+                        </h4>
+                    </div>
+                    <div class="col-xs-3 text-right" style="margin-top:20%">
+                        x{{ wash.count }}
+                    </div>
+                </div>
+            </div>
+          {% endfor %}
+      </li>
+      <li class="list-group-item text-right">
+          共{{ order.count }}件衣物 合计:&nbsp;￥<label style="bold">{{ order.money }}</label>元
+      </li>
+    </ul>
+    {% endfor %}
+{% else %}
+无订单
+{% endif %}
+{% endblock %}
+
+{% block account %}on{% endblock %}

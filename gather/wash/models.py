@@ -42,6 +42,12 @@ class Address(models.Model):
         except:
             return ''
 
+    @classmethod
+    def get_id(cls, name):
+        try:
+            return cls.objects.get(name=name).id
+        except:
+            return ''
 
 class IndexBanner(models.Model):
     """ 首页轮播图"""
@@ -237,7 +243,7 @@ PAY = (
 
 STATUS = (
     (0, u'未付款'),
-    (1, u'已付款,未处理'),
+    (1, u'已提交,未处理'),
     (2, u'已处理, 取货中'),
     (3, u'清洗中'),
     (4, u'清洗完毕, 派送中'),
@@ -274,9 +280,18 @@ class Order(models.Model):
 class OrderDetail(models.Model):
     """ 订单详情"""
     order = models.ForeignKey(Order, related_name='order_general')
-    wash_type = models.ForeignKey(WashType, related_name='order_wash_type')
+    wash_type_id = models.IntegerField()
     count = models.IntegerField('数量', default=0)
     price = models.IntegerField('购买时价格', default=0)
+    name = models.CharField('名称', max_length=50)
+    measure = models.IntegerField('单位', choices=WashType.MEASURE, default=1)
+    belong = models.IntegerField('所属', choices=WashType.WASH_TYPE, default=1)
+    photo = models.CharField('图片', max_length=255)
 
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
     updated = models.DateTimeField('最后更新时间', auto_now=True)
+
+    def get_photo_url(self):
+        if self.photo:
+            return "http://7xkqb1.com1.z0.glb.clouddn.com/{}".format(self.photo)
+        return "/static/img/av1.png"

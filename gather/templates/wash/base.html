@@ -10,7 +10,7 @@
     <meta http-equiv="Pragma" content="no-cache"/>
     <meta http-equiv="Expires" content="0"/>
 
-    <title>我来洗</title>
+    <title>我要洗鞋、洗衣</title>
 
     <meta content="洗衣，o2o" name="keywords"/>
     <meta content="一站式管家服务"
@@ -18,7 +18,7 @@
     <link rel="stylesheet" type="text/css" href="/static/styles/wash/amazeui.min.css">
     <link rel="stylesheet" type="text/css" href="/static/styles/wash/iconfont.css?v=1.0.0"/>
     <link rel="stylesheet" type="text/css" href="/static/styles/wash/base.css"/>
-    <link rel="stylesheet" type="text/css" href="/static/styles/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/styles/bootstrap.css"/>
     {% block extra_css %}
     {% endblock %}
 
@@ -40,6 +40,7 @@
             {% endblock %}
         </div>
         <div class="col-xs-4 text-center">
+            {% block title_right %}
             <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
             <a href="{% url 'wash_basket' %}">
             {% if total == 0 %}
@@ -48,6 +49,7 @@
             <span class="badge btn-sm" id="order_count" style="z-index:100;position:absolute;background-color:red;margin-top:5px;margin-left:-30px">{{ total }}</span>
             {% endif %}
             </a>
+            {% endblock %}
         </div>
     </div>
 </header>

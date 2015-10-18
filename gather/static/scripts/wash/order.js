@@ -29,10 +29,36 @@ function get_show_info(belong){
                     var d = Data['result'][i];
                     var html = "<div class='container-fluid' style='border-bottom:solid 1px #CCCCCC;margin-top:10px;'>"+
                                     "<div clss='row'>"+
-                                        "<div class='col-xs-3 text-left'>"+
+                                        "<div class='col-xs-2 text-left'>"+
                                             "<a href='#'><img class='order-img' src='"+ d['photo'] +"' alt='...'></a>"+
                                         "</div>"+
-                                        "<div class='col-xs-5'>"+
+                                         "<div class='col-xs-10'>"+
+                                            "<div clss='row'>"+
+                                                "<div class='col-xs-5 text-left'>"+
+                                                    "<h4 class='media-heading'>"+ d['name']+"</h4>"+
+                                                    "<label class='media-heading'>"+ d['belong']+"</label>"+
+                                                "</div>"+
+                                                "<div class='col-xs-7 text-right'>"+
+                                                    "<button type='button' class='btn btn-default btn-sm' style='margin-right:4px;' onclick='order_minus("+ d['id']+")'>"+
+                                                      "<span class='glyphicon glyphicon-minus' aria-hidden='true'></span>"+
+                                                    "</button>"+
+                                                    "<label id='wash_count_"+ d['id']+"'>"+ d['count']+
+                                                    "</label>"+
+                                                    "<button type='button' class='btn btn-default btn-sm' onclick='order_add("+ d['id']+")' style='margin-left:4px;'>"+
+                                                      "<span class='glyphicon glyphicon-plus' aria-hidden='true'></span>"+
+                                                    "</button>"+
+                                                "</div>"+
+                                            "</div>"+
+                                            "<div clss='row'>"+
+                                                "<div class='col-xs-12 text-left'>"+
+                                                    "<h4>"+
+                                                        "<label style='color:red'>￥</label><label class='media-heading'>"+ d['new_price']+"</label>元("+ d['measure']+")"+
+                                                    "</h4>"+
+                                                "</div>"+
+                                            "</div>"+
+                                        "</div></div></div>"
+
+                                        /*"<div class='col-xs-5'>"+
                                            "<h4 class='media-heading text-left'>"+ d['name'] +"</h4>"+
                                             "<label class='media-heading'>"+ d['belong'] +"</label>"+
                                             "<h4>"+
@@ -43,7 +69,7 @@ function get_show_info(belong){
                                             "<button type='button' class='btn btn-default btn-sm' style='margin-right:4px;' onclick='order_minus("+ d['id'] +")'>"+
                                               "<span class='glyphicon glyphicon-minus' aria-hidden='true'></span>"+
                                              " </button><label id='wash_count_"+ d['id'] +"'>"+ d['count']+"</label><button type='button' class='btn btn-default btn-sm add' style='margin-left:4px;' onclick='order_add("+ d['id'] +")'>"+
-                                             "<span class='glyphicon glyphicon-plus' aria-hidden='true'></span></button></div></div>";
+                                             "<span class='glyphicon glyphicon-plus' aria-hidden='true'></span></button></div></div>";*/
                     $("#wash_"+belong).append(html);
                 }
             } else {
