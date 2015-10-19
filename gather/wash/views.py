@@ -18,6 +18,7 @@ from wash.models import Basket, UserAddress, Address, Order, OrderDetail
 from wash.forms import RegistForm
 from CCPRestSDK import REST
 from utils import gen_verify_code, adjacent_paginator
+from utils.verify import Code
 
 WASH_URL = settings.WASH_URL
 
@@ -36,6 +37,20 @@ def auto_login(func):
         wrapped.__doc__ = func.__doc__
         wrapped.__name__ = func.__name__
     return wrapped
+
+
+def verify_code_img(request):
+    """ 更改验证码"""
+    code = Code(request)
+    code.type = 'word'
+    return code.display()
+
+
+def verify_code_check(request):
+    """ 检测验证码"""
+    code = Code(request)
+    input_code = request.GET.get('code', '')
+    return HttpResponse(json.dumps(code.check(input_code)))
 
 
 def regist(request, form_class=RegistForm, template_name='wash/regist.html'):
@@ -136,7 +151,9 @@ def order(request, template_name="wash/order.html"):
         order.save()
         for wash in wash_list:
             OrderDetail(order=order, wash_type_id=wash['id'],
-                        count=wash['count'], price=wash['new_price']).save()
+                        count=wash['count'], price=wash['new_price'],
+                        photo=wash['photo'], measure=wash['measure_id'],
+                        name=wash['name'], belong=wash['belong_id']).save()
         Basket.submit(request.session.session_key)
         return HttpResponseRedirect(reverse('wash.views.user_order'))
     else:
@@ -191,6 +208,8 @@ def basket_info(request, washes=None):
         w['old_price'] = wash.old_price
         w['measure'] = wash.get_measure_display()
         w['belong'] = wash.get_belong_display()
+        w['measure_id'] = wash.measure
+        w['belong_id'] = wash.belong
         w['photo'] = wash.get_photo_url()
         w['count'] = basket_list.get(wash.id, 0)
         wash_arr.append(w)
@@ -199,9 +218,11 @@ def basket_info(request, washes=None):
 
 @login_required(login_url=WASH_URL)
 def user_address(request, template_name="wash/address.html"):
+    place = request.GET.get('place', 'account')
     addresses = UserAddress.objects.filter(user=request.user.wash_profile)
     return render(request, template_name, {
         'addresses': addresses,
+        'place': place,
     })
 
 
@@ -222,6 +243,7 @@ def user_address_add(request, template_name="wash/address_add.html"):
         mark = request.POST.get('mark', '')
         name = request.POST.get('name', '')
         phone = request.POST.get('phone', '')
+        place = request.POST.get('place', 'account')
 
         if UserAddress.has_default(request.user.wash_profile):
             is_default = False
@@ -234,13 +256,17 @@ def user_address_add(request, template_name="wash/address_add.html"):
                     phone=phone,
                     country=country,
                     street=street,
-                    mark=mark,
+                    mark=mark.strip(),
                     is_default=is_default).save()
-        return HttpResponseRedirect(reverse('wash.views.user_address'))
+        if place == 'account':
+            redirect = 'wash.views.user_address'
+        else:
+            redirect = 'wash.views.user_address_select'
+        return HttpResponseRedirect(reverse(redirect))
     else:
         countrys = Address.objects.filter(pid=1101)
         streets = Address.objects.filter(pid=110101)
-        place = request.GET.get('place')
+        place = request.GET.get('place', 'account')
     return render(request, template_name, {
         'countrys': countrys,
         'streets': streets,
@@ -260,8 +286,46 @@ def address_street(request):
 
 
 @login_required(login_url=WASH_URL)
-def user_address_update(request, template_name="wash/address_update.html"):
-    return render(request, template_name)
+def user_address_update(request, address_id, template_name="wash/address_update.html"):
+    try:
+        address = UserAddress.objects.get(id=address_id)
+    except UserAddress.DoesNotExist:
+        return HttpResponseRedirect(reverse('wash.views.user_address'))
+
+    if request.method == "POST":
+        place = request.POST.get('place', 'account')
+        country_id = request.POST.get('country', '')
+        country = Address.get_name(country_id)
+        street = request.POST.get('street', '')
+        mark = request.POST.get('mark', '')
+        name = request.POST.get('name', '')
+        phone = request.POST.get('phone', '')
+        is_default = request.POST.get('is_default', '0')
+        if is_default == '1':
+            profile = request.user.wash_profile
+            if UserAddress.has_default(profile):
+                default = UserAddress.get_default(profile)
+                default.is_default = 0
+                default.save()
+            address.is_default = is_default
+        address.country = country
+        address.street = street
+        address.mark = mark
+        address.phone = phone
+        address.name = name
+        address.save()
+        return HttpResponseRedirect('%s?place=%s' % (reverse('wash.views.user_address'), place))
+    else:
+        place = request.GET.get('place', 'account')
+        countrys = Address.objects.filter(pid=1101)
+        streets = Address.objects.filter(pid=Address.get_id(address.country))
+
+    return render(request, template_name, {
+        'address': address,
+        'place': place,
+        'countrys': countrys,
+        'streets': streets,
+    })
 
 
 #@auto_login
@@ -277,11 +341,46 @@ def account(request, template_name='wash/account.html'):
 
 
 @login_required(login_url=WASH_URL)
-def user_order(request, template_name="my_order.html"):
-    return render(request, template_name)
+def user_order(request, template_name="wash/user_order.html"):
+    profile = request.user.wash_profile
+
+    order_list = Order.objects.filter(user=profile).order_by('-created')
+    order_id_arr = list(set([order.id for order in order_list]))
+    order_detail_list = OrderDetail.objects.filter(order_id__in=order_id_arr)
+
+    detail_dict = {}
+    for detail in order_detail_list:
+        d = {
+            'id': detail.id,
+            'count': detail.count,
+            'price': detail.price,
+            'photo': detail.photo,
+            'belong': detail.get_belong_display(),
+            'measure': detail.get_measure_display(),
+            'name': detail.name,
+        }
+        if detail.order_id in detail_dict:
+            detail_dict[detail.order_id].append(d)
+        else:
+            detail_dict[detail.order_id] = [d]
+
+    orders = []
+    for order in order_list:
+        o = {}
+        o['id'] = order.id
+        o['money'] = order.money
+        o['created'] = order.created
+        o['status'] = order.get_status_display()
+        o['detail'] = detail_dict.get(order.id, [])
+        o['count'] = sum(d['count'] for d in detail_dict.get(order.id, []))
+        orders.append(o)
+
+    return render(request, template_name, {
+        'orders': orders,
+    })
 
 
 @login_required(login_url=WASH_URL)
-def user_discount(request, template_name="my_order.html"):
+def user_discount(request, template_name="wash/user_order.html"):
     return render(request, template_name)
 

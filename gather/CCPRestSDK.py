@@ -16,12 +16,12 @@ VOICE_LOG = logging.getLogger('voice_verify')
 
 class REST:
 
-    if settings.DEBUG:
+    #if settings.DEBUG:
         # test
-        ServerIP = 'sandboxapp.cloopen.com'
-    else:
+    ServerIP = 'sandboxapp.cloopen.com'
+    #else:
         # online
-        ServerIP = 'app.cloopen.com'
+    #    ServerIP = 'app.cloopen.com'
 
     AppId = 'aaf98f894fd44d15014fd59e8a1202f9'
     AccountSid = '8a48b5514fd49643014fd59022a804c9'
@@ -33,9 +33,9 @@ class REST:
 
     ServerPort = '8883'
     SoftVersion = '2013-12-26'
-    Iflog = True #是否打印日志
-    Batch = ''  #时间戳
-    BodyType = 'json'#包体格式，可填值：json 、xml
+    Iflog = True  # 是否打印日志
+    Batch = ''  # 时间戳
+    BodyType = 'json'  # 包体格式，可填值：json 、xml
     
     def __init__(self):
         self.ServerIP = REST.ServerIP
@@ -52,7 +52,7 @@ class REST:
     
     def voice_verify(self, verify_code, to):
 
-        if  settings.DEBUG == True:
+        if settings.DEBUG == True:
             return True
         nowdate = datetime.datetime.now()
         self.Batch = nowdate.strftime("%Y%m%d%H%M%S")
@@ -90,9 +90,71 @@ class REST:
             VOICE_LOG.error(traceback.format_exc())
             return False
 
+    # 发送模板短信
+    # @param to  必选参数     短信接收彿手机号码集合,用英文逗号分开
+    # @param datas 可选参数    内容数据
+    # @param tempId 必选参数    模板Id
+    def sendTemplateSMS(self, to, datas, tempId):
+
+        nowdate = datetime.datetime.now()
+        self.Batch = nowdate.strftime("%Y%m%d%H%M%S")
+        # 生成sig
+        signature = self.AccountSid + self.AccountToken + self.Batch
+        sig = md5.new(signature).hexdigest().upper()
+        # 拼接URL
+        url = "https://"+self.ServerIP + ":" + self.ServerPort + "/" + self.SoftVersion + "/Accounts/" + self.AccountSid + "/SMS/TemplateSMS?sig=" + sig
+        # 生成auth
+        src = self.AccountSid + ":" + self.Batch
+        auth = base64.encodestring(src).strip()
+        req = urllib2.Request(url)
+        self.setHttpHeader(req)
+        req.add_header("Authorization", auth)
+        # 创建包体
+        b = ''
+        for a in datas:
+            b += '<data>%s</data>' % (a)
+
+        body ='<?xml version="1.0" encoding="utf-8"?><SubAccount><datas>'+b+'</datas><to>%s</to><templateId>%s</templateId><appId>%s</appId>\
+            </SubAccount>\
+            '%(to, tempId,self.AppId)
+        if self.BodyType == 'json':
+            # if this model is Json ..then do next code
+            b='['
+            for a in datas:
+                b += '"%s",'%(a)
+            b += ']'
+            body = '''{"to": "%s", "datas": %s, "templateId": "%s", "appId": "%s"}'''%(to,b,tempId,self.AppId)
+        req.add_data(body)
+        data=''
+        try:
+            res = urllib2.urlopen(req)
+            data = res.read()
+            res.close()
+
+            if self.BodyType == 'json':
+                # json格式
+                locations = json.loads(data)
+
+            return locations
+        except Exception, error:
+
+            return {'172001': '网络错误'}
+
+    #设置包头
+    def setHttpHeader(self,req):
+        if self.BodyType == 'json':
+            req.add_header("Accept", "application/json")
+            req.add_header("Content-Type", "application/json;charset=utf-8")
+
+        else:
+            req.add_header("Accept", "application/xml")
+            req.add_header("Content-Type", "application/xml;charset=utf-8")
+
+
 def test():
     rest = REST()
-    result = rest.voice_verify('123456', '18510912695')
+    #result = rest.voice_verify('123456', '18510912695')
+    result = rest.sendTemplateSMS('18510912695', [1234, 2], 42221)
     print result
 
 if __name__ == '__main__':

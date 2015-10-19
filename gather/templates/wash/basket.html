@@ -1,36 +1,26 @@
 {% extends 'wash/base.html' %}
 {% load staticfiles %}
 
-{% block extra_css %}
-    <style>
-        .order-img{
-            height:90px;
-            width:80px;
-        }
-    </style>
-{% endblock %}
-
 {% block title_left %}
     <a href="{% url 'wash_show' %}"><img class="label_img" src="/static/images/wash/label_left.png" /></a>
 {% endblock %}
 
 {% block title_center %}
-    <a href="{% url 'wash_show' %}">
-        <img class="top-logo" src="{% static 'images/wash/basket.png' %}" width="100">
-    </a>
+<a href="{% url 'wash_show' %}">
+    <img class="top-logo" src="{% static 'images/wash/basket.png' %}" width="100">
+</a>
 {% endblock %}
-
 
 {% block content %}
     {% for wash in wash_arr %}
     <div class="container-fluid" style="border-bottom:solid 1px #CCCCCC;margin-top:10px;">
         <div clss="row">
-            <div class="col-xs-3 text-left">
+            <div class="col-xs-2 text-left">
                 <a href="#">
                     <img class="order-img" src="{{ wash.photo }}" alt="...">
                 </a>
             </div>
-            <div class="col-xs-5">
+            <!--<div class="col-xs-5">
                 <h4 class="media-heading text-left">{{ wash.name }}</h4>
                 <label class="media-heading">{{ wash.belong }}</label>
                 <h4>
@@ -47,7 +37,35 @@
                 <button type="button" class="btn btn-default btn-sm" onclick="order_add({{ wash.id }})">
                   <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                 </button>
+            </div>-->
+
+            <div class="col-xs-10">
+                <div clss="row">
+                    <div class="col-xs-5 text-left">
+                        <h4 class="media-heading">{{ wash.name }}</h4>
+                        <label class="media-heading">{{ wash.belong }}</label>
+                    </div>
+                    <div class="col-xs-7 text-right">
+                        <button type="button" class="btn btn-default btn-sm" onclick="order_minus({{ wash.id }})">
+                          <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+                        </button>
+                        <label id="wash_count_{{ wash.id }}">
+                            {{ wash.count }}
+                        </label>
+                        <button type="button" class="btn btn-default btn-sm" onclick="order_add({{ wash.id }})">
+                          <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                </div>
+                <div clss="row">
+                    <div class="col-xs-12 text-left">
+                        <h4>
+                            <label style="color:red">￥</label><label class="media-heading" name="price" value="{{ wash.id }}">{{ wash.new_price }}</label>元({{ wash.measure }})
+                        </h4>
+                    </div>
+                </div>
             </div>
+
         </div>
     </div>
     {% endfor %}

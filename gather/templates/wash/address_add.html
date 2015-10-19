@@ -38,6 +38,7 @@
 {% block content %}
 <form action="." method="post" id="address_form">
     {% csrf_token %}
+    <input type="hidden" name="place" value="{{ place }}"/>
     <table width="100%" class="table">
         <tr>
             <td>

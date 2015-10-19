@@ -1,11 +1,13 @@
 # encoding:utf-8
-from django.http import HttpResponse
-from PIL import Image, ImageDraw, ImageFont
+
 import random, StringIO
 import os
+
+from django.http import HttpResponse
+from PIL import Image, ImageDraw, ImageFont
 from math import ceil
 
-from wei import settings
+from gather import settings
 
 
 current_path = os.path.join(settings.BASE_DIR, "static/verify")

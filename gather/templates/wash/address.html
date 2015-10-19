@@ -5,12 +5,17 @@
 {% endblock %}
 
 {% block title_left %}
+    {% if place == 'account'%}
     <a href="{% url 'wash_account' %}"><img class="label_img" src="/static/images/wash/label_left.png" /></a>
+    {% else %}
+    <a href="{% url 'wash_user_address_select' %}"><img class="label_img" src="/static/images/wash/label_left.png" /></a>
+    {% endif %}
 {% endblock %}
 
 {% block content %}
 <div class="list-group">
     {% for address in addresses %}
+    <a href="{% url 'wash_user_address_update' address.id %}?place={{ place }}">
       <div class="list-group-item {% if address.is_default %}disabled{% endif %}">
           <div class="row">
               <div class="col-xs-10">
@@ -30,11 +35,12 @@
               </div>
               {% if address.is_default %}
               <div class="col-xs-2">
-                  <span class="glyphicon glyphicon-ok-sign" aria-hidden="true" style="margin-top:10px;"></span>
+                  <span class="glyphicon glyphicon-ok-sign" aria-hidden="true" style="margin-top:20px;"></span>
               </div>
               {% endif %}
           </div>
       </div>
+    </a>
     {% endfor %}
 </div>
 {% endblock %}
@@ -45,7 +51,7 @@
 <nav class="main-nav am-topbar am-topbar-fixed-bottom">
     <div class="text-center">
         <h4 style="color:green">
-             <a href="{% url 'wash_user_address_add' %}?place=account"><span class="label label-danger">新增地址</span></a>
+             <a href="{% url 'wash_user_address_add' %}?place={{ place }}"><span class="label label-danger">新增地址</span></a>
         </h4>
     </div>
 
