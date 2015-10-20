@@ -38,15 +38,20 @@
                     <td>{{ order.id }}</td>
                     <td>{{ order.user.phone }}</td>
                     <td>{{ order.money }}</td>
-                    <td>{{ order.service_begin }}</td>
-                    <td>{{ order.service_end }}</td>
-                    <td>{{ discount.get_status_display }}</td>
-                    <td>{{ discount.created|date:'Y-m-d H:i:s' }}</td>
+                    <td>{{ order.get_pay_method_display }}</td>
+                    <td>{{ order.service_begin|default:'未开始' }}</td>
+                    <td>{{ order.service_end|default:'未开始' }}</td>
+                    <td>{{ order.get_status_display }}</td>
+                    <td>{{ order.created|date:'Y-m-d H:i:s' }}</td>
                     <td class="hidden-480">
                         <div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
+                            {% if order.discount %}
                             <a class="btn btn-xs btn-info" href="{% url 'manage_discount_update' discount.id %}">
                                 <i class="icon-edit bigger-120"></i>
                             </a>
+                            {% else %}
+                            无
+                            {% endif %}
                         </div>
                     </td>
                 </tr>

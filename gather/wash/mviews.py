@@ -286,17 +286,17 @@ def order(request, template_name="wash/manage/order.html"):
     """
     if request.method == "POST":
         pass
-    orders = Order.objects.all().order_by("-updated")
-    order_list, page_numbers = adjacent_paginator(orders, page=request.GET.get('page', 1))
+    order_list = Order.objects.all().order_by("-updated")
+    orders, page_numbers = adjacent_paginator(order_list, page=request.GET.get('page', 1))
 
     return render(request, template_name, {
-        'order_list': order_detail,
+        'orders': orders,
         'page_number': page_numbers,
     })
 
 
 @login_required(login_url=WASH_MURL)
-def order_detail(request, order_id='0', template_name="wash/manage/order.html"):
+def order_detail(request, order_id='0', template_name="wash/manage/order_detail.html"):
     """
     订单概览列表
     :param request:
@@ -305,13 +305,14 @@ def order_detail(request, order_id='0', template_name="wash/manage/order.html"):
     """
     if request.method == "POST":
         pass
+    print order_id == '0'
     if order_id == '0':
-        details = OrderDetail.objects.all()
+        detail_list = OrderDetail.objects.all().order_by('-created')
     else:
-        details = OrderDetail.objects.filter(order_id=order_id)
+        detail_list = OrderDetail.objects.filter(order_id=order_id)
 
-    detail_list, page_numbers = adjacent_paginator(details, page=request.GET.get('page', 1))
+    details, page_numbers = adjacent_paginator(detail_list, page=request.GET.get('page', 1))
 
     return render(request, template_name, {
-        'detail_list': detail_list,
+        'details': details,
     })
