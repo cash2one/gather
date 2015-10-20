@@ -58,8 +58,9 @@ INSTALLED_APPS = (
     'chatting',
     'wash',
     'wechat',
-    # 'debug_toolbar',
     'djcelery'
+    # 'debug_toolbar',
+
 )
 
 MIDDLEWARE_CLASSES = (
