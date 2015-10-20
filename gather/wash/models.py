@@ -265,7 +265,7 @@ class Order(models.Model):
     discount = models.ForeignKey(Discount, related_name='order_discount', null=True)
     mark = models.CharField('备注', max_length=255, null=True)
     money = models.IntegerField('总价', default=0)
-    pay_method = models.IntegerField('付款方式', choices=STATUS, default=1)
+    pay_method = models.IntegerField('付款方式', choices=PAY, default=1)
     service_begin = models.DateTimeField('服务开始时间', blank=True, null=True)
     service_end = models.DateTimeField('服务结束时间', blank=True, null=True)
     service_time = models.DateTimeField('要求服务时间', blank=True, null=True)

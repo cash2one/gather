@@ -57,9 +57,10 @@ INSTALLED_APPS = (
     'comment',
     'chatting',
     'wash',
-    # 'wechat',
-    # 'debug_toolbar',
+    'wechat',
     'djcelery'
+    # 'debug_toolbar',
+
 )
 
 MIDDLEWARE_CLASSES = (
@@ -280,6 +281,7 @@ BUCKET_NAME = 'gather'
 #APP_SECRET = 'fb1fc7739f1524fd1ca1025c06b1f0a'
 APP_ID = 'wx88c30f037ed63a21'
 APP_SECRET = 'e99b0fc16b49c82e82649e7c4f1f6589'
+SERVER_TOKEN = 'gather'
 
 # 验证码过期时间 2分钟
 VERIFY_CODE_EXPIRE = 120
