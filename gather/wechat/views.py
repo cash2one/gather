@@ -30,8 +30,9 @@ from utils import gen_password
 WASH_URL_EXPIRE = 5 * 60
 WASH_USER_INFO_URL = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token=wash&openid=%s&lang=zh_CN'
 WASH_GET_ACCESS_TOKEN = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s'
-WASH_WEB_GRANT = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_base&state=123#wechat_redirect"
+WASH_WEB_GRANT = "https://open.weixin.qq.com/connect/oauth2/authorize?appid={app_id}&redirect_uri={redirect_uri}&response_type=code&scope=snsapi_base&state=123#wechat_redirect"
 WASH_LOGIN_ID = '777'
+
 
 def get_server_access_token():
     """ 获取微信access_token"""
@@ -229,7 +230,6 @@ def handle_subscribe_msg(msg):
     """ 处理用户关注时的事件"""
     open_id = msg['FromUserName']
     is_exists = WeProfile.objects.filter(open_id=open_id).exists()
-    bind_email_url = settings.SERVER_URL + "/accounts/m/bind_already_user/?open_id=%s" % open_id
 
     if not is_exists:
         user_info = get_userinfo_server_token(open_id)
@@ -246,13 +246,12 @@ def handle_subscribe_msg(msg):
             is_subscribed=True,
             is_binded=False,
         ).save()
-        return response_text_msg(msg, u'欢迎登录乡信！乡信网站用户请先<a href=\"' + unicode(bind_email_url) + u'\">绑定已有帐号</a>或点击下方"我的账户"注册')
+        return response_text_msg(msg, u'欢迎关注我要洗鞋微信平台')
+
     else:
         profile = WeProfile.objects.get(open_id=open_id)
         if profile.is_binded:
-            return response_text_msg(msg, u'欢迎关注乡信微信平台')
-        else:
-            return response_text_msg(msg, u'欢迎登录乡信！乡信网站用户请先<a href=\"' + unicode(bind_email_url) + u'\">绑定已有帐号</a>或点击下方"我的账户"注册')
+            return response_text_msg(msg, u'欢迎关注我要洗鞋微信平台')
 
 
 
@@ -300,14 +299,8 @@ def handle_accounts_reigster(msg):
     we_user = WeProfile.objects.get(open_id=open_id)
     signer = TimestampSigner()
     encrypt_id = base64.b64encode(signer.sign(open_id))
-    if not we_user.is_binded:
-        create_accounts_url = u'\"%s/wechat/create_accounts/?id=%s\"' % (settings.SERVER_URL, encrypt_id)
-        bind_email_url = u'\"%s/wechat/bind_email/?id=%s&i=1\"' % (settings.SERVER_URL, encrypt_id)
-        return response_text_msg(msg, u'<a href=' + create_accounts_url + u'>创建新帐号</a>\n或者\n' + u'<a href=' + bind_email_url +
-                                 u'>绑定已有的乡信帐号></a>')
-    else:
-        bind_email_url = u'\"%s/wechat/bind_email/?id=%s&i=2\"' % (settings.SERVER_URL, encrypt_id)
-        return response_text_msg(msg, u'<a href=' + bind_email_url + u'>重新绑定乡信帐号</a>')
+
+    return response_text_msg(msg, u'欢迎光临')
 
 
 def handle_click(msg):
@@ -397,4 +390,22 @@ def code_get_openid(request):
     else:
         return False, open_id
 
+
+def oauth_get_code(request):
+    """
+    通过oauth获取code
+    :param request:
+    :return:
+    """
+    url = WASH_WEB_GRANT.format(app_id='wx88c30f037ed63a21', redirect_uri='www.baidu.com')
+
+    r = requests.get(url)
+    print r.text
+    r = r.json()
+    print r['openid']
+    return r['openid']
+
+
+if __name__ == '__main__':
+    oauth_get_code('www.baidu.com')
 
