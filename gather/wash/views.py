@@ -32,7 +32,7 @@ def auto_login(func):
             redirect_uri = "http://www.jacsice.cn/wechat/oauth/code/"
             WASH_WEB_GRANT = "https://open.weixin.qq.com/connect/oauth2/authorize?appid={app_id}&redirect_uri={redirect_uri}&response_type=code&scope=snsapi_base&state=123#wechat_redirect".format(app_id=settings.APP_ID, redirect_uri=redirect_uri)
             r = requests.get(WASH_WEB_GRANT)
-            return HttpResponse(r.text)
+            return HttpResponse(r.json())
             if WashUserProfile.user_valid(user):
                 user = authenticate(remote_user=user.username)
                 user.backend = 'django.contrib.auth.backends.ModelBackend'
@@ -102,6 +102,7 @@ def verify_code(request):
         return HttpResponse(json.dumps({"result": False, 'msg': u'手机号格式错误'}))
     return render(request)
 
+@auto_login
 def index(request, template_name='wash/index.html'):
     img_list = IndexBanner.objects.filter(is_show=True).order_by("index")
     imgs, page_numbers = adjacent_paginator(img_list, page=request.GET.get('page', 1))
