@@ -375,8 +375,8 @@ def code_get_openid(request):
     open_id = None
     if code:
         params = {
-            'appid': settings.APPID,
-            'secret': settings.APPSECRET,
+            'appid': settings.APP_ID,
+            'secret': settings.APP_SECRET,
             'code': code,
             'grant_type': 'authorization_code',
         }
