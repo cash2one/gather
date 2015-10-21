@@ -29,7 +29,7 @@ def auto_login(func):
         user = _request.user
         if not user.is_authenticated():
             next = _request.GET.get('next', '/')
-            redirect_uri = "http://www.jacsice.cn/wechat/oauth/code/"
+            redirect_uri = "http://106.185.39.97:8080/wechat/oauth/code/"
             WASH_WEB_GRANT = "https://open.weixin.qq.com/connect/oauth2/authorize?appid={app_id}&redirect_uri={redirect_uri}&response_type=code&scope=snsapi_base&state=123#wechat_redirect".format(app_id=settings.APP_ID, redirect_uri=redirect_uri)
             r = requests.get(WASH_WEB_GRANT)
             return HttpResponse(r.json())
