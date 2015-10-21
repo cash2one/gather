@@ -391,21 +391,3 @@ def code_get_openid(request):
         return False, open_id
 
 
-def oauth_get_code(request):
-    """
-    通过oauth获取code
-    :param request:
-    :return:
-    """
-    url = WASH_WEB_GRANT.format(app_id='wx88c30f037ed63a21', redirect_uri='www.baidu.com')
-
-    r = requests.get(url)
-    print r.text
-    r = r.json()
-    print r['openid']
-    return r['openid']
-
-
-if __name__ == '__main__':
-    oauth_get_code('www.baidu.com')
-
