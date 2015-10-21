@@ -372,6 +372,7 @@ WE_CODE_TO_ACCESS_TOKEN = 'https://api.weixin.qq.com/sns/oauth2/access_token?app
 def code_get_openid(request):
     """ 通过auth的code获取open_id"""
     code = request.GET.get('code', '')
+    print code
     open_id = None
     if code:
         params = {
