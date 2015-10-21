@@ -34,7 +34,6 @@ def auto_login(func):
                               redirect_uri={redirect_uri}&response_type=code&scope=snsapi_base&\
                               state=123#wechat_redirect".format(app_id=settings.APP_ID, redirect_uri=redirect_uri)
             r = requests.get(WASH_WEB_GRANT)
-            print r.text
             if WashUserProfile.user_valid(user):
                 user = authenticate(remote_user=user.username)
                 user.backend = 'django.contrib.auth.backends.ModelBackend'
