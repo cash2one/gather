@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import logging
 import hashlib
 import socket
 import urllib
@@ -33,6 +34,7 @@ WASH_GET_ACCESS_TOKEN = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=clie
 WASH_WEB_GRANT = "https://open.weixin.qq.com/connect/oauth2/authorize?appid={app_id}&redirect_uri={redirect_uri}&response_type=code&scope=snsapi_base&state=123#wechat_redirect"
 WASH_LOGIN_ID = '777'
 
+ERROR_LOG = logging.getLogger('err')
 
 def get_server_access_token():
     """ 获取微信access_token"""
@@ -373,6 +375,8 @@ def code_get_openid(request):
     """ 通过auth的code获取open_id"""
     code = request.GET.get('code', '')
     print "code", code
+    ERROR_LOG.info(code)
+
     open_id = None
     if code:
         params = {
