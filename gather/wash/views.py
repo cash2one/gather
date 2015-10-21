@@ -103,7 +103,6 @@ def verify_code(request):
     return render(request)
 
 
-@auto_login
 def index(request, template_name='wash/index.html'):
     img_list = IndexBanner.objects.filter(is_show=True).order_by("index")
     imgs, page_numbers = adjacent_paginator(img_list, page=request.GET.get('page', 1))
