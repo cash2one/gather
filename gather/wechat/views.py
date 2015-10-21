@@ -385,10 +385,13 @@ def code_get_openid(request):
         try:
             r = r.json()
             open_id = r['openid']
-            return True, open_id
+            #return True, open_id
         except:
-            return False, open_id
+            #return False, open_id
+            pass
     else:
-        return False, open_id
+        #return False, open_id
+        pass
+    return HttpResponse(open_id)
 
 
