@@ -13,6 +13,7 @@
 {% endblock %}
 
 {% block content %}
+{% if addresses %}
 <div class="list-group">
     {% for address in addresses %}
     <a href="{% url 'wash_user_address_update' address.id %}?place={{ place }}">
@@ -43,6 +44,10 @@
     </a>
     {% endfor %}
 </div>
+{% else %}
+<center style="margin-top:100px;" ><a class='btn btn-success' href="{% url 'wash_user_address_add'%}">新增地址</a></center>
+{% endif %}
+
 {% endblock %}
 
 {% block show %}on{% endblock %}

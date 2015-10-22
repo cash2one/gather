@@ -34,7 +34,7 @@
                 </table>
                 {% else %}
                 <div style="margin-top:10px;">
-                    <a href="{% url 'wash_user_address_add'%}" >新建地址</a>
+                    <a href="{% url 'wash_user_address_add'%}?place=select" >新建地址</a>
                 </div>
                 {% endif %}
             </div>
@@ -70,6 +70,12 @@
         <div class="bs-callout bs-callout-danger">
             <div class="media">
                 <textarea class="form-control" rows="3" name="mark" placeholder="请填写注意事项(选填)"></textarea>
+            </div>
+        </div>
+
+        <div class="bs-callout bs-callout-danger">
+            <div class="media">
+               <span class="label label-danger">注意</span> <label style="color:grey">衣服小于六件加收10元运费</label>
             </div>
         </div>
     </form>

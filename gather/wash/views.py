@@ -210,6 +210,9 @@ def order(request, template_name="wash/order.html"):
     profile = request.user.wash_profile
     wash_list = basket_info(request)
     price_sum = reduce(lambda x, y: x+y, [wash['count']*wash['new_price']for wash in wash_list])
+    wash_count = reduce(lambda x, y: x+y, [wash['count'] for wash in wash_list])
+    if wash_count <= 6:
+        price_sum += 10
 
     if request.method == "POST":
         address_id = request.POST.get('address_id')
