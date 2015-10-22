@@ -20,29 +20,59 @@ from wash.forms import RegistForm
 from CCPRestSDK import REST
 from utils import gen_verify_code, adjacent_paginator
 from utils.verify import Code
+from wechat.views import code_get_openid
+from wechat.models import WeProfile
 
 WASH_URL = settings.WASH_URL
+OAUTH_WASH_URL = settings.OAUTH_WASH_URL
 
 
 def auto_login(func):
     def wrapped(_request, *args, **kwargs):
         user = _request.user
         if not user.is_authenticated():
-            next = _request.GET.get('next', '/')
-            redirect_uri = "http://www.jacsice.cn/wechat/oauth/code/"
-            WASH_WEB_GRANT = "https://open.weixin.qq.com/connect/oauth2/authorize?appid={app_id}&redirect_uri={redirect_uri}&response_type=code&scope=snsapi_base&state=123#wechat_redirect".format(app_id=settings.APP_ID, redirect_uri=redirect_uri)
-            r = requests.get(WASH_WEB_GRANT)
-            return HttpResponse(r.text)
-            if WashUserProfile.user_valid(user):
-                user = authenticate(remote_user=user.username)
-                user.backend = 'django.contrib.auth.backends.ModelBackend'
-                login(_request, user)
-            else:
-                return HttpResponseRedirect((reverse('wash.views.regist')))
+            status, open_id = code_get_openid(_request)
+            if status:
+                if WeProfile.objects.filter(open_id=open_id).exists():
+                    profile = WeProfile.objects.get(open_id=open_id)
+                    user =profile.user
+                    if WashUserProfile.user_valid(user):
+                        user = authenticate(remote_user=user.username)
+                        user.backend = 'django.contrib.auth.backends.ModelBackend'
+                        login(_request, user)
+                        return HttpResponseRedirect(_request.GET.get('next', '/wash/'))
+                else:
+                    kwargs['open_id'] = open_id
         return func(_request, *args, **kwargs)
         wrapped.__doc__ = func.__doc__
         wrapped.__name__ = func.__name__
     return wrapped
+
+
+def oauth(request):
+    redirect_uri = request.GET.get('redirect_uri')
+    return HttpResponseRedirect(redirect_uri+"&code=123")
+
+
+def index(request, template_name='wash/index.html'):
+    img_list = IndexBanner.objects.filter(is_show=True).order_by("index")
+    imgs, page_numbers = adjacent_paginator(img_list, page=request.GET.get('page', 1))
+    return render(request, template_name, {
+        'imgs': imgs,
+        'page_numbers': page_numbers
+    })
+
+
+@login_required(login_url=OAUTH_WASH_URL.format(next='/wash/account/'))
+def account(request, template_name='wash/account.html'):
+    user = request.user
+    if user.is_authenticated():
+        profile = WashUserProfile.objects.get(user=user)
+    else:
+        profile = None
+    return render(request, template_name, {
+        'profile': profile
+    })
 
 
 def verify_code_img(request):
@@ -57,19 +87,6 @@ def verify_code_check(request):
     code = Code(request)
     input_code = request.GET.get('code', '')
     return HttpResponse(json.dumps(code.check(input_code)))
-
-
-def regist(request, form_class=RegistForm, template_name='wash/regist.html'):
-    if request.method == "POST":
-        form = form_class(request, data=request.POST)
-        if form.is_valid():
-            form.login()
-            return HttpResponseRedirect(reverse('wash.views.index'))
-    else:
-        form = form_class()
-    return render(request, template_name, {
-        'form': form
-    })
 
 
 @csrf_exempt
@@ -97,18 +114,26 @@ def verify_code(request):
                 else:
                     verify_code = gen_verify_code()
                     VerifyCode(phone=phone, code=verify_code).save()
-                result = rest.voice_verify(verify_code, phone)
+                #result = rest.voice_verify(verify_code, phone)
+                result = rest.sendTemplateSMS(phone, [verify_code, 2], 42221)['statusCode']
+                result = True if result == '000000' else False
                 return HttpResponse(json.dumps({'result': result}))
         return HttpResponse(json.dumps({"result": False, 'msg': u'手机号格式错误'}))
     return render(request)
 
+
 @auto_login
-def index(request, template_name='wash/index.html'):
-    img_list = IndexBanner.objects.filter(is_show=True).order_by("index")
-    imgs, page_numbers = adjacent_paginator(img_list, page=request.GET.get('page', 1))
+def regist(request, form_class=RegistForm, template_name='wash/regist.html', open_id=None):
+    if request.method == "POST":
+        form = form_class(request, data=request.POST)
+        if form.is_valid():
+            form.login()
+            return HttpResponseRedirect(reverse('wash.views.index'))
+    else:
+        form = form_class()
     return render(request, template_name, {
-        'imgs': imgs,
-        'page_numbers': page_numbers
+        'form': form,
+        'open_id': open_id,
     })
 
 
@@ -119,6 +144,46 @@ def show(request, template_name='wash/show.html'):
 
     return render(request, template_name, {
         'wash_arr': wash_arr,
+    })
+
+
+@login_required(login_url=OAUTH_WASH_URL.format(next='/wash/user/order/'))
+def user_order(request, template_name="wash/user_order.html"):
+    profile = request.user.wash_profile
+
+    order_list = Order.objects.filter(user=profile).order_by('-created')
+    order_id_arr = list(set([order.id for order in order_list]))
+    order_detail_list = OrderDetail.objects.filter(order_id__in=order_id_arr)
+
+    detail_dict = {}
+    for detail in order_detail_list:
+        d = {
+            'id': detail.id,
+            'count': detail.count,
+            'price': detail.price,
+            'photo': detail.photo,
+            'belong': detail.get_belong_display(),
+            'measure': detail.get_measure_display(),
+            'name': detail.name,
+        }
+        if detail.order_id in detail_dict:
+            detail_dict[detail.order_id].append(d)
+        else:
+            detail_dict[detail.order_id] = [d]
+
+    orders = []
+    for order in order_list:
+        o = {}
+        o['id'] = order.id
+        o['money'] = order.money
+        o['created'] = order.created
+        o['status'] = order.get_status_display()
+        o['detail'] = detail_dict.get(order.id, [])
+        o['count'] = sum(d['count'] for d in detail_dict.get(order.id, []))
+        orders.append(o)
+
+    return render(request, template_name, {
+        'orders': orders,
     })
 
 
@@ -135,7 +200,7 @@ def basket(request, template_name='wash/basket.html'):
     })
 
 
-@login_required(login_url=WASH_URL)
+@login_required(login_url=OAUTH_WASH_URL.format(next='/wash/order/'))
 def order(request, template_name="wash/order.html"):
     """
     下单
@@ -222,7 +287,7 @@ def basket_info(request, washes=None):
     return wash_arr
 
 
-@login_required(login_url=WASH_URL)
+@login_required(login_url=OAUTH_WASH_URL.format(next='/wash/user/address/'))
 def user_address(request, template_name="wash/address.html"):
     place = request.GET.get('place', 'account')
     addresses = UserAddress.objects.filter(user=request.user.wash_profile)
@@ -232,7 +297,7 @@ def user_address(request, template_name="wash/address.html"):
     })
 
 
-@login_required(login_url=WASH_URL)
+@login_required(login_url=OAUTH_WASH_URL.format(next='/wash/address/select/'))
 def user_address_select(request, template_name="wash/address_select.html"):
     addresses = UserAddress.objects.filter(user=request.user.wash_profile)
     return render(request, template_name, {
@@ -240,7 +305,7 @@ def user_address_select(request, template_name="wash/address_select.html"):
     })
 
 
-@login_required(login_url=WASH_URL)
+@login_required(login_url=OAUTH_WASH_URL.format(next='/wash/address/add/'))
 def user_address_add(request, template_name="wash/address_add.html"):
     if request.method == 'POST':
         country_id = request.POST.get('country', '')
@@ -291,7 +356,7 @@ def address_street(request):
         return HttpResponse(json.dumps({'result': True, 'info': street_arr}))
 
 
-@login_required(login_url=WASH_URL)
+@login_required(login_url=OAUTH_WASH_URL.format(next='/wash/user/address/'))
 def user_address_update(request, address_id, template_name="wash/address_update.html"):
     try:
         address = UserAddress.objects.get(id=address_id)
@@ -331,58 +396,6 @@ def user_address_update(request, address_id, template_name="wash/address_update.
         'place': place,
         'countrys': countrys,
         'streets': streets,
-    })
-
-
-#@auto_login
-def account(request, template_name='wash/account.html'):
-    user = request.user
-    if user.is_authenticated():
-        profile = WashUserProfile.objects.get(user=user)
-    else:
-        profile = None
-    return render(request, template_name, {
-        'profile': profile
-    })
-
-
-@login_required(login_url=WASH_URL)
-def user_order(request, template_name="wash/user_order.html"):
-    profile = request.user.wash_profile
-
-    order_list = Order.objects.filter(user=profile).order_by('-created')
-    order_id_arr = list(set([order.id for order in order_list]))
-    order_detail_list = OrderDetail.objects.filter(order_id__in=order_id_arr)
-
-    detail_dict = {}
-    for detail in order_detail_list:
-        d = {
-            'id': detail.id,
-            'count': detail.count,
-            'price': detail.price,
-            'photo': detail.photo,
-            'belong': detail.get_belong_display(),
-            'measure': detail.get_measure_display(),
-            'name': detail.name,
-        }
-        if detail.order_id in detail_dict:
-            detail_dict[detail.order_id].append(d)
-        else:
-            detail_dict[detail.order_id] = [d]
-
-    orders = []
-    for order in order_list:
-        o = {}
-        o['id'] = order.id
-        o['money'] = order.money
-        o['created'] = order.created
-        o['status'] = order.get_status_display()
-        o['detail'] = detail_dict.get(order.id, [])
-        o['count'] = sum(d['count'] for d in detail_dict.get(order.id, []))
-        orders.append(o)
-
-    return render(request, template_name, {
-        'orders': orders,
     })
 
 

@@ -11,6 +11,7 @@ from django.contrib.auth import login
 
 from account.models import LoginLog
 from wash.models import WashUserProfile, VerifyCode, WashType, Discount, IndexBanner
+from wechat.models import WeProfile
 from utils import gen_info_msg, gen_photo_name
 from qn import Qiniu
 
@@ -55,12 +56,15 @@ class RegistForm(forms.Form):
             return
         phone = self.cleaned_data['phone']
         code = self.cleaned_data['code']
+        open_id = self._request.POST.get('open_id', '')
         if not VerifyCode.code_expire(phone):
             if VerifyCode.code_valid(phone, code):
                 if not WashUserProfile.objects.filter(phone=phone).exists():
                     user, created = User.objects.get_or_create(username=phone)
                     user.set_password("111111")
                     user.save()
+                    if open_id:
+                        WeProfile(user=user, open_id=open_id).save()
                     WashUserProfile(user=user, phone=phone, is_phone_verified=True,
                                     phone_verified_date=datetime.datetime.now()).save()
             else:

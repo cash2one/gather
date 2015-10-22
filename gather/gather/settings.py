@@ -277,11 +277,15 @@ QN_SK = 'i5IfMz2kfMJcSVNmBpyBTebhojJcnY8Pf7fXdjt2'
 BUCKET_NAME = 'gather'
 
 # wechat
-#APP_ID = 'wx307bbb641dbacf6d'
-#APP_SECRET = 'fb1fc7739f1524fd1ca1025c06b1f0a'
+# APP_ID = 'wx307bbb641dbacf6d'
+# APP_SECRET = 'fb1fc7739f1524fd1ca1025c06b1f0a'
 APP_ID = 'wx88c30f037ed63a21'
 APP_SECRET = 'e99b0fc16b49c82e82649e7c4f1f6589'
 SERVER_TOKEN = 'gather'
+DOMAIN_NAME = 'http://www.jacsice.cn/wash/regist/?next='
+# DOMAIN_NAME = 'http://localhost:8000/wash/regist/?next='
+# OAUTH_WASH_URL = 'http://localhost:8000/wash/oauth/?appid='+ APP_ID +'&redirect_uri='+ DOMAIN_NAME +'{next}&response_type=code&scope=snsapi_base&state=123#wechat_redirect'
+OAUTH_WASH_URL = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='+ APP_ID +'&redirect_uri='+ DOMAIN_NAME +'{next}&response_type=code&scope=snsapi_base&state=123#wechat_redirect'
 
 # 验证码过期时间 2分钟
 VERIFY_CODE_EXPIRE = 120

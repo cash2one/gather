@@ -30,6 +30,7 @@
     </div>
     <form action="." method="post">
         {% csrf_token %}
+        <input type="hidden" name="open_id" value="{{ open_id }}"/>
         <div class="row-fluid">
             <div class="col-xs-12">
                 <input type="number" placeholder="请输入手机号" name="phone" id="id_phone" class="form-control">
@@ -75,7 +76,7 @@
     {% endif %}
 
     <div class="alert alert-success text-center" role="alert" style="display:none" id="send_succ">
-        发送成功!您将收到一条&nbsp;&nbsp;<span class="label label-danger">语音</span>&nbsp;&nbsp;验证码
+        发送成功!您将收到一条&nbsp;&nbsp;<span class="label label-danger">短信</span>&nbsp;&nbsp;验证码
     </div>
     <div class="alert alert-danger text-center" role="alert" style="display:none" id="send_err">
         网络错误, 请重试!
