@@ -20,9 +20,6 @@ TEMPLATE_DIRS = os.path.join(BASE_DIR, 'templates')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'q*a@dd=d-d^2p#+$%an3q#d^ww0i3csc)-ev4%nd+4(b72i70x'
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
@@ -130,14 +127,6 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, os.path.join(os.pardir, "media"))
 
 MEDIA_URL = "/media/"
-
-SERVER_EMAIL = 'gather_jacsice@163.com'
-EMAIL_HOST = 'smtp.163.com'
-EMAIL_PORT = 25
-EMAIL_HOST_USER = 'gather_jacsice@163.com'
-EMAIL_HOST_PASSWORD = 'gather_zhangbo'
-# EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'gather_jacsice@163.com'
 
 # logging
 
@@ -270,22 +259,6 @@ CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 BROKER_URL = 'redis://localhost:6379/0'
 CELERY_DISABLE_RATE_LIMITS = True
 # celery worker --app=project.celery:app --loglevel=INFO
-
-# 七牛配置信息
-QN_AK = 'AVcYYJ313VYKHeBW5giWZ1WVXOEZIpB1kN7QlHUo'
-QN_SK = 'i5IfMz2kfMJcSVNmBpyBTebhojJcnY8Pf7fXdjt2'
-BUCKET_NAME = 'gather'
-
-# wechat
-# APP_ID = 'wx307bbb641dbacf6d'
-# APP_SECRET = 'fb1fc7739f1524fd1ca1025c06b1f0a'
-APP_ID = 'wx88c30f037ed63a21'
-APP_SECRET = 'e99b0fc16b49c82e82649e7c4f1f6589'
-SERVER_TOKEN = 'gather'
-DOMAIN_NAME = 'http://www.jacsice.cn/wash/regist/?next='
-# DOMAIN_NAME = 'http://localhost:8000/wash/regist/?next='
-# OAUTH_WASH_URL = 'http://localhost:8000/wash/oauth/?appid='+ APP_ID +'&redirect_uri='+ DOMAIN_NAME +'{next}&response_type=code&scope=snsapi_base&state=123#wechat_redirect'
-OAUTH_WASH_URL = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='+ APP_ID +'&redirect_uri='+ DOMAIN_NAME +'{next}&response_type=code&scope=snsapi_base&state=123#wechat_redirect'
 
 # 验证码过期时间 2分钟
 VERIFY_CODE_EXPIRE = 120
