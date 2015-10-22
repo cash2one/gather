@@ -15,7 +15,7 @@
       <div class="bs-callout bs-callout-danger">
         <div class="media">
             <div class="media-left">
-                <span class="glyphicon glyphicon-map-marker" aria-hidden="true" style="margin-top:13px;"></span>
+                <span class="glyphicon glyphicon-map-marker" aria-hidden="true" style="margin-top:8px;"></span>
             </div>
             <div class="media-body">
                 {% if address %}
@@ -33,7 +33,7 @@
                     </tr>
                 </table>
                 {% else %}
-                <div style="margin-top:10px;">
+                <div style="margin-top:5px;">
                     <a href="{% url 'wash_user_address_add'%}?place=select" >新建地址</a>
                 </div>
                 {% endif %}
@@ -69,13 +69,30 @@
 
         <div class="bs-callout bs-callout-danger">
             <div class="media">
-                <textarea class="form-control" rows="3" name="mark" placeholder="请填写注意事项(选填)"></textarea>
+                <div class="media-left">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true" style="margin-top:5px;"></span>
+                </div>
+                <div class="media-body">
+                    <span class="label label-danger">注意</span> <label style="color:grey">衣服小于六件加收10元运费</label>
+                </div>
             </div>
         </div>
 
         <div class="bs-callout bs-callout-danger">
             <div class="media">
-               <span class="label label-danger">注意</span> <label style="color:grey">衣服小于六件加收10元运费</label>
+                <div class="media-left">
+                    <span class="glyphicon glyphicon-usd" aria-hidden="true" style="margin-top:5px;"></span>
+                </div>
+                <div class="media-body">
+                    付款方式&nbsp;&nbsp;
+                    <input type="radio" checked/> 货到付款
+                </div>
+            </div>
+        </div>
+
+         <div class="bs-callout bs-callout-danger">
+            <div class="media">
+                <textarea class="form-control" rows="3" name="mark" placeholder="请填写注意事项(选填)"></textarea>
             </div>
         </div>
     </form>
