@@ -15,17 +15,15 @@
     <meta content="洗衣，o2o" name="keywords"/>
     <meta content="一站式管家服务"
           name="description"/>
-    <link rel="stylesheet" type="text/css" href="/static/styles/wash/amazeui.min.css">
-    <link rel="stylesheet" type="text/css" href="/static/styles/wash/iconfont.css?v=1.0.0"/>
-    <link rel="stylesheet" type="text/css" href="/static/styles/wash/base.css"/>
-    <link rel="stylesheet" type="text/css" href="/static/styles/bootstrap.css"/>
+    <link rel="stylesheet" type="text/css" href="http://7xkqb1.com1.z0.glb.clouddn.com/base.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/styles/bootstrap.min.css"/>
     {% block extra_css %}
     {% endblock %}
 
 </head>
-<body class="page am-with-topbar-fixed-top">
+<body>
 
-<header class="am-topbar am-topbar-fixed-top am-force-show">
+<header class="am-topbar am-topbar-fixed-top">
     <div class="row">
         <div class="col-xs-4">
             {% block title_left %}
@@ -66,37 +64,29 @@
 
 {% block bottom %}
 <nav class="main-nav am-topbar am-topbar-fixed-bottom">
-    <ul class="am-avg-sm-3">
-        <li class="{% block index %}{% endblock %}">
+    <div class="row">
+        <div class="col-xs-4">
             <a href="{% url 'wash_index' %}" class="item">
-                <i class="am-icon-home am-icon-sm"></i><br/>
-                首页
-            </a>
-        </li>
-        <li class="nav-middle {% block show %}{% endblock %}">
-            <a href="{% url 'wash_show' %}" class="item" id="order_submit">
-                <i class="am-icon-reorder am-icon-sm">
-                </i>
-                <br/>
-                订单
-            </a>
-        </li>
+                <span class="glyphicon glyphicon-home" aria-hidden="true"></span><br/>
+            </a>首页
+        </div>
+        <div class="col-xs-4">
+            <a href="{% url 'wash_show' %}" class="item on" id="order_submit">
+                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span><br/>
+            </a>订单
+        </div>
 
-        <li class="{% block account %}{% endblock %}">
+        <div class="col-xs-4">
             <a href="{% url 'wash_account' %}" class="item">
-                <i class="am-icon-user am-icon-sm"></i><br>
-                我的
-            </a>
-        </li>
-    </ul>
+                <span class="glyphicon glyphicon-user" aria-hidden="true"></span><br/>
+            </a>我的
+        </div>
+    </div>
 </nav>
 {% endblock %}
 
-<script type="text/javascript" src="/static/scripts/wash/jquery2.1.1.min.js"></script>
-<script type="text/javascript" src="/static/scripts/wash/amazeui.min.js"></script>
-<script type="text/javascript" src="/static/scripts/wash/utils.js"></script>
-<script type="text/javascript" src="/static/scripts/wash/tips.js"></script>
-<script type="text/javascript" src="/static/scripts/bootstrap.min.js"></script>
+<script type="text/javascript" src="http://7xkqb1.com1.z0.glb.clouddn.com/jquery.min.js"></script>
+<script type="text/javascript" src="http://7xkqb1.com1.z0.glb.clouddn.com/bootstrap.min.js"></script>
 {% block extra_js %}
 {% endblock %}
 </body>
