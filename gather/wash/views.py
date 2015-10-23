@@ -153,7 +153,7 @@ def show(request, template_name='wash/show.html'):
 def user_order(request, template_name="wash/user_order.html"):
     profile = request.user.wash_profile
 
-    order_list = Order.objects.filter(user=profile).order_by('-created')
+    order_list = Order.objects.filter(user=profile).order_by('-updated')
     order_id_arr = list(set([order.id for order in order_list]))
     order_detail_list = OrderDetail.objects.filter(order_id__in=order_id_arr)
 
