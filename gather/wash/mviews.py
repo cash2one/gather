@@ -285,7 +285,19 @@ def order(request, template_name="wash/manage/order.html"):
     :return:
     """
     if request.method == "POST":
-        pass
+        next = request.POST.get('next', None)
+        oid = request.POST.get('oid', None)
+        cancel = request.POST.get('cancel', None)
+        close = request.POST.get('close', None)
+        print next, cancel, close
+        if next:
+            Order.status_next(oid)
+        if cancel:
+            Order.status_back(oid)
+        if close:
+            Order.status_close(oid, is_buyer=False)
+        messages.info(request, u'更新成功')
+
     order_list = Order.objects.all().order_by("-updated")
     orders, page_numbers = adjacent_paginator(order_list, page=request.GET.get('page', 1))
 
@@ -305,7 +317,6 @@ def order_detail(request, order_id='0', template_name="wash/manage/order_detail.
     """
     if request.method == "POST":
         pass
-    print order_id == '0'
     if order_id == '0':
         detail_list = OrderDetail.objects.all().order_by('-created')
     else:

@@ -22,14 +22,18 @@
 {% block content %}
 {% if orders %}
     {% for order in orders %}
-    <ul class="list-group">
+    <ul class="list-group" style="margin-top:10px;">
       <li class="list-group-item">
           <div class="row">
               <div class="col-xs-6 text-left">
                   {{ order.created|date:'Y年m月d日'}}
               </div>
               <div class="col-xs-6 text-right">
-                  <label style="color:red">{{ order.status }}</label>
+                  {% if order.status_id == 7 %}
+                  <label style="color:grey">{{ order.status }}</label>
+                  {% else %}
+                  <label style="color:orange">{{ order.status }}</label>
+                  {% endif %}
               </div>
           </div>
       </li>
@@ -55,9 +59,15 @@
                 </div>
             </div>
           {% endfor %}
+          <div class="text-right" style="margin-top:10px;">
+              共{{ order.count }}件 合计:&nbsp;￥<label style="bold">{{ order.money }}</label>元(含运费￥10.00)
+          </div>
       </li>
       <li class="list-group-item text-right">
-          共{{ order.count }}件衣物 合计:&nbsp;￥<label style="bold">{{ order.money }}</label>元
+          {% if order.status_id == 1 %}
+          <a href="{% url 'wash_user_order_cancel' order.id %}" class="btn btn-default">取消</a>
+          {% endif %}
+          <a href="{% url 'wash_user_order_detail' order.id %}" class="btn btn-info">交易记录</a>
       </li>
     </ul>
     {% endfor %}

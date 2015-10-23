@@ -25,6 +25,8 @@ urlpatterns = patterns('wash.views',
     url(r'^user/address/update/(?P<address_id>\d+)/$', 'user_address_update', name='wash_user_address_update'),
 
     url(r'^user/order/$', 'user_order', name='wash_user_order'),
+    url(r'^user/order/detail/(?P<order_id>\d+)/$', 'user_order_detail', name='wash_user_order_detail'),
+    url(r'^user/order/cancel/(?P<order_id>\d+)/$', 'user_order_cancel', name='wash_user_order_cancel'),
     url(r'^user/discount/$', 'user_discount', name='wash_user_discount'),
 
 )

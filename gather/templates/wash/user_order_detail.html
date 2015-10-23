@@ -1,0 +1,37 @@
+{% extends 'wash/base.html' %}
+
+{% block title_center %}
+<img class="top-logo" src="/static/images/wash/basket.png" width="100">
+{% endblock %}
+
+{% block title_left %}
+    <a href="{% url 'wash_user_order' %}"><img class="label_img" src="/static/images/wash/label_left.png" /></a>
+{% endblock %}
+
+{% block content %}
+<div class="text-center" style="margin-top:20px;">
+    <span class="glyphicon glyphicon-time" aria-hidden="true"></span>&nbsp;&nbsp;订单记录
+</div>
+{% for log in logs %}
+<div class="bs-callout bs-callout-danger text-center" style="margin:5px;">
+    <label style="color:{% if forloop.counter == 1 %}green{% else %}grey{% endif %}">
+        {{ log.get_status_display }}
+        {{ log.created|date:'Y-m-d H:i:s' }}
+    </label>
+</div>
+<div class="text-center">
+    <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+</div>
+{% endfor %}
+<div class="bs-callout bs-callout-danger text-center" style="margin:5px;">
+    <label style="color:{% if logs %}grey{% else %}green{% endif %}">
+        订单创建
+        {{ order.created|date:'Y-m-d H:i:s' }}
+    </label>
+</div>
+{% endblock %}
+
+
+
+
+

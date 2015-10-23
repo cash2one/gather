@@ -244,12 +244,15 @@ PAY = (
 STATUS = (
     (0, u'未付款'),
     (1, u'已提交,未处理'),
-    (2, u'已处理, 取货中'),
-    (3, u'清洗中'),
+    (2, u'确认,取货中'),
+    (3, u'已取,清洗中'),
     (4, u'清洗完毕, 派送中'),
     (5, u'交易结束'),
     (6, u'交易失败'),
-    (7, u'已过期'),
+    (7, u'买家取消交易'),
+    (8, u'卖家取消交易'),
+    (9, u'已过期'),
+
 )
 
 
@@ -276,6 +279,45 @@ class Order(models.Model):
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
     updated = models.DateTimeField('最后更新时间', auto_now=True)
 
+    @classmethod
+    def exists(cls, oid):
+        return cls.objects.filter(pk=oid).exists()
+
+    @classmethod
+    def status_next(cls, oid):
+        if cls.exists(oid):
+            order = Order.objects.get(pk=oid)
+            if order.status < 5:
+                param = {
+                    'status': order.status+1
+                }
+                if order.status == 1:
+                    param['service_begin'] = datetime.datetime.now()
+                if order.status == 4:
+                    param['service_end'] = datetime.datetime.now()
+
+                cls.objects.filter(pk=oid).update(**param)
+                OrderLog.create(oid, order.status+1)
+
+    @classmethod
+    def status_back(cls, oid):
+        if cls.exists(oid):
+            order = Order.objects.get(pk=oid)
+            if order.status > 1 and order.status < 5:
+                cls.objects.filter(pk=oid).update(status=order.status-1)
+                OrderLog.create(oid, order.status-1)
+
+    @classmethod
+    def status_close(cls, oid, is_buyer=True):
+        if cls.exists(oid):
+            if is_buyer:
+                if cls.objects.get(pk=oid).status == 1:
+                    OrderLog.create(oid, 7)
+                    cls.objects.filter(pk=oid).update(status=7)
+            else:
+                cls.objects.filter(pk=oid).update(status=8)
+                OrderLog.create(oid, 8)
+
 
 class OrderDetail(models.Model):
     """ 订单详情"""
@@ -295,3 +337,17 @@ class OrderDetail(models.Model):
         if self.photo:
             return "http://7xkqb1.com1.z0.glb.clouddn.com/{}".format(self.photo)
         return "/static/img/av1.png"
+
+
+class OrderLog(models.Model):
+    """订单状态记录"""
+    order = models.ForeignKey(Order, related_name='order_log')
+    status = models.IntegerField('订单状态', choices=STATUS, default=1)
+
+    created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
+    updated = models.DateTimeField('最后更新时间', auto_now=True)
+
+    @classmethod
+    def create(cls, oid, status):
+        cls(order_id=oid, status=status).save()
+

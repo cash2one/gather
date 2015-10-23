@@ -15,7 +15,7 @@ from django.conf import settings
 from django.contrib.auth import login, authenticate
 
 from wash.models import VerifyCode, WashUserProfile, WashType, IndexBanner
-from wash.models import Basket, UserAddress, Address, Order, OrderDetail
+from wash.models import Basket, UserAddress, Address, Order, OrderDetail, OrderLog
 from wash.forms import RegistForm
 from CCPRestSDK import REST
 from utils import gen_verify_code, adjacent_paginator
@@ -35,12 +35,12 @@ def auto_login(func):
             if status:
                 if WeProfile.objects.filter(open_id=open_id).exists():
                     profile = WeProfile.objects.get(open_id=open_id)
-                    user =profile.user
+                    user = profile.user
                     if WashUserProfile.user_valid(user):
                         user = authenticate(remote_user=user.username)
                         user.backend = 'django.contrib.auth.backends.ModelBackend'
                         login(_request, user)
-                        return HttpResponseRedirect(_request.GET.get('next', '/wash/'))
+                        return HttpResponseRedirect(_request.GET.get('next', '/wash/account/'))
                 else:
                     kwargs['open_id'] = open_id
         return func(_request, *args, **kwargs)
@@ -122,18 +122,20 @@ def verify_code(request):
     return render(request)
 
 
-@auto_login
+#@auto_login
 def regist(request, form_class=RegistForm, template_name='wash/regist.html', open_id=None):
     if request.method == "POST":
         form = form_class(request, data=request.POST)
         if form.is_valid():
             form.login()
-            return HttpResponseRedirect(reverse('wash.views.index'))
+            return HttpResponseRedirect(request.POST.get('next', '/wash/'))
     else:
         form = form_class()
+        next = request.GET.get('next', '/')
     return render(request, template_name, {
         'form': form,
         'open_id': open_id,
+        'next': next,
     })
 
 
@@ -178,6 +180,7 @@ def user_order(request, template_name="wash/user_order.html"):
         o['money'] = order.money
         o['created'] = order.created
         o['status'] = order.get_status_display()
+        o['status_id'] = order.status
         o['detail'] = detail_dict.get(order.id, [])
         o['count'] = sum(d['count'] for d in detail_dict.get(order.id, []))
         orders.append(o)
@@ -187,12 +190,31 @@ def user_order(request, template_name="wash/user_order.html"):
     })
 
 
+@login_required(login_url=OAUTH_WASH_URL.format(next='/wash/user/order/detail/0/'))
+def user_order_detail(request, order_id, template_name='wash/user_order_detail.html'):
+    """
+    用户交易流程
+    """
+    logs = OrderLog.objects.filter(order_id=order_id).order_by('-created')
+    order = Order.objects.get(pk=order_id)
+    return render(request, template_name, {
+        'logs': logs,
+        'order': order,
+    })
+
+
+@login_required(login_url=OAUTH_WASH_URL.format(next='/wash/user/order/cancel/0/'))
+def user_order_cancel(request, order_id):
+    """
+    用户取消订单
+    """
+    Order.status_close(order_id)
+    return HttpResponseRedirect(reverse("wash.views.user_order"))
+
+
 def basket(request, template_name='wash/basket.html'):
     """
     购物车
-    :param request:
-    :param template_name:
-    :return:
     """
     wash_arr = basket_info(request)
     return render(request, template_name, {
@@ -229,6 +251,7 @@ def order(request, template_name="wash/order.html"):
                         photo=wash['photo'], measure=wash['measure_id'],
                         name=wash['name'], belong=wash['belong_id']).save()
         Basket.submit(request.session.session_key)
+        OrderLog.create(order.id, 1)
         return HttpResponseRedirect(reverse('wash.views.user_order'))
     else:
         choose = request.GET.get('choose', None)
