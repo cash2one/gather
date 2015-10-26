@@ -63,11 +63,11 @@ def send_wechat_msg(user, msg_type, order_id, data=None):
     if msg_type == 'order_create':
         template_id = settings.ORDER_CREATE_ID
     elif msg_type == 'order_get':
-        template_id = settings.ORDER_GET_ID
+        template_id = settings.ORDER_UPDATE_ID
     elif msg_type == 'order_post':
-        template_id = settings.ORDER_POST_ID
+        template_id = settings.ORDER_UPDATE_ID
     elif msg_type == 'order_succ':
-        template_id = settings.ORDER_SUCC_ID
+        template_id = settings.ORDER_UPDATE_ID
     elif msg_type == 'order_close':
         template_id = settings.ORDER_CLOSE_ID
 
