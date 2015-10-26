@@ -145,7 +145,7 @@ def verification(request):
     timestamp = request.GET.get('timestamp', '')
     nonce = request.GET.get('nonce', '')
 
-    sortlist = [settings.SERVER_TOKEN, timestamp, nonce, settings.EncodingAESKey]
+    sortlist = [settings.SERVER_TOKEN, timestamp, nonce]
     sortlist.sort()
     sha = hashlib.sha1()
     sha.update("".join(sortlist))
@@ -362,8 +362,7 @@ def index(request):
         return wechat_msg(request)
     else:
         # 微信公共号绑定时需要
-        #if verification(request):
-        return HttpResponse(request.GET.get('echostr', ''))
+        return HttpResponse(verification(request))
     create_menu()
     return HttpResponse('For Test WeChat')
 
