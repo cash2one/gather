@@ -362,8 +362,8 @@ def index(request):
         return wechat_msg(request)
     else:
         # 微信公共号绑定时需要
-        if verification(request):
-            return HttpResponse(request.GET.get('echostr', ''))
+        #if verification(request):
+        return HttpResponse(request.GET.get('echostr', ''))
     create_menu()
     return HttpResponse('For Test WeChat')
 
