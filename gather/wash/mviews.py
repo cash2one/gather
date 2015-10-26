@@ -290,8 +290,9 @@ def order(request, template_name="wash/manage/order.html"):
         cancel = request.POST.get('cancel', None)
         close = request.POST.get('close', None)
         verify_code = request.POST.get('verify_code', None)
+        hour = request.POST.get('hour', None)
         if next:
-            status = Order.status_next(oid, verify_code=verify_code)
+            status = Order.status_next(oid, verify_code=verify_code, hour=hour)
             if not status:
                 messages.error(request, u'验证码错误')
         if cancel:

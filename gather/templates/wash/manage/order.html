@@ -82,6 +82,7 @@
                             {% csrf_token %}
                             <input type="hidden" name="oid" value="{{ order.id }}"/>
                         {% if order.status == 1 %}
+                            <input type="text" name="hour" placeholder="具体时间"/>
                             <button type="submit" class="btn btn-success" name="next" value="true">
                               <span class="glyphicon glyphicon-ok" aria-hidden="true" id=""></span>确认
                             </button>

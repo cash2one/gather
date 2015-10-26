@@ -287,7 +287,7 @@ class Order(models.Model):
         return cls.objects.filter(pk=oid).exists()
 
     @classmethod
-    def status_next(cls, oid, verify_code=None):
+    def status_next(cls, oid, verify_code=None, hour=u'无'):
         if cls.exists(oid):
             order = Order.objects.get(pk=oid)
             if order.status < 5:
@@ -297,12 +297,52 @@ class Order(models.Model):
                 user = order.user.user
                 if order.status == 1:
                     param['service_begin'] = datetime.datetime.now()
-                    send_wechat_msg(user, 'order_get', oid)
+                    param['hour'] = hour
+                    data = {
+                        'first': {'key': u'取货通知', 'value': '#173177'},
+                        'keyword1': {'key': order.id, 'value': '#173177'},
+                        'keyword2': {'key': u'工作人员取货中', 'value': '#173177'},
+                        'keyword3': {
+                            'key': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                            'value': '#173177'
+                        },
+                        'remark': {
+                            'key': u'如果您不方便，请拨打{}'.format(settings.MY_PHONE),
+                            'value': '#173177'
+                        },
+                    }
+                    send_wechat_msg(user, 'order_get', oid, data)
                 elif order.status == 3:
-                    send_wechat_msg(user, 'order_post', oid, {'verify_code': {'value': order.verify_code, 'color': '#173177'}})
+                    data = {
+                        'first': {'key': u'送货通知', 'value': '#173177'},
+                        'keyword1': {'key': order.id, 'value': '#173177'},
+                        'keyword2': {'key': u'工作人员送货中', 'value': '#173177'},
+                        'keyword3': {
+                            'key': order.service_time.strftime('%Y-%m-%d %H:%M:%S')+order.am_pm+order.hour,
+                            'value': '#173177'
+                        },
+                        'remark': {
+                            'key': u'请将该验证码（{}）给予送货员;如果您不方便，请拨打{}'.format(order.verify_code, settings.MY_PHONE),
+                            'value': '#173177'
+                        },
+                    }
+                    send_wechat_msg(user, 'order_post', oid, data)
                 if order.status == 4:
                     if verify_code == order.verify_code:
-                        send_wechat_msg(user, 'order_succ', oid)
+                        data = {
+                            'first': {'key': u'交易成功', 'value': '#173177'},
+                            'keyword1': {'key': order.id, 'value': '#173177'},
+                            'keyword2': {'key': u'交易完毕', 'value': '#173177'},
+                            'keyword3': {
+                                'key': order.service_end.strftime('%Y-%m-%d %H:%M:%S'),
+                                'value': '#173177'
+                            },
+                            'remark': {
+                                'key': u'本次交易已结束，感谢您的使用，希望下次还能为您服务。',
+                                'value': '#173177'
+                            },
+                        }
+                        send_wechat_msg(user, 'order_succ', oid, data)
                         param['service_end'] = datetime.datetime.now()
                     else:
                         return False
@@ -330,11 +370,37 @@ class Order(models.Model):
                 if cls.objects.get(pk=oid).status == 1:
                     OrderLog.create(oid, 7)
                     cls.objects.filter(pk=oid).update(status=7)
-                    send_wechat_msg(user, 'order_close', oid)
+                    data = {
+                        'first': {'key': u'交易取消', 'value': '#173177'},
+                        'keyword1': {'key': order.id, 'value': '#173177'},
+                        'keyword2': {'key': u'买家取消', 'value': '#173177'},
+                        'keyword3': {
+                            'key': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                            'value': '#173177'
+                        },
+                        'remark': {
+                            'key': u'本次交易已取消;有需要的地方，请拨打{}'.format(settings.MY_PHONE),
+                            'value': '#173177'
+                        },
+                    }
+                    send_wechat_msg(user, 'order_close', oid, data)
                     return True
             else:
                 cls.objects.filter(pk=oid).update(status=8)
                 OrderLog.create(oid, 8)
+                data = {
+                    'first': {'key': u'卖家取消交易', 'value': '#173177'},
+                    'keyword1': {'key': order.id, 'value': '#173177'},
+                    'keyword2': {'key': u'卖家取消', 'value': '#173177'},
+                    'keyword3': {
+                        'key': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                        'value': '#173177'
+                    },
+                    'remark': {
+                        'key': u'本次交易已取消;有不明白的地方，请拨打{}'.format(settings.MY_PHONE),
+                        'value': '#173177'
+                    },
+                }
                 send_wechat_msg(user, 'order_close', oid, {'user': {'value': u'卖家', 'color': '#173177'}})
                 return True
         return False

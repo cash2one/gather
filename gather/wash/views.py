@@ -22,6 +22,7 @@ from utils import gen_verify_code, adjacent_paginator
 from utils.verify import Code
 from wechat.views import code_get_openid
 from wechat.models import WeProfile
+from gather.celery import send_wechat_msg
 
 WASH_URL = settings.WASH_URL
 OAUTH_WASH_URL = settings.OAUTH_WASH_URL
@@ -122,7 +123,7 @@ def verify_code(request):
     return render(request)
 
 
-#@auto_login
+@auto_login
 def regist(request, form_class=RegistForm, template_name='wash/regist.html', open_id=None):
     if request.method == "POST":
         form = form_class(request, data=request.POST)
@@ -254,10 +255,11 @@ def order(request, template_name="wash/order.html"):
         Basket.submit(request.session.session_key)
         OrderLog.create(order.id, 1)
         data = {
-           "create": {
-               "value": datetime.datetime.now().strftime( '%Y-%m-%d %H:%M:%S' ),
-               "color": "#173177"
-            },
+            'first': {'key': u'您好，您已下单成功。', 'value': '#173177'},
+            'keyword1': {'key': order.id, 'value': '#173177'},
+            'keyword2': {'key': u'创建成功', 'value': '#173177'},
+            'keyword3': {'key': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'value': '#173177'},
+            'remark': {'key': u'请耐心等待客服与您确认', 'value': '#173177'},
         }
         send_wechat_msg(request.user, 'order_create', order.id, data)
         return HttpResponseRedirect(reverse('wash.views.user_order'))
