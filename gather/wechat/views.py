@@ -143,10 +143,9 @@ def verification(request):
     """ 微信验证"""
     signature = request.GET.get('signature', '')
     timestamp = request.GET.get('timestamp', '')
-    encrypt = request.GET.get('encrypt', '')
     nonce = request.GET.get('nonce', '')
 
-    sortlist = [settings.SERVER_TOKEN, timestamp, nonce, encrypt]
+    sortlist = [settings.SERVER_TOKEN, timestamp, nonce, settings.EncodingAESKey]
     sortlist.sort()
     sha = hashlib.sha1()
     sha.update("".join(sortlist))
