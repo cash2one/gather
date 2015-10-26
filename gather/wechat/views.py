@@ -143,12 +143,13 @@ def verification(request):
     """ 微信验证"""
     signature = request.GET.get('signature', '')
     timestamp = request.GET.get('timestamp', '')
+    encrypt = request.GET.get('encrypt', '')
     nonce = request.GET.get('nonce', '')
 
-    temp = sorted([settings.SERVER_TOKEN, timestamp, nonce])
-    temp = ''.join(temp)
-
-    sha = hashlib.sha1(temp)
+    sortlist = [settings.SERVER_TOKEN, timestamp, nonce, encrypt]
+    sortlist.sort()
+    sha = hashlib.sha1()
+    sha.update("".join(sortlist))
     s = sha.hexdigest()
 
     if s == signature:
