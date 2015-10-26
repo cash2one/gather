@@ -57,7 +57,7 @@ def async_send_html_email(self, subject, recipient_list, template_name, context)
 
 
 #@app.task(bind=True, default_retry_delay=300, max_retries=1)
-def send_wechat_msg(self, user, msg_type, order_id, data=None):
+def send_wechat_msg(user, msg_type, order_id, data=None):
     open_id = WeProfile.objects.get(user=user).open_id
 
     if msg_type == 'order_create':
