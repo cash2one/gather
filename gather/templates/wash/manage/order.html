@@ -36,6 +36,14 @@
 {% endblock %}
 
 {% block content %}
+{% if messages %}
+    {% for message in messages %}
+<div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}" role="alert">
+  <button class="close" data-dismiss="alert"> × </button>
+  {{ message }}
+</div>
+    {% endfor %}
+{% endif %}
 <div class="row">
     <div class="col-xs-12">
         <div class="table-responsive" style="margin-top:10px;">
@@ -89,11 +97,12 @@
                               <span class="glyphicon glyphicon-plane" aria-hidden="true"></span>派送
                             </button>
                         {% elif order.status == 4%}
+                            <input type="text" name="verify_code" style="width:50px;" placeholder="输入验证码"/>
                             <button type="submit" class="btn btn-success" name="next" value="true">
                               <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>结束
                             </button>
                         {% endif %}
-                            {% if order.status == 2 or order.status == 3 or order.status == 4 %}
+                            {% if order.status == 2 or order.status == 3%}
                             <button type="submit" class="btn btn-warning" name="cancel" value="true">
                               <span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>撤销
                              </button>

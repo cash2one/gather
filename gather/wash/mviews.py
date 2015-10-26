@@ -289,14 +289,15 @@ def order(request, template_name="wash/manage/order.html"):
         oid = request.POST.get('oid', None)
         cancel = request.POST.get('cancel', None)
         close = request.POST.get('close', None)
-        print next, cancel, close
+        verify_code = request.POST.get('verify_code', None)
         if next:
-            Order.status_next(oid)
+            status = Order.status_next(oid, verify_code=verify_code)
+            if not status:
+                messages.error(request, u'验证码错误')
         if cancel:
             Order.status_back(oid)
         if close:
             Order.status_close(oid, is_buyer=False)
-        messages.info(request, u'更新成功')
 
     order_list = Order.objects.all().order_by("-updated")
     orders, page_numbers = adjacent_paginator(order_list, page=request.GET.get('page', 1))

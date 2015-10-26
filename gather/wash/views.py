@@ -243,7 +243,8 @@ def order(request, template_name="wash/order.html"):
         mark = request.POST.get('mark')
 
         order = Order(user=profile, address_id=address_id, mark=mark,
-                      money=price_sum, service_time=service_time, am_pm=am_pm)
+                      money=price_sum, service_time=service_time,
+                      am_pm=am_pm, verify_code=gen_verify_code())
         order.save()
         for wash in wash_list:
             OrderDetail(order=order, wash_type_id=wash['id'],
@@ -252,6 +253,13 @@ def order(request, template_name="wash/order.html"):
                         name=wash['name'], belong=wash['belong_id']).save()
         Basket.submit(request.session.session_key)
         OrderLog.create(order.id, 1)
+        data = {
+           "create": {
+               "value": datetime.datetime.now().strftime( '%Y-%m-%d %H:%M:%S' ),
+               "color": "#173177"
+            },
+        }
+        send_wechat_msg(request.user, 'order_create', order.id, data)
         return HttpResponseRedirect(reverse('wash.views.user_order'))
     else:
         choose = request.GET.get('choose', None)

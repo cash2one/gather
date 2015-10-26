@@ -8,6 +8,8 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.db.models import Sum
 
+from gather.celery import send_wechat_msg
+
 
 class WashUserProfile(models.Model):
     """ 用户注册信息"""
@@ -275,6 +277,7 @@ class Order(models.Model):
     am_pm = models.IntegerField('时间段', choices=SERVICE_TIME_CHOICE, default=0)
     pay_date = models.DateTimeField('付款日期', blank=True, null=True)
     status = models.IntegerField('订单状态', choices=STATUS, default=1)
+    verify_code = models.IntegerField('订单确认码')
 
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
     updated = models.DateTimeField('最后更新时间', auto_now=True)
@@ -284,20 +287,29 @@ class Order(models.Model):
         return cls.objects.filter(pk=oid).exists()
 
     @classmethod
-    def status_next(cls, oid):
+    def status_next(cls, oid, verify_code=None):
         if cls.exists(oid):
             order = Order.objects.get(pk=oid)
             if order.status < 5:
                 param = {
                     'status': order.status+1
                 }
+                user = order.user.user
                 if order.status == 1:
                     param['service_begin'] = datetime.datetime.now()
+                    send_wechat_msg(user, 'order_get', oid)
+                elif order.status == 3:
+                    send_wechat_msg(user, 'order_post', oid, {'verify_code': {'value': order.verify_code, 'color': '#173177'}})
                 if order.status == 4:
-                    param['service_end'] = datetime.datetime.now()
+                    if verify_code == order.verify_code:
+                        send_wechat_msg(user, 'order_succ', oid)
+                        param['service_end'] = datetime.datetime.now()
+                    else:
+                        return False
 
                 cls.objects.filter(pk=oid).update(**param)
                 OrderLog.create(oid, order.status+1)
+                return True
 
     @classmethod
     def status_back(cls, oid):
@@ -306,18 +318,26 @@ class Order(models.Model):
             if order.status > 1 and order.status < 5:
                 cls.objects.filter(pk=oid).update(status=order.status-1)
                 OrderLog.create(oid, order.status-1)
+                return True
+        return False
 
     @classmethod
     def status_close(cls, oid, is_buyer=True):
         if cls.exists(oid):
+            order = cls.objects.get(pk=oid)
+            user = order.user.user
             if is_buyer:
                 if cls.objects.get(pk=oid).status == 1:
                     OrderLog.create(oid, 7)
                     cls.objects.filter(pk=oid).update(status=7)
+                    send_wechat_msg(user, 'order_close', oid)
+                    return True
             else:
                 cls.objects.filter(pk=oid).update(status=8)
                 OrderLog.create(oid, 8)
-
+                send_wechat_msg(user, 'order_close', oid, {'user': {'value': u'卖家', 'color': '#173177'}})
+                return True
+        return False
 
 class OrderDetail(models.Model):
     """ 订单详情"""

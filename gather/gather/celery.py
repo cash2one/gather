@@ -4,6 +4,8 @@
 from __future__ import absolute_import
 
 import os
+import requests
+import simplejson as json
 
 from celery import Celery
 from smtplib import SMTPRecipientsRefused, SMTPServerDisconnected, SMTPConnectError
@@ -11,6 +13,9 @@ from smtplib import SMTPRecipientsRefused, SMTPServerDisconnected, SMTPConnectEr
 from django.conf import settings
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template import Context, loader
+
+from wechat.models import WeProfile
+from wechat.views import get_server_access_token
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'gather.settings')
 
@@ -49,4 +54,36 @@ def async_send_html_email(self, subject, recipient_list, template_name, context)
         self.retry(exc)
     except SMTPRecipientsRefused:
         return False, '邮箱不存在'
+
+
+@app.task(bind=True, default_retry_delay=300, max_retries=1)
+def send_wechat_msg(self, user, msg_type, order_id, data=None):
+    open_id = WeProfile.objects.get(user=user).open_id
+
+    if msg_type == 'order_create':
+        template_id = settings.ORDER_CREATE_ID
+    elif msg_type == 'order_get':
+        template_id = settings.ORDER_GET_ID
+    elif msg_type == 'order_post':
+        template_id = settings.ORDER_POST_ID
+    elif msg_type == 'order_succ':
+        template_id = settings.ORDER_SUCC_ID
+    elif msg_type == 'order_close':
+        template_id = settings.ORDER_CLOSE_ID
+
+    if settings.DEBUG:
+        domain = '10.10.202.37'
+    else:
+        domain = 'www.jacsice.cn'
+
+    json_data = {
+       "touser": open_id,
+       "template_id": template_id,
+       "url":  "http://{url}:8000/wash/user/order/detail/{order_id}".format(url=domain, order_id=order_id),
+       "data": data
+    }
+    access_token = get_server_access_token()
+    url = settings.SEND_WE_MSG_URL % access_token
+    requests.post(url, data=json.dumps(json_data))
+
 

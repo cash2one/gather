@@ -11,7 +11,7 @@ import random
 import requests
 import traceback
 import simplejson as json
-from datetime import datetime
+import datetime
 import xml.etree.ElementTree as ET
 
 from django.conf import settings
@@ -120,17 +120,17 @@ def create_menu():
                    {
                        "type": "view",
                        "name": "联系客服",
-                       "url": "http://www.jacsice.cn/"
+                       "url": "http://www.jacsice.cn/wash/"
                    },
                    {
                        "type": "view",
                        "name": "意见建议",
-                       "url": "http://www.jacsice.cn/"
+                       "url": "http://www.jacsice.cn/wash/"
                    },
                    {
                        "type": "view",
                        "name": "关于我们",
-                       "url": "http://www.jacsice.cn/"
+                       "url": "http://www.jacsice.cn/wash/"
                    }
                ],
             },
@@ -244,16 +244,16 @@ def handle_subscribe_msg(msg):
             province=user_info['province'],
             country=user_info['country'],
             headimgurl=user_info['headimgurl'],
-            subscribe_time=datetime.fromtimestamp(int(user_info['subscribe_time'])),
+            subscribe_time=datetime.datetime.fromtimestamp(int(user_info['subscribe_time'])),
             is_subscribed=True,
             is_binded=False,
         ).save()
-        return response_text_msg(msg, u'欢迎关注我要洗鞋微信平台')
+        return response_text_msg(msg, u'欢迎关注我要洗鞋微信平台;本公司承接团体单位,会所,服装干洗免费取送,职业装定做,工服订做 电话:010-89550098 135-8182-6688')
 
     else:
         profile = WeProfile.objects.get(open_id=open_id)
         if profile.is_binded:
-            return response_text_msg(msg, u'欢迎关注我要洗鞋微信平台')
+            return response_text_msg(msg, u'欢迎关注我要洗鞋微信平台;本公司承接团体单位,会所,服装干洗免费取送,职业装定做,工服订做 电话:010-89550098 135-8182-6688')
 
 
 
@@ -392,5 +392,6 @@ def code_get_openid(request):
             pass
     else:
         return False, open_id
+
 
 
