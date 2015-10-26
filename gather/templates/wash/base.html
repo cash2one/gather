@@ -25,19 +25,18 @@
 
 <header class="am-topbar am-topbar-fixed-top">
     <div class="row">
-        <div class="col-xs-4">
-            {% block title_left %}
-                <span class="current-city">北京</span>
+        <div class="col-xs-3 text-right">
+            {% block title_left%}
             {% endblock %}
         </div>
-        <div class="col-xs-4">
+        <div class="col-xs-6 text-center">
             {% block title_center %}
             <a href="{% url 'wash_show' %}">
-                <img class="top-logo" src="{% static 'images/wash/top_logo.png' %}" width="100">
+                <img class="top-logo" src="{% static 'images/wash/top_logo.png' %}" width="150">
             </a>
             {% endblock %}
         </div>
-        <div class="col-xs-4 text-center">
+        <div class="col-xs-3 text-left">
             {% block title_right %}
             <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
             <a href="{% url 'wash_basket' %}">
