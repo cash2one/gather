@@ -6,6 +6,7 @@ from __future__ import absolute_import
 import os
 import requests
 import simplejson as json
+import logging
 
 from celery import Celery
 from smtplib import SMTPRecipientsRefused, SMTPServerDisconnected, SMTPConnectError
@@ -16,6 +17,7 @@ from django.template import Context, loader
 
 from wechat.models import WeProfile
 from wechat.views import get_server_access_token
+from utils import gen_info_msg
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'gather.settings')
 
@@ -24,6 +26,7 @@ app = Celery('gather')
 app.config_from_object('django.conf:settings')
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
+INFO_LOG = logging.getLogger('info')
 
 @app.task(bind=True)
 def debug_task(self):
@@ -84,6 +87,7 @@ def send_wechat_msg(user, msg_type, order_id, data=None):
     }
     access_token = get_server_access_token()
     url = settings.SEND_WE_MSG_URL % access_token
-    requests.post(url, data=json.dumps(json_data))
+    r = requests.post(url, data=json.dumps(json_data))
+    INFO_LOG.info(r.text)
 
 
