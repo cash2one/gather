@@ -197,7 +197,10 @@ def user_order_detail(request, order_id, template_name='wash/user_order_detail.h
     用户交易流程
     """
     logs = OrderLog.objects.filter(order_id=order_id).order_by('-created')
-    order = Order.objects.get(pk=order_id)
+    if Order.exists(order_id):
+        order = Order.objects.get(pk=order_id)
+    else:
+        order = None
     return render(request, template_name, {
         'logs': logs,
         'order': order,

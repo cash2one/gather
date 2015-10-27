@@ -304,7 +304,7 @@ class Order(models.Model):
                         'keyword1': {'value': order.id, 'color': '#173177'},
                         'keyword2': {'value': u'工作人员等待取货中', 'color': '#173177'},
                         'keyword3': {
-                            'value': u"取货时间{},{},{}".format(order.service_time.strftime('%Y-%m-%d'),order.get_am_pm_display(),order.hour),
+                            'value': u"取货时间{},{},{}".format(order.service_time.strftime('%Y-%m-%d'), order.get_am_pm_display(), hour),
                             'color': '#173177'
                         },
                         'remark': {
@@ -319,7 +319,7 @@ class Order(models.Model):
                         'keyword1': {'value': order.id, 'color': '#173177'},
                         'keyword2': {'value': u'工作人员送货中', 'color': '#173177'},
                         'keyword3': {
-                            'value': datetime.datetime.now().strftime('%Y-%m-%d'),
+                            'value': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                             'color': '#173177'
                         },
                         'remark': {
