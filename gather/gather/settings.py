@@ -55,7 +55,7 @@ INSTALLED_APPS = (
     'chatting',
     'wash',
     'wechat',
-    'djcelery'
+    'djcelery',
     # 'debug_toolbar',
 
 )
