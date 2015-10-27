@@ -89,5 +89,6 @@ def send_wechat_msg(user, msg_type, order_id, data=None):
     url = settings.SEND_WE_MSG_URL % access_token
     r = requests.post(url, data=json.dumps(json_data))
     INFO_LOG.info(r.text)
+    INFO_LOG.info(json_data)
 
 
