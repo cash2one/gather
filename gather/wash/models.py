@@ -300,11 +300,11 @@ class Order(models.Model):
                     param['service_begin'] = datetime.datetime.now()
                     param['hour'] = hour
                     data = {
-                        'first': {'value': u'取货通知', 'color': '#173177'},
+                        'first': {'value': u'卖家已确认', 'color': '#173177'},
                         'keyword1': {'value': order.id, 'color': '#173177'},
-                        'keyword2': {'value': u'工作人员取货中', 'color': '#173177'},
+                        'keyword2': {'value': u'工作人员等待取货中', 'color': '#173177'},
                         'keyword3': {
-                            'value': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                            'value': u"取货时间{},{},{}".format(order.service_time.strftime('%Y-%m-%d'),order.get_am_pm_display(),order.hour),
                             'color': '#173177'
                         },
                         'remark': {
@@ -319,7 +319,7 @@ class Order(models.Model):
                         'keyword1': {'value': order.id, 'color': '#173177'},
                         'keyword2': {'value': u'工作人员送货中', 'color': '#173177'},
                         'keyword3': {
-                            'value': order.service_time.strftime('%Y-%m-%d %H:%M:%S')+order.get_am_pm_display()+order.hour,
+                            'value': datetime.datetime.now().strftime('%Y-%m-%d'),
                             'color': '#173177'
                         },
                         'remark': {

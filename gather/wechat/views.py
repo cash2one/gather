@@ -92,7 +92,7 @@ def create_menu():
             {
                "type": "view",
                "name": "下单",
-               "url": "http://www.jacsice.cn/wash/"
+               "url": "http://www.jacsice.cn/wash/show/"
             },
             {
                "name": "会员中心",

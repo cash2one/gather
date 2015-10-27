@@ -16,7 +16,7 @@
                 success: function(Data) {
                     if(Data){
                         $("#verify_code").addClass("disabled");
-                        $("#verify_code").html("发送中...");
+                        $("#verify_code").html("发送中,请稍等...");
                         $.ajax({
                             type: 'post',
                             dataType: "json",
