@@ -80,7 +80,7 @@ def send_wechat_msg(user, msg_type, order_id, data=None):
         domain = 'www.jacsice.cn'
 
     json_data = {
-       "touser": open_id,
+       "touser": str(open_id),
        "template_id": template_id,
        "url":  "http://{url}:8000/wash/user/order/detail/{order_id}".format(url=domain, order_id=order_id),
        "data": data
