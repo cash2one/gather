@@ -300,47 +300,47 @@ class Order(models.Model):
                     param['service_begin'] = datetime.datetime.now()
                     param['hour'] = hour
                     data = {
-                        'first': {'key': u'取货通知', 'value': '#173177'},
-                        'keyword1': {'key': order.id, 'value': '#173177'},
-                        'keyword2': {'key': u'工作人员取货中', 'value': '#173177'},
+                        'first': {'value': u'取货通知', 'color': '#173177'},
+                        'keyword1': {'value': order.id, 'color': '#173177'},
+                        'keyword2': {'value': u'工作人员取货中', 'color': '#173177'},
                         'keyword3': {
-                            'key': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                            'value': '#173177'
+                            'value': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                            'color': '#173177'
                         },
                         'remark': {
-                            'key': u'如果您不方便，请拨打{}'.format(settings.MY_PHONE),
-                            'value': '#173177'
+                            'value': u'如果您不方便，请拨打{}'.format(settings.MY_PHONE),
+                            'color': '#173177'
                         },
                     }
                     send_wechat_msg(user, 'order_get', oid, data)
                 elif order.status == 3:
                     data = {
-                        'first': {'key': u'送货通知', 'value': '#173177'},
-                        'keyword1': {'key': order.id, 'value': '#173177'},
-                        'keyword2': {'key': u'工作人员送货中', 'value': '#173177'},
+                        'first': {'value': u'送货通知', 'color': '#173177'},
+                        'keyword1': {'value': order.id, 'color': '#173177'},
+                        'keyword2': {'value': u'工作人员送货中', 'color': '#173177'},
                         'keyword3': {
-                            'key': order.service_time.strftime('%Y-%m-%d %H:%M:%S')+order.get_am_pm_display()+order.hour,
-                            'value': '#173177'
+                            'value': order.service_time.strftime('%Y-%m-%d %H:%M:%S')+order.get_am_pm_display()+order.hour,
+                            'color': '#173177'
                         },
                         'remark': {
-                            'key': u'请将该验证码（{}）给予送货员;如果您不方便，请拨打{}'.format(order.verify_code, settings.MY_PHONE),
-                            'value': '#173177'
+                            'value': u'请将该验证码（{}）给予送货员;如果您不方便，请拨打{}'.format(order.verify_code, settings.MY_PHONE),
+                            'color': '#173177'
                         },
                     }
                     send_wechat_msg(user, 'order_post', oid, data)
                 if order.status == 4:
                     if verify_code == str(order.verify_code):
                         data = {
-                            'first': {'key': u'交易成功', 'value': '#173177'},
-                            'keyword1': {'key': order.id, 'value': '#173177'},
-                            'keyword2': {'key': u'交易完毕', 'value': '#173177'},
+                            'first': {'value': u'交易成功', 'color': '#173177'},
+                            'keyword1': {'value': order.id, 'color': '#173177'},
+                            'keyword2': {'value': u'交易完毕', 'color': '#173177'},
                             'keyword3': {
-                                'key': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                                'value': '#173177'
+                                'value': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                                'color': '#173177'
                             },
                             'remark': {
-                                'key': u'本次交易已结束，感谢您的使用，希望下次还能为您服务。',
-                                'value': '#173177'
+                                'value': u'本次交易已结束，感谢您的使用，希望下次还能为您服务。',
+                                'color': '#173177'
                             },
                         }
                         send_wechat_msg(user, 'order_succ', oid, data)
