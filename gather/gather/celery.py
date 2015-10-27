@@ -75,19 +75,19 @@ def send_wechat_msg(user, msg_type, order_id, data=None):
         template_id = settings.ORDER_CLOSE_ID
 
     if settings.DEBUG:
-        domain = '10.10.202.37'
+        domain = '10.10.202.37:8000'
     else:
         domain = 'www.jacsice.cn'
 
     json_data = {
        "touser": str(open_id),
        "template_id": template_id,
-       "url":  "http://{url}:8000/wash/user/order/detail/{order_id}".format(url=domain, order_id=order_id),
+       "url":  "http://{url}/wash/user/order/detail/{order_id}".format(url=domain, order_id=order_id),
        "data": data
     }
     access_token = get_server_access_token()
     url = settings.SEND_WE_MSG_URL % access_token
-    r = requests.post(url, data=json.dumps(json_data))
+    r = requests.post(url, json.dumps(json_data, ensure_ascii=False).encode('utf-8'))
     INFO_LOG.info(r.text)
     INFO_LOG.info(json_data)
 
