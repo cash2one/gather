@@ -275,6 +275,7 @@ class Order(models.Model):
     service_end = models.DateTimeField('服务结束时间', blank=True, null=True)
     service_time = models.DateTimeField('要求服务时间', blank=True, null=True)
     am_pm = models.IntegerField('时间段', choices=SERVICE_TIME_CHOICE, default=0)
+    hour = models.CharField('具体时间', max_length=255)
     pay_date = models.DateTimeField('付款日期', blank=True, null=True)
     status = models.IntegerField('订单状态', choices=STATUS, default=1)
     verify_code = models.IntegerField('订单确认码')
@@ -318,7 +319,7 @@ class Order(models.Model):
                         'keyword1': {'key': order.id, 'value': '#173177'},
                         'keyword2': {'key': u'工作人员送货中', 'value': '#173177'},
                         'keyword3': {
-                            'key': order.service_time.strftime('%Y-%m-%d %H:%M:%S')+order.am_pm+order.hour,
+                            'key': order.service_time.strftime('%Y-%m-%d %H:%M:%S')+order.get_am_pm_display()+order.hour,
                             'value': '#173177'
                         },
                         'remark': {
@@ -328,13 +329,13 @@ class Order(models.Model):
                     }
                     send_wechat_msg(user, 'order_post', oid, data)
                 if order.status == 4:
-                    if verify_code == order.verify_code:
+                    if verify_code == str(order.verify_code):
                         data = {
                             'first': {'key': u'交易成功', 'value': '#173177'},
                             'keyword1': {'key': order.id, 'value': '#173177'},
                             'keyword2': {'key': u'交易完毕', 'value': '#173177'},
                             'keyword3': {
-                                'key': order.service_end.strftime('%Y-%m-%d %H:%M:%S'),
+                                'key': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                                 'value': '#173177'
                             },
                             'remark': {

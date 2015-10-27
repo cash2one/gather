@@ -64,7 +64,7 @@ def index(request, template_name='wash/index.html'):
     })
 
 
-@auto_login
+@login_required(login_url=OAUTH_WASH_URL.format(next='/wash/account/'))
 def account(request, template_name='wash/account.html'):
     user = request.user
     if user.is_authenticated():
