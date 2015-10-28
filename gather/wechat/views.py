@@ -92,7 +92,7 @@ def create_menu():
             {
                "type": "view",
                "name": "下单",
-               "url": "http://www.jacsice.cn/wash/show/"
+               "url": settings.OAUTH_WASH_URL.format(settings.APP_ID, "http://www.jacsice.cn/wash/show/")
             },
             {
                "name": "会员中心",
@@ -100,12 +100,12 @@ def create_menu():
                    {
                        "type": "view",
                        "name": "订单查询",
-                       "url": "http://www.jacsice.cn/wash/user/order/"
+                       "url": settings.OAUTH_WASH_URL.format(settings.APP_ID, "http://www.jacsice.cn/wash/user/order/")
                     },
                     {
                        "type": "view",
                        "name": "个人中心",
-                       "url": "http://www.jacsice.cn/wash/account/"
+                       "url": settings.OAUTH_WASH_URL.format(settings.APP_ID, "http://www.jacsice.cn/wash/account/")
                     }
                ],
             },

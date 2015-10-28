@@ -4,6 +4,7 @@
 import datetime
 import requests
 import simplejson as json
+import logging
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -27,12 +28,15 @@ from gather.celery import send_wechat_msg
 WASH_URL = settings.WASH_URL
 OAUTH_WASH_URL = settings.OAUTH_WASH_URL
 
+INFO_LOG = logging.getLogger('info')
+
 
 def auto_login(func):
     def wrapped(_request, *args, **kwargs):
         user = _request.user
         if not user.is_authenticated():
             status, open_id = code_get_openid(_request)
+            INFO_LOG.info(status, open_id, _request.GET.get('next', ''))
             if status:
                 if WeProfile.objects.filter(open_id=open_id).exists():
                     profile = WeProfile.objects.get(open_id=open_id)
@@ -140,6 +144,7 @@ def regist(request, form_class=RegistForm, template_name='wash/regist.html', ope
     })
 
 
+@auto_login
 def show(request, template_name='wash/show.html'):
     wash_arr = get_show_info(request)
     if request.is_ajax():
@@ -237,8 +242,8 @@ def order(request, template_name="wash/order.html"):
     wash_list = basket_info(request)
     price_sum = reduce(lambda x, y: x+y, [wash['count']*wash['new_price']for wash in wash_list])
     wash_count = reduce(lambda x, y: x+y, [wash['count'] for wash in wash_list])
-    if wash_count <= 6:
-        price_sum += 10
+    if wash_count < 30:
+        price_sum += 8
 
     if request.method == "POST":
         address_id = request.POST.get('address_id')
