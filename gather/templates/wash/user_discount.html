@@ -1,0 +1,35 @@
+{% extends 'wash/base.html' %}
+
+{% block title_center %}
+<img class="top-logo" src="/static/images/wash/address_title.png" width="100">
+{% endblock %}
+
+{% block title_left %}
+    <a href="{% url 'wash_account' %}"><img class="label_img" src="/static/images/wash/label_left.png" /></a>
+{% endblock %}
+
+{% block content %}
+{% if discounts %}
+<div class="list-group">
+    {% for discount in discounts %}
+      <div class="list-group-item {% if address.is_default %}disabled{% endif %}">
+          <div class="row">
+              <div class="col-xs-6">
+                  {{ discount.desc }}
+              </div>
+              <div class="col-xs-6">
+                  {{ discount.begin|date:'Y-m-d H:i:s' }}
+                  {{ discount.end|date:'Y-m-d H:i:s' }}
+              </div>
+          </div>
+      </div>
+    {% endfor %}
+</div>
+{% else %}
+<div style="text-center" ></div>
+{% endif %}
+
+{% endblock %}
+
+
+

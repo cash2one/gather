@@ -17,6 +17,7 @@ from django.contrib.auth import login, authenticate
 
 from wash.models import VerifyCode, WashUserProfile, WashType, IndexBanner
 from wash.models import Basket, UserAddress, Address, Order, OrderDetail, OrderLog
+from wash.models import Discount, MyDiscount, Advice, Company
 from wash.forms import RegistForm
 from CCPRestSDK import REST
 from utils import gen_verify_code, adjacent_paginator
@@ -24,6 +25,7 @@ from utils.verify import Code
 from wechat.views import code_get_openid
 from wechat.models import WeProfile
 from gather.celery import send_wechat_msg
+from wechat_pay import UnifiedOrder_pub, JsApi_pub
 
 WASH_URL = settings.WASH_URL
 OAUTH_WASH_URL = settings.OAUTH_WASH_URL
@@ -159,6 +161,7 @@ def show(request, template_name='wash/show.html'):
 def user_order(request, template_name="wash/user_order.html"):
     profile = request.user.wash_profile
 
+    company_discounts_dict = Discount.short_descs(request.user)
     order_list = Order.objects.filter(user=profile).order_by('-updated')
     order_id_arr = list(set([order.id for order in order_list]))
     order_detail_list = OrderDetail.objects.filter(order_id__in=order_id_arr)
@@ -173,6 +176,7 @@ def user_order(request, template_name="wash/user_order.html"):
             'belong': detail.get_belong_display(),
             'measure': detail.get_measure_display(),
             'name': detail.name,
+            'short_desc': company_discounts_dict.get(detail.wash_type_id, '')
         }
         if detail.order_id in detail_dict:
             detail_dict[detail.order_id].append(d)
@@ -245,6 +249,19 @@ def order(request, template_name="wash/order.html"):
     if wash_count < 30:
         price_sum += 8
 
+    # 合作账号优先使用提供给公司的、类型为全部的优惠
+    discount = None
+    if profile.is_company_user:
+        discount = Discount.get_discount(1, company=profile.company)
+    else:
+        discount = Discount.get_discount(1)
+
+    if discount is not None:
+        if discount.discount_type == 1:
+            price_sum -= int(discount.price)
+        else:
+            price_sum *= float(discount.price)
+
     if request.method == "POST":
         address_id = request.POST.get('address_id')
         service_time = request.POST.get('service_time')
@@ -280,6 +297,7 @@ def order(request, template_name="wash/order.html"):
         'wash_list': wash_list,
         'price_sum': price_sum,
         'today': datetime.datetime.now(),
+        'discount': discount,
     })
 
 
@@ -302,8 +320,17 @@ def basket_update(request):
 def get_show_info(request):
     # 洗刷清单页
     belong = request.GET.get('belong', '2')
-    wash_list = WashType.objects.filter(belong=belong)
-    washes, page_numbers = adjacent_paginator(wash_list, page=request.GET.get('page', 1))
+    user = request.user
+
+    param = {'belong': belong}
+    if user.is_authenticated():
+        if not user.wash_profile.is_company_user:
+            param['is_for_company'] = False
+    else:
+        param['is_for_company'] = False
+
+    washes = WashType.objects.filter(**param)
+
     return basket_info(request, washes)
 
 
@@ -311,6 +338,7 @@ def basket_info(request, washes=None):
     # 组装预购数据, 同时可用来反馈用户选择了哪些商品
     sessionid = request.session.session_key
     basket_list = Basket.get_list(sessionid)
+    company_discounts_dict = Discount.short_descs(request.user)
     if washes is None:
         washes = WashType.objects.filter(id__in=basket_list.keys())
 
@@ -325,6 +353,8 @@ def basket_info(request, washes=None):
         w['belong'] = wash.get_belong_display()
         w['measure_id'] = wash.measure
         w['belong_id'] = wash.belong
+        w['is_for_company'] = wash.is_for_company
+        w['short_desc'] = company_discounts_dict.get(wash.id, '')
         w['photo'] = wash.get_photo_url()
         w['count'] = basket_list.get(wash.id, 0)
         wash_arr.append(w)
@@ -443,7 +473,90 @@ def user_address_update(request, address_id, template_name="wash/address_update.
     })
 
 
-@login_required(login_url=WASH_URL)
-def user_discount(request, template_name="wash/user_order.html"):
+@login_required(login_url=OAUTH_WASH_URL.format(next='/wash/user/discount/'))
+def user_discount(request, template_name="wash/user_discount.html"):
+    user = request.user.wash_profile
+    discounts = MyDiscount.objects.filter(phone=user.phone)
+    return render(request, template_name, {
+        'discounts': discounts
+    })
+
+
+def discount_get(request):
+    if request.method == "POST":
+        phone = request.POST.get('phone', '')
+        did = request.POST.get('did', '')
+        if Discount.is_exists(did):
+            if MyDiscount.has(phone, did):
+                messages.error(request, u'已领取过了')
+            else:
+                MyDiscount(phone=phone, discount_id=did).save()
+                messages.info(request, u'领取成功,进入公众号查看')
+        else:
+            messages.error(request, u'不存在')
+
+
+def advice(request, template_name='wash/advice.html'):
+    """
+    意见建议
+    :param request:
+    :param template_name:
+    :return:
+    """
+    if request.method == 'POST':
+        user = request.user
+        content = request.POST.get('content', '')
+        if content:
+            if user.is_authenticated():
+                Advice(user=user.wash_profile, content=content).save()
+            else:
+                Advice(content=content).save()
+            messages.info(request, '建议成功')
+        else:
+            messages.error(request, '内容为空')
+
     return render(request, template_name)
+
+
+@login_required(login_url=OAUTH_WASH_URL.format(next='/wash/verify/company/'))
+def verify_company(request, template_name='wash/verify_company.html'):
+    user = request.user
+    profile = user.wash_profile
+    if request.method == 'POST':
+        short = request.POST.get('short', '')
+        if Company.exists(short):
+            company = Company.objects.get(short=short)
+            WashUserProfile.objects.filter(user=user).update(is_company_user=True, company=company)
+        else:
+            messages.error(request, u'验证码错误')
+    else:
+        if request.GET.get('rebind', ''):
+            profile = None
+    return render(request, template_name, {
+        'profile': profile,
+    })
+
+
+@login_required(login_url=OAUTH_WASH_URL.format(next='/wash/user/order/'))
+def wechat_pay(request, order_id, template_name='wash/pay.html'):
+    order = Order.objects.get(pk=order_id)
+    weprofile = WeProfile.objects.get(user=request.user)
+    pay = UnifiedOrder_pub()
+    h5_pay = JsApi_pub()
+    pay.setParameter("out_trade_no", datetime.datetime.now().strftime('%Y%m%d%H%M%S%f'))
+    pay.setParameter("body", "test")
+    pay.setParameter("total_fee", str(order.money*100))
+    pay.setParameter("notify_url", "1")
+    pay.setParameter("trade_type", "JSAPI")
+    pay.setParameter("openid", 'oXP2qt4NT-izUpr_B86wbViypiqI')
+    #preypay_id = pay.getPrepayId()
+    preypay_id = "wx201511091542253d0517f9b80856928950"
+
+    h5_pay.setPrepayId(preypay_id)
+    parameters = h5_pay.getParameters()
+    print parameters
+    return render(request, template_name, parameters)
+
+
+
 

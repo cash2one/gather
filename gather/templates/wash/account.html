@@ -44,8 +44,12 @@
           <img class="account_img" src="/static/images/wash/order.png"/>订单信息
           <img class="label_img" src="/static/images/wash/label_right.png"/>
        </a>
-        <a href="#" class="list-group-item">
+        <a href="{% url 'wash_user_discount'%}" class="list-group-item">
           <img class="account_img" src="/static/images/wash/discount.png"/>优惠券
+          <img class="label_img" src="/static/images/wash/label_right.png"/>
+       </a>
+        <a href="{% url 'wash_verify_company'%}" class="list-group-item">
+          <img class="account_img img-circle" src="/static/images/wash/verify.png"/>绑定公司
           <img class="label_img" src="/static/images/wash/label_right.png"/>
        </a>
     </div>

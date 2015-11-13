@@ -11,12 +11,34 @@ from django.db.models import Sum
 from gather.celery import send_wechat_msg
 
 
+class Company(models.Model):
+    name = models.CharField(verbose_name='公司名称', unique=True, max_length=100)
+    short = models.CharField(verbose_name='简称', unique=True, max_length=50)
+
+    created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
+    updated = models.DateTimeField('最后更新时间', auto_now=True)
+
+    @classmethod
+    def exists(cls, short):
+        return cls.objects.filter(short=short).exists()
+
+    @classmethod
+    def create(cls, name, short):
+        if cls.objects.filter(short=short, name=name).exists():
+            return False
+        else:
+            cls(name=name, short=short).save()
+            return True
+
+
 class WashUserProfile(models.Model):
     """ 用户注册信息"""
     user = models.OneToOneField(User, related_name='wash_profile')
     phone = models.CharField('电话', max_length=11, unique=True)
     is_phone_verified = models.BooleanField('是否已经通过验证', default=False)
     phone_verified_date = models.DateTimeField('电话通过验证时间', blank=True, null=True)
+    is_company_user = models.BooleanField(verbose_name='是否是合作单位', default=False)
+    company = models.ForeignKey(Company, null=True, related_name='user_company')
 
     avator = models.CharField('头像', max_length=255, blank=True, null=True)
 
@@ -141,13 +163,13 @@ class WashType(models.Model):
     )
 
     WASH_TYPE = (
+        (0, u'无'),
         (1, u'鞋'),
         (2, u'上衣'),
         (3, u'裤子'),
         (4, u'帽子'),
         (5, u'床上用品'),
-        (6, u'其他'),
-        (7, u'全部')
+        (7, u'其他'),
     )
     name = models.CharField('名称', max_length=50)
     new_price = models.IntegerField('现价')
@@ -155,6 +177,7 @@ class WashType(models.Model):
     measure = models.IntegerField('单位', choices=MEASURE, default=1)
     belong = models.IntegerField('所属', choices=WASH_TYPE, default=1)
     photo = models.CharField('图片', max_length=255)
+    is_for_company = models.BooleanField(verbose_name='是否单位合作', default=False)
     mark = models.CharField('备注', max_length=255, blank=True, null=True)
 
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
@@ -165,27 +188,122 @@ class WashType(models.Model):
             return "http://7xkqb1.com1.z0.glb.clouddn.com/{}".format(self.photo)
         return "/static/img/av1.png"
 
+    def desc(self):
+        return u'{name}({belong}){price}元'.format(name=self.name, belong=self.get_belong_display(),
+                                                   price=self.new_price)
+
 
 class Discount(models.Model):
     """ 优惠券"""
     DISCOUNT_TYPE = (
-        (1, u'金钱'),
+        (1, u'元'),
         (2, u'折扣')
     )
+
+    RANGE_TYPE = (
+        (1, u'全部'),
+        (2, u'一类'),
+        (3, u'单个'),
+    )
+
+    company = models.ForeignKey(Company, related_name='company_discount', null=True)
+    wash = models.ForeignKey(WashType, related_name='wash_discount', null=True)
     name = models.CharField('优惠券名称', max_length=50)
     price = models.CharField('折扣值', max_length=50)
-    begin = models.DateTimeField('开始时间')
-    end = models.DateTimeField('结束时间')
-    wash_type = models.IntegerField('优惠对象', choices=WashType.WASH_TYPE, default=7)
+    begin = models.DateTimeField('活动开始时间')
+    end = models.DateTimeField('活动结束时间')
+    wash_type = models.IntegerField('优惠对象', choices=WashType.WASH_TYPE, default=0)
+    range_type = models.IntegerField('优惠范围', choices=RANGE_TYPE, default=3)
     discount_type = models.IntegerField('折扣类型', choices=DISCOUNT_TYPE, default=1)
-    is_valid = models.BooleanField('是否有效', default=True)
+    status = models.BooleanField('是否有效', default=True)
 
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
     updated = models.DateTimeField('最后更新时间', auto_now=True)
 
-    def delete(self):
-        self.is_valid = False
-        self.save()
+    #def delete(self):
+    #    self.status = False
+    #    self.save()
+
+    def valid_show(self):
+        if self.status:
+            today = datetime.datetime.now()
+            if today < self.end and self.begin < today:
+                return u'有效'
+        return u'无效'
+
+    @classmethod
+    def is_exists(cls, did):
+        return cls.objects.filter(pk=did).exists()
+
+    @classmethod
+    def is_valid(cls, did):
+        if cls.is_exists(did):
+            d = cls.objects.get(pk=did)
+            if d.status:
+                today = datetime.datetime.now()
+                if today < d.end and d.begin < today:
+                    return True
+        return False
+
+    @property
+    def desc(self):
+        if self.discount_type == 1:
+            return u"{name} 减去{price}元".format(name=self.get_wash_type_display(), price=self.price)
+        else:
+            return u"{name} 打{price}折".format(name=self.get_wash_type_display(), price=self.price)
+
+    @classmethod
+    def short_descs(cls, user):
+        # 公司优惠
+        if not user.is_authenticated():
+            return {}
+        else:
+            company = user.wash_profile.company
+            today = datetime.datetime.now()
+            results = {}
+
+            discounts = Discount.objects.filter(company=company, wash__isnull=False, status=True,
+                                                begin__lte=today, end__gte=today, range_type=3)
+            for d in discounts:
+                results[d.wash_id] = d.desc
+            return results
+
+    def desc(self):
+        if self.discount_type == 1:
+           short_desc = u"减{price}元".format(price=self.price)
+        else:
+           short_desc = u"{price}折".format(price=self.price)
+        return short_desc
+
+    @classmethod
+    def get_discount(cls, range_type, company=None):
+        today = datetime.datetime.now()
+        if cls.objects.filter(company=company, range_type=1, begin__lte=today,
+                              end__gte=today, status=True).exists():
+            return cls.objects.get(company=company, range_type=1, begin__lte=today,
+                                   end__gte=today, status=True)
+        else:
+            return None
+
+
+class MyDiscount(models.Model):
+    discount = models.ForeignKey(Discount, related_name='discount')
+    phone = models.CharField(verbose_name='手机号领取', max_length=11)
+    begin = models.DateTimeField('优惠开始时间')
+    end = models.DateTimeField('优惠结束时间')
+
+    created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
+    updated = models.DateTimeField('最后更新时间', auto_now=True)
+
+    @classmethod
+    def is_valid(cls, phone, did):
+        if Discount.is_exists(did):
+            today = datetime.datetime.now()
+
+            if cls.objects.filter(phone=phone, discount_id=did,
+                                  begin__lte=today, end__gte=today).exists():
+                return True
+        return False
 
 
 class Basket(models.Model):
@@ -277,7 +395,7 @@ class Order(models.Model):
     am_pm = models.IntegerField('时间段', choices=SERVICE_TIME_CHOICE, default=0)
     hour = models.CharField('具体时间', max_length=255)
     pay_date = models.DateTimeField('付款日期', blank=True, null=True)
-    status = models.IntegerField('订单状态', choices=STATUS, default=1)
+    status = models.IntegerField('订单状态', choices=STATUS, default=0)
     verify_code = models.IntegerField('订单确认码')
 
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
@@ -437,4 +555,12 @@ class OrderLog(models.Model):
     @classmethod
     def create(cls, oid, status):
         cls(order_id=oid, status=status).save()
+
+
+class Advice(models.Model):
+    user = models.ForeignKey(User, related_name='advice', null=True)
+    content = models.TextField()
+
+    created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
+    updated = models.DateTimeField('最后更新时间', auto_now=True)
 

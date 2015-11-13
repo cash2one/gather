@@ -13,13 +13,17 @@
 {% block content %}
 <div class="row">
     <div class="col-xs-12">
-
         <div class="row text-left">
             <div class="col-xs-1">
                 <a class="btn btn-primary btn-sm" href="{% url 'manage_discount_add' %}">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                     新增
                 </a>
+            </div>
+            <div class="col-xs-11 text-right">
+                {% for error in form.non_field_errors %}
+                <div class="alert alert-danger text-center" role="alert">{{ error }}</div>
+                {% endfor %}
             </div>
         </div>
 
@@ -28,17 +32,16 @@
                 <thead>
                 <tr>
                     <th class="center">序号</th>
-                    <th>优惠券名称</th>
-                    <th>优惠规格</th>
-                    <th>优惠对象</th>
-                    <th>优惠类型</th>
-                    <th>开始时间</th>
-                    <th>结束时间</th>
-                    <th>是否有效</th>
-                    <th>
-                        <i class="icon-time bigger-110"></i>
-                        创建日期
-                    </th>
+                    <th>名称</th>
+                    <th>数量</th>
+                    <th>折扣</th>
+                    <th>对象</th>
+                    <th>范围</th>
+                    <th>公司</th>
+                    <th>针对产品</th>
+                    <th>开始</th>
+                    <th>结束</th>
+                    <th>有效</th>
                     <th class="hidden-480">操作</th>
                 </tr>
                 </thead>
@@ -48,12 +51,14 @@
                     <td>{{ discount.id }}</td>
                     <td>{{ discount.name }}</td>
                     <td>{{ discount.price }}</td>
-                    <td>{{ discount.get_wash_type_display }}</td>
                     <td>{{ discount.get_discount_type_display }}</td>
+                    <td>{{ discount.get_wash_type_display }}</td>
+                    <td>{{ discount.get_range_type_display }}</td>
+                    <td>{{ discount.company.name|default:'无' }}</td>
+                    <td>{{ discount.wash.desc|default:'无' }}</td>
                     <td>{{ discount.begin|date:'Y-m-d H:i:s' }}</td>
                     <td>{{ discount.end|date:'Y-m-d H:i:s' }}</td>
-                    <td>{{ discount.is_valid }}</td>
-                    <td>{{ discount.created|date:'Y-m-d H:i:s' }}</td>
+                    <td>{{ discount.valid_show }}</td>
                     <td class="hidden-480">
                         <div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
                             <a class="btn btn-xs btn-info" href="{% url 'manage_discount_update' discount.id %}">

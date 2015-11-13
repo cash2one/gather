@@ -44,6 +44,7 @@
                     <th>所属</th>
                     <th>图片</th>
                     <th>备注</th>
+                    <th>公司合作</th>
                     <th>
                         <i class="icon-time bigger-110"></i>
                         创建日期
@@ -62,6 +63,7 @@
                     <td>{{ type.get_belong_display }}</td>
                     <td><img src="{{ type.get_photo_url }}" style="width:80px;height:100px;"/></td>
                     <td>{{ type.mark }}</td>
+                    <td>{{ type.is_for_company  }}</td>
                     <td>{{ type.created|date:'Y-m-d H:i:s' }}</td>
                     <td class="hidden-480">
                         <div class="visible-md visible-lg hidden-sm hidden-xs btn-group">

@@ -47,9 +47,6 @@ class WeProfile(models.Model):
         verbose_name = '微信用户信息'
         verbose_name_plural = '微信用户信息列表'
 
-    def __unicode__(self):
-        return self.nick_name
-
 
 class WeLoginQR(models.Model):
     """ 微信扫描登录"""

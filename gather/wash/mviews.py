@@ -15,11 +15,10 @@ from django.conf import settings
 from django.contrib.auth import login, authenticate
 
 from wash.models import WashType, WashUserProfile, Discount, Order, OrderDetail
-from wash.models import IndexBanner
+from wash.models import IndexBanner, Company
 from account.models import LoginLog
-from wash.forms import RegistForm, WashTypeForm, DiscountForm, IndexForm
-from CCPRestSDK import REST
-from utils import gen_verify_code, adjacent_paginator
+from wash.forms import WashTypeForm, DiscountForm, IndexForm
+from utils import adjacent_paginator
 
 WASH_MURL = settings.WASH_MURL
 
@@ -243,9 +242,18 @@ def discount_add(request, form_class=DiscountForm, template_name="wash/manage/di
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse("wash.mviews.discount"))
-    form = form_class()
+    else:
+        form = form_class()
+    companys = Company.objects.all()
+    washes = WashType.objects.all()
+    today = datetime.datetime.now()
+    next = today + datetime.timedelta(days=30)
     return render(request, template_name, {
         'form': form,
+        'companys': companys,
+        'washes': washes,
+        'today': today,
+        'next': next
     })
 
 
@@ -262,14 +270,22 @@ def discount_update(request, discount_id, form_class=DiscountForm, template_name
 
         if request.method == "POST":
             form = form_class(request, instance=discount, data=request.POST)
-            if form.is_valid():
-                form.save()
-                return HttpResponseRedirect(reverse("wash.mviews.discount"))
-        form = form_class(instance=discount)
-        messages.info(request, u"修改成功")
+            discount.name = request.POST.get('name')
+            discount.discount_type = request.POST.get('discount_type')
+            discount.price = request.POST.get('price')
+            discount.begin = request.POST.get('begin')
+            discount.end = request.POST.get('end')
+            discount.save()
+            return HttpResponseRedirect(reverse("wash.mviews.discount"))
+        else:
+            form = form_class(request, instance=discount)
+        companys = Company.objects.all()
+        washes = WashType.objects.all()
         return render(request, template_name, {
             'form': form,
             'discount': discount,
+            'companys': companys,
+            'washes': washes,
         })
     except WashType.DoesNotExist:
         messages.error(request, u"类型不存在")
@@ -329,3 +345,37 @@ def order_detail(request, order_id='0', template_name="wash/manage/order_detail.
     return render(request, template_name, {
         'details': details,
     })
+
+
+@login_required(login_url=WASH_MURL)
+def company(request, template_name="wash/manage/company_list.html"):
+    if request.method == "POST":
+        name = request.POST.get('name', '')
+        short = request.POST.get('short', '')
+        if name and short:
+            result = Company.create(name, short)
+            if result:
+                messages.info(request, u'添加成功')
+            else:
+                messages.error(request, u'名称或验证码重复')
+
+    companys = Company.objects.all()
+    return render(request, template_name, {
+        'companys': companys
+    })
+
+
+@login_required(login_url=WASH_MURL)
+def company_discount(request, template_name="wash/manage/company_discount.html"):
+    company_id = request.GET.get('company_id', '')
+    if company_id:
+        param = {
+            'company_id': company_id
+        }
+    else:
+        param = {}
+    discounts = Discount.objects.filter(status=True, **param).order_by('company')
+    return render(request, template_name, {
+        'discounts': discounts
+    })
+

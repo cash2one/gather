@@ -34,5 +34,10 @@ urlpatterns = patterns('wash.mviews',
     # 订单详情
     url(r'^order/detail/(?P<order_id>\d+)/$', 'order_detail', name='manage_order_detail'),
 
+    # 公司优惠
+    url(r'^company/$', 'company', name='manage_company'),
+    url(r'^company_discount/$', 'company_discount', name='manage_company_discount'),
+
+
 
 )

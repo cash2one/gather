@@ -28,5 +28,13 @@ urlpatterns = patterns('wash.views',
     url(r'^user/order/detail/(?P<order_id>\d+)/$', 'user_order_detail', name='wash_user_order_detail'),
     url(r'^user/order/cancel/(?P<order_id>\d+)/$', 'user_order_cancel', name='wash_user_order_cancel'),
     url(r'^user/discount/$', 'user_discount', name='wash_user_discount'),
+    url(r'^verify/company/$', 'verify_company', name='wash_verify_company'),
+
+    url(r'^discount/get/$', 'discount_get', name='wash_discount_get'),
+
+    url(r'^advice/$', 'advice', name='wash_advice'),
+
+    url(r'^pay/(?P<order_id>\d+)/$', 'wechat_pay', name='wash_wechat_pay'),
+
 
 )

@@ -6,7 +6,7 @@
         <li role="presentation" value="3"><a href="#">裤子</a></li>
         <li role="presentation" value="1"><a href="#">鞋</a></li>
         <li role="presentation" value="5"><a href="#">家居</a></li>
-        <li role="presentation" value="6"><a href="#">其他</a></li>
+        <li role="presentation" value="6"><a href="#">单位</a></li>
     </ul>
     {% endblock %}
 
@@ -39,7 +39,20 @@
                 <div clss="row">
                     <div class="col-xs-12 text-left">
                         <h4>
-                            &nbsp;&nbsp;<label style="color:red">￥</label><label class="media-heading">{{ wash.new_price }}</label>元({{ wash.measure }})
+                            &nbsp;&nbsp;
+                            <label style="color:red">￥</label>
+                            <label class="media-heading">{{ wash.new_price }}</label>元({{ wash.measure }})
+                            {% if wash.is_for_company %}
+                            {% if wash.short_desc %}
+                            <span class="label label-danger">
+                                {{ wash.short_desc }}
+                            </span>
+                            {% else %}
+                            <span class="label label-success">
+                                合作
+                            </span>
+                            {% endif %}
+                            {% endif %}
                         </h4>
                     </div>
                 </div>

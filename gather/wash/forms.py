@@ -11,6 +11,7 @@ from django.contrib.auth import login
 
 from account.models import LoginLog
 from wash.models import WashUserProfile, VerifyCode, WashType, Discount, IndexBanner
+from wash.models import Company
 from wechat.models import WeProfile
 from utils import gen_info_msg, gen_photo_name
 from qn import Qiniu
@@ -57,6 +58,7 @@ class RegistForm(forms.Form):
         phone = self.cleaned_data['phone']
         code = self.cleaned_data['code']
         open_id = self._request.POST.get('open_id', '')
+        short = self._request.POST.get('short', '')
         if not VerifyCode.code_expire(phone):
             if VerifyCode.code_valid(phone, code):
                 if not WashUserProfile.objects.filter(phone=phone).exists():
@@ -65,8 +67,16 @@ class RegistForm(forms.Form):
                     user.save()
                     if open_id:
                         WeProfile(user=user, open_id=open_id).save()
+
+                    extra_param = {}
+                    if short:
+                        if Company.exists(short):
+                            company = Company.objects.get(short=short)
+                            extra_param["is_company_user"] = True
+                            extra_param["company"] = company
+
                     WashUserProfile(user=user, phone=phone, is_phone_verified=True,
-                                    phone_verified_date=datetime.datetime.now()).save()
+                                    phone_verified_date=datetime.datetime.now(), **extra_param).save()
             else:
                 raise forms.ValidationError('验证码输入错误!')
         else:
@@ -89,7 +99,7 @@ class WashTypeForm(forms.ModelForm):
 
     class Meta:
         model = WashType
-        fields = ('name', 'new_price', 'old_price', 'mark', 'measure', 'belong')
+        fields = ('name', 'new_price', 'old_price', 'mark', 'measure', 'belong', 'is_for_company')
 
     name = forms.CharField(label='名称', widget=forms.TextInput(attrs={'placeholder': '请输入名称'}), error_messages={'required': '请输入名称'})
     new_price = forms.CharField(label='现价', widget=forms.TextInput(attrs={'placeholder': '请输入现价'}), error_messages={'required': '请输入名称'})
@@ -97,6 +107,7 @@ class WashTypeForm(forms.ModelForm):
     mark = forms.CharField(label='备注', initial='')
     measure = forms.ChoiceField(label=u'单位', choices=WashType.MEASURE, widget=forms.RadioSelect())
     belong = forms.ChoiceField(label=u'所属', choices=WashType.WASH_TYPE, widget=forms.RadioSelect())
+    is_for_company = forms.IntegerField(label=u'是否公司合作', )
 
     def clean(self):
         return self.cleaned_data
@@ -123,7 +134,7 @@ class DiscountForm(forms.ModelForm):
 
     class Meta:
         model = Discount
-        fields = ('name', 'price', 'begin', 'end', 'wash_type', 'discount_type')
+        fields = ('name', 'price', 'begin', 'end', 'wash_type', 'discount_type', 'range_type')
 
     name = forms.CharField(label='名称', widget=forms.TextInput(attrs={'placeholder': '请输入名称'}), error_messages={'required': '请输入名称'})
     price = forms.CharField(label='优惠规格', widget=forms.TextInput(attrs={'placeholder': '输入优惠价格或者折扣'}), error_messages={'required': '请输入名称'})
@@ -131,6 +142,47 @@ class DiscountForm(forms.ModelForm):
     end = forms.CharField(label='结束时间')
     wash_type = forms.ChoiceField(label=u'优惠对象', choices=WashType.WASH_TYPE, widget=forms.RadioSelect())
     discount_type = forms.ChoiceField(label=u'优惠类型', choices=Discount.DISCOUNT_TYPE, widget=forms.RadioSelect())
+    range_type = forms.ChoiceField(label=u'优惠范围', choices=Discount.RANGE_TYPE, widget=forms.RadioSelect())
+
+    def clean(self):
+        wash_type = self.cleaned_data['wash_type']
+        discount_type = self.cleaned_data['discount_type']
+        range_type = self.cleaned_data['range_type']
+        wash_id = self._request.POST.get('wash', '0')
+        u = self._request.POST.get('update', 'no')
+        company_id = self._request.POST.get('company', '0')
+        company_id = None if company_id == '0' else company_id
+        wash_id = None if wash_id == '0' else wash_id
+        today = datetime.datetime.now()
+
+        if range_type == u'1':
+            # 全部类型 折扣和减钱只能有一个
+            if Discount.objects.filter(status=True, range_type=range_type, begin__lte=today,
+                                       end__gte=today, company_id=company_id).exists():
+                raise forms.ValidationError(u'已存在同类型的有效优惠券或折扣和减钱只能有一个!')
+        elif range_type == u'2':
+            # 一类 折扣和减钱只能有一个
+            if Discount.objects.filter(wash_type=wash_type, status=True, range_type=range_type,
+                                       begin__lte=today, end__gte=today,
+                                       company_id=company_id).exists():
+                raise forms.ValidationError(u'已存在同类型的有效优惠券或折扣和减钱只能有一个!')
+        elif range_type == u'3':
+            # 某一个产品
+            if Discount.objects.filter(wash_type=wash_type, status=True, wash_id=wash_id,
+                                       range_type=range_type, begin__lte=today, end__gte=today,
+                                       company_id=company_id).exists():
+                raise forms.ValidationError(u'已存在同类型的有效优惠券或折扣和减钱只能有一个!')
+        return self.cleaned_data
+
+    def save(self, commit=True, force_update=False):
+        m = super(DiscountForm, self).save(commit=False)
+        company_id = self._request.POST.get('company', '0')
+        wash_id = self._request.POST.get('wash', '0')
+        if company_id != '0':
+            m.company_id = company_id
+        if wash_id != '0':
+            m.wash_id = wash_id
+        m.save()
 
 
 class IndexForm(forms.ModelForm):

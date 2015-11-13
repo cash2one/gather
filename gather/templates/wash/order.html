@@ -77,8 +77,20 @@
                 </div>
             </div>
         </div>
-
+        {% if discount %}
         <div class="bs-callout bs-callout-danger">
+            <div class="media">
+                <div class="media-left">
+                    <span class="glyphicon glyphicon-heart" aria-hidden="true" style="margin-top:5px; color:red"></span>
+                </div>
+                <div class="media-body">
+                    <label style="color:red">优惠信息:{{ discount.desc }}</label>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!--<div class="bs-callout bs-callout-danger">
             <div class="media">
                 <div class="media-left">
                     <span class="glyphicon glyphicon-usd" aria-hidden="true" style="margin-top:5px;"></span>
@@ -88,7 +100,7 @@
                     <input type="radio" checked/> 货到付款
                 </div>
             </div>
-        </div>
+        </div>-->
 
          <div class="bs-callout bs-callout-danger">
             <div class="media">
@@ -109,7 +121,19 @@
                 <h4 class="media-heading text-left">{{ wash.name }}</h4>
                 <label class="media-heading">{{ wash.belong }}</label>
                 <h4>
-                    <label style="color:red">￥</label><label class="media-heading" name="price" value="{{ wash.id }}">{{ wash.new_price }}</label>元({{ wash.measure }})
+                    <label style="color:red">￥</label>
+                    <label class="media-heading" name="price" value="{{ wash.id }}">{{ wash.new_price }}</label>元({{ wash.measure }})
+                    {% if wash.is_for_company %}
+                    {% if wash.short_desc %}
+                    <span class="label label-danger">
+                        {{ wash.short_desc }}
+                    </span>
+                    {% else %}
+                    <span class="label label-success">
+                        合作
+                    </span>
+                    {% endif %}
+                    {% endif %}
                 </h4>
             </div>
             <div class="col-xs-3 text-right" style="margin-top:20%">

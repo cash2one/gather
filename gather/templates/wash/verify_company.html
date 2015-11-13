@@ -1,0 +1,87 @@
+{% extends 'wash/base.html' %}
+
+{% block extra_css %}
+<style>
+    .form-control {
+        position: relative;
+        height: auto;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        padding: 10px;
+        font-size: 16px;
+    }
+    .form-control:focus {
+        z-index: 2;
+    }
+    input {
+        margin-bottom: -1px;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    </style>
+{% endblock %}
+
+{% block title_center %}
+<img class="top-logo" src="/static/images/wash/account_title.png" width="100">
+{% endblock %}
+
+{% block title_left %}
+    <a href="{% url 'wash_account' %}"><img class="label_img" src="/static/images/wash/label_left.png" /></a>
+{% endblock %}
+
+{% block content %}
+<form action="." method="post" id="verify_company">
+    {% csrf_token %}
+    <table width="100%" class="table">
+        <tr>
+            <td class="text-center">
+                {% if profile.company %}
+                公司已验证<span class="label label-success">{{ profile.company.name }}</span>
+                {% else %}
+                <textarea name="short" class="form-control" rows="5" placeholder="输入验证码"></textarea>
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+</form>
+
+{% if messages %}
+    {% for message in messages %}
+<div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}" role="alert">
+  <button class="close" data-dismiss="alert"> × </button>
+  {{ message }}
+</div>
+    {% endfor %}
+{% endif %}
+
+{% endblock %}
+
+
+{% block bottom %}
+<nav class="main-nav am-topbar am-topbar-fixed-bottom" style="background-color:#FF6600 ">
+    <div class="text-center" id="verify_btn">
+        <h4 style="color:white;margin-top:15px;">
+            {% if profile.company %}
+            <a href="{% url 'wash_verify_company'%}?rebind=true" style="color:white">重新绑定</a>
+            {% else %}
+             保存
+            {% endif %}
+        </h4>
+    </div>
+
+</nav>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $("#verify_btn").click(function(){
+        $("#verify_company").submit();
+    });
+</script>
+{% endblock %}
+
+
+
+
