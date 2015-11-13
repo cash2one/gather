@@ -1,1 +1,2 @@
-pangpang is shabi
+User-agen:*
+Disallow:/
