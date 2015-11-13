@@ -169,7 +169,7 @@ class WashType(models.Model):
         (3, u'裤子'),
         (4, u'帽子'),
         (5, u'床上用品'),
-        (7, u'其他'),
+        (6, u'其他'),
     )
     name = models.CharField('名称', max_length=50)
     new_price = models.IntegerField('现价')
