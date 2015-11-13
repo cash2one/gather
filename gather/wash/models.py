@@ -255,7 +255,7 @@ class Discount(models.Model):
     @classmethod
     def short_descs(cls, user):
         # 公司优惠
-        if not user.is_authenticated():
+        if not user.is_authenticated() or not user.is_company_user:
             return {}
         else:
             company = user.wash_profile.company
