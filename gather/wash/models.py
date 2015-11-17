@@ -258,19 +258,22 @@ class Discount(models.Model):
         if not user.is_authenticated():
             return {}
         else:
-            profile = user.wash_profile
+            try:
+                profile = user.wash_profile
 
-            if not profile.is_company_user:
+                if not profile.is_company_user:
+                    return {}
+                company = profile.company
+                today = datetime.datetime.now()
+                results = {}
+
+                discounts = Discount.objects.filter(company=company, wash__isnull=False, status=True,
+                                                    begin__lte=today, end__gte=today, range_type=3)
+                for d in discounts:
+                    results[d.wash_id] = d.desc
+                return results
+            except:
                 return {}
-            company = profile.company
-            today = datetime.datetime.now()
-            results = {}
-
-            discounts = Discount.objects.filter(company=company, wash__isnull=False, status=True,
-                                                begin__lte=today, end__gte=today, range_type=3)
-            for d in discounts:
-                results[d.wash_id] = d.desc
-            return results
 
     def desc(self):
         if self.discount_type == 1:
