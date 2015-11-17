@@ -328,8 +328,11 @@ def get_show_info(request):
     }
 
     if user.is_authenticated():
-        if user.wash_profile.is_company_user:
-            param['is_for_company'] = True
+        try:
+            if user.wash_profile.is_company_user:
+                param['is_for_company'] = True
+        except:
+            pass
 
     washes = WashType.objects.filter(**param)
 

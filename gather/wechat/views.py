@@ -91,8 +91,8 @@ def create_menu():
        "button": [
             {
                "type": "view",
-               "name": "下单",
-               "url": settings.OAUTH_WASH_URL.format(settings.APP_ID, "http://www.jacsice.cn/wash/show/")
+               "name": "一键下单",
+               "url": settings.OAUTH_WASH_URL.format(settings.APP_ID, "http://www.woyaoxixie.cn/wash/show/")
             },
             {
                "name": "会员中心",
@@ -100,38 +100,38 @@ def create_menu():
                    {
                        "type": "view",
                        "name": "订单查询",
-                       "url": settings.OAUTH_WASH_URL.format(settings.APP_ID, "http://www.jacsice.cn/wash/user/order/")
+                       "url": settings.OAUTH_WASH_URL.format(settings.APP_ID, "http://www.woyaoxixie.cn/wash/user/order/")
                     },
                     {
                        "type": "view",
                        "name": "个人中心",
-                       "url": settings.OAUTH_WASH_URL.format(settings.APP_ID, "http://www.jacsice.cn/wash/account/")
+                       "url": settings.OAUTH_WASH_URL.format(settings.APP_ID, "http://www.woyaoxixie.cn/wash/account/")
                     }
                ],
             },
            {
                "name": "服务中心",
                "sub_button": [
-                   {
-                       "type": "view",
-                       "name": "常见问题",
-                       "url": "http://www.jacsice.cn/wash/"
-                   },
+                   #{
+                   #    "type": "view",
+                   #    "name": "常见问题",
+                   #    "url": "http://www.jacsice.cn/wash/"
+                   #},
                    {
                        "type": "view",
                        "name": "联系客服",
-                       "url": "http://www.jacsice.cn/wash/"
+                       "url": "http://www.woyaoxixie.cn/wash/"
                    },
                    {
                        "type": "view",
                        "name": "意见建议",
-                       "url": "http://www.jacsice.cn/wash/"
+                       "url": "http://www.woyaoxixie.cn/advice/"
                    },
-                   {
-                       "type": "view",
-                       "name": "关于我们",
-                       "url": "http://www.jacsice.cn/wash/"
-                   }
+                   #{
+                   #    "type": "view",
+                   #    "name": "关于我们",
+                   #    "url": "http://www.jacsice.cn/wash/"
+                   #}
                ],
             },
        ]
