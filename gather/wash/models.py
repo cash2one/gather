@@ -255,10 +255,13 @@ class Discount(models.Model):
     @classmethod
     def short_descs(cls, user):
         # 公司优惠
-        profile = user.wash_profile
-        if not user.is_authenticated() or not profile.is_company_user:
+        if not user.is_authenticated():
             return {}
         else:
+            profile = user.wash_profile
+
+            if not profile.is_company_user:
+                return {}
             company = profile.company
             today = datetime.datetime.now()
             results = {}

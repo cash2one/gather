@@ -322,12 +322,14 @@ def get_show_info(request):
     belong = request.GET.get('belong', '2')
     user = request.user
 
-    param = {'belong': belong}
+    param = {
+        'belong': belong,
+        'is_for_company': False
+    }
+
     if user.is_authenticated():
-        if not user.wash_profile.is_company_user:
-            param['is_for_company'] = False
-    else:
-        param['is_for_company'] = False
+        if user.wash_profile.is_company_user:
+            param['is_for_company'] = True
 
     washes = WashType.objects.filter(**param)
 
@@ -527,6 +529,7 @@ def verify_company(request, template_name='wash/verify_company.html'):
         if Company.exists(short):
             company = Company.objects.get(short=short)
             WashUserProfile.objects.filter(user=user).update(is_company_user=True, company=company)
+            return HttpResponseRedirect(reverse('wash.views.account'))
         else:
             messages.error(request, u'验证码错误')
     else:

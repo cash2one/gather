@@ -9,3 +9,15 @@ tornadoredis
 tornado
 qiniu
 requests
+python-dev
+mysql-client mysql-server libmysqlclient-dev
+nginx
+supervisor
+PIL
+Pillow
+Image
+apt-get install python-dev
+apt-get install libjpeg-dev
+apt-get install libjpeg8-dev
+apt-get install libpng3
+apt-get install libfreetype6-dev

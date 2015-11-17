@@ -58,7 +58,10 @@
                             <select name="wash">
                                 <option value="0">无</option>
                                 {% for wash in washes %}
-                                <option value="{{ wash.id }}">{{ wash.desc }}</option>
+                                <option value="{{ wash.id }}">
+                                    {{ wash.desc }}
+                                    {% if wash.is_for_company %}(公司){% endif %}
+                                </option>
                                 {% endfor %}
                             </select>
                         </td>
