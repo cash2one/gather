@@ -125,7 +125,7 @@ def create_menu():
                    {
                        "type": "view",
                        "name": "意见建议",
-                       "url": "http://www.woyaoxixie.cn/advice/"
+                       "url": "http://www.woyaoxixie.cn/wash/advice/"
                    },
                    #{
                    #    "type": "view",
