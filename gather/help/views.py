@@ -122,3 +122,4 @@ def help_list(request):
             return HttpResponse(json.dumps(data))
         except Help.DoesNotExist:
             return HttpResponse(json.dumps({'result': False}))
+    return HttpResponse('hello')
