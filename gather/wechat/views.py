@@ -92,7 +92,7 @@ def create_menu():
             {
                "type": "view",
                "name": "一键下单",
-               "url": settings.OAUTH_WASH_URL.format(settings.APP_ID, "http://www.woyaoxixie.cn/wash/show/")
+               "url": settings.OAUTH_WASH_URL.format(next="/wash/show/")
             },
             {
                "name": "会员中心",
@@ -100,12 +100,12 @@ def create_menu():
                    {
                        "type": "view",
                        "name": "订单查询",
-                       "url": settings.OAUTH_WASH_URL.format(settings.APP_ID, "http://www.woyaoxixie.cn/wash/user/order/")
+                       "url": settings.OAUTH_WASH_URL.format(next="/wash/user/order/")
                     },
                     {
                        "type": "view",
                        "name": "个人中心",
-                       "url": settings.OAUTH_WASH_URL.format(settings.APP_ID, "http://www.woyaoxixie.cn/wash/account/")
+                       "url": settings.OAUTH_WASH_URL.format(next="/wash/account/")
                     }
                ],
             },
