@@ -93,7 +93,7 @@ def create_menu():
             {
                "type": "view",
                "name": "一键下单",
-               "url": settings.OAUTH_WASH_URL.format(settings.APP_ID, "{server_name}/wash/show/".format(server_name=SERVER_NAME))
+               "url": settings.OAUTH_WASH_URL.format(next="{server_name}/wash/show/".format(server_name=SERVER_NAME))
             },
             {
                "name": "会员中心",
@@ -101,12 +101,12 @@ def create_menu():
                    {
                        "type": "view",
                        "name": "订单查询",
-                       "url": settings.OAUTH_WASH_URL.format(settings.APP_ID, "{server_name}/wash/user/order/".format(server_name=SERVER_NAME))
+                       "url": settings.OAUTH_WASH_URL.format(next="{server_name}/wash/user/order/".format(server_name=SERVER_NAME))
                     },
                     {
                        "type": "view",
                        "name": "个人中心",
-                       "url": settings.OAUTH_WASH_URL.format(settings.APP_ID, "{server_name}/wash/account/".format(server_name=SERVER_NAME))
+                       "url": settings.OAUTH_WASH_URL.format(next="{server_name}/wash/account/".format(server_name=SERVER_NAME))
                     }
                ],
             },
