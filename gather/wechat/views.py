@@ -33,6 +33,7 @@ WASH_USER_INFO_URL = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token=w
 WASH_GET_ACCESS_TOKEN = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s'
 WASH_WEB_GRANT = "https://open.weixin.qq.com/connect/oauth2/authorize?appid={app_id}&redirect_uri={redirect_uri}&response_type=code&scope=snsapi_base&state=123#wechat_redirect"
 WASH_LOGIN_ID = '777'
+SERVER_NAME = settings.SERVER_NAME
 
 ERROR_LOG = logging.getLogger('err')
 
@@ -92,7 +93,7 @@ def create_menu():
             {
                "type": "view",
                "name": "一键下单",
-               "url": settings.OAUTH_WASH_URL.format(settings.APP_ID, "http://www.woyaoxixie.cn/wash/show/")
+               "url": settings.OAUTH_WASH_URL.format(settings.APP_ID, "{server_name}/wash/show/".format(server_name=SERVER_NAME))
             },
             {
                "name": "会员中心",
@@ -100,12 +101,12 @@ def create_menu():
                    {
                        "type": "view",
                        "name": "订单查询",
-                       "url": settings.OAUTH_WASH_URL.format(settings.APP_ID, "http://www.woyaoxixie.cn/wash/user/order/")
+                       "url": settings.OAUTH_WASH_URL.format(settings.APP_ID, "{server_name}/wash/user/order/".format(server_name=SERVER_NAME))
                     },
                     {
                        "type": "view",
                        "name": "个人中心",
-                       "url": settings.OAUTH_WASH_URL.format(settings.APP_ID, "http://www.woyaoxixie.cn/wash/account/")
+                       "url": settings.OAUTH_WASH_URL.format(settings.APP_ID, "{server_name}/wash/account/".format(server_name=SERVER_NAME))
                     }
                ],
             },
@@ -125,7 +126,7 @@ def create_menu():
                    {
                        "type": "view",
                        "name": "意见建议",
-                       "url": "http://www.woyaoxixie.cn/wash/"
+                       "url": "{server_name}/wash/.format(server_name=SERVER_NAME)"
                    },
                    #{
                    #    "type": "view",
