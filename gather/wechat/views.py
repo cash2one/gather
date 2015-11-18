@@ -92,7 +92,7 @@ def create_menu():
             {
                "type": "view",
                "name": "一键下单",
-               "url": settings.OAUTH_WASH_URL.format(next="/wash/show/")
+               "url": settings.OAUTH_WASH_URL.format(settings.APP_ID, "http://www.woyaoxixie.cn/wash/show/")
             },
             {
                "name": "会员中心",
@@ -100,12 +100,12 @@ def create_menu():
                    {
                        "type": "view",
                        "name": "订单查询",
-                       "url": settings.OAUTH_WASH_URL.format(next="/wash/user/order/")
+                       "url": settings.OAUTH_WASH_URL.format(settings.APP_ID, "http://www.woyaoxixie.cn/wash/user/order/")
                     },
                     {
                        "type": "view",
                        "name": "个人中心",
-                       "url": settings.OAUTH_WASH_URL.format(next="/wash/account/")
+                       "url": settings.OAUTH_WASH_URL.format(settings.APP_ID, "http://www.woyaoxixie.cn/wash/account/")
                     }
                ],
             },
@@ -117,15 +117,15 @@ def create_menu():
                    #    "name": "常见问题",
                    #    "url": "http://www.jacsice.cn/wash/"
                    #},
-                   {
-                       "type": "view",
+                  {
+                       "type": "click",
                        "name": "联系客服",
-                       "url": "http://www.woyaoxixie.cn/wash/"
+                       "key": "SERVICE"
                    },
                    {
                        "type": "view",
                        "name": "意见建议",
-                       "url": "http://www.woyaoxixie.cn/wash/advice/"
+                       "url": "http://www.woyaoxixie.cn/wash/"
                    },
                    #{
                    #    "type": "view",
@@ -310,6 +310,8 @@ def handle_click(msg):
     key = int(msg['EventKey'])
     if key == MENU_ACCOUNTS_REGISTER:
         return handle_accounts_reigster(msg)
+    elif key == 'SERVICE':
+        return response_text_msg(msg, u'请直接输入您要咨询的问题, 客服会在三分钟内为您服务')
     else:
         return response_text_msg(msg, u'这个功能还在开发中')
 
