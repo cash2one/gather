@@ -9,15 +9,15 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    # url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', include(admin.site.urls)),
 
-    # url(r'^$', 'gather.views.index', name='index'),
+    url(r'^$', 'gather.views.index', name='index'),
     url(r'^$', 'wash.views.index', name='index'),
-    # url(r'^share/', include('share.urls')),
-    # url(r'^help/', include('help.urls')),
-    # url(r'^account/', include('account.urls')),
-    # url(r'^bookmark/', include('bookmark.urls')),
-    # url(r'^comment/', include('comment.urls')),
+    url(r'^share/', include('share.urls')),
+    url(r'^help/', include('help.urls')),
+    url(r'^account/', include('account.urls')),
+    url(r'^bookmark/', include('bookmark.urls')),
+    url(r'^comment/', include('comment.urls')),
     url(r'^wechat/', include('wechat.urls')),
     url(r'^wash/', include('wash.urls')),
     url(r'^wash/manage/', include('wash.murls')),
