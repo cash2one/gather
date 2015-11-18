@@ -126,7 +126,7 @@ def create_menu():
                    {
                        "type": "view",
                        "name": "意见建议",
-                       "url": "{server_name}/wash/.format(server_name=SERVER_NAME)"
+                       "url": "{server_name}/wash/".format(server_name=SERVER_NAME)
                    },
                    #{
                    #    "type": "view",
