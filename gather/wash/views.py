@@ -50,6 +50,8 @@ def auto_login(func):
                         return HttpResponseRedirect(_request.GET.get('next', '/wash/account/'))
                 else:
                     kwargs['open_id'] = open_id
+        INFO_LOG.info(user.is_authenticated(), _request.GET.get('next', ''))
+
         return func(_request, *args, **kwargs)
         wrapped.__doc__ = func.__doc__
         wrapped.__name__ = func.__name__
