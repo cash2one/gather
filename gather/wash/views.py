@@ -38,7 +38,6 @@ def auto_login(func):
         user = _request.user
         if not user.is_authenticated():
             status, open_id = code_get_openid(_request)
-            INFO_LOG.info(status, open_id, _request.GET.get('next', ''))
             if status:
                 if WeProfile.objects.filter(open_id=open_id).exists():
                     profile = WeProfile.objects.get(open_id=open_id)
@@ -50,8 +49,6 @@ def auto_login(func):
                         return HttpResponseRedirect(_request.GET.get('next', '/wash/account/'))
                 else:
                     kwargs['open_id'] = open_id
-        INFO_LOG.info(user.is_authenticated(), _request.GET.get('next', ''))
-
         return func(_request, *args, **kwargs)
         wrapped.__doc__ = func.__doc__
         wrapped.__name__ = func.__name__
@@ -123,7 +120,7 @@ def verify_code(request):
                 else:
                     verify_code = gen_verify_code()
                     VerifyCode(phone=phone, code=verify_code).save()
-                #result = rest.voice_verify(verify_code, phone)
+                # result = rest.voice_verify(verify_code, phone)
                 result = rest.sendTemplateSMS(phone, [verify_code, 2], 42221)['statusCode']
                 result = True if result == '000000' else False
                 return HttpResponse(json.dumps({'result': result}))
@@ -140,7 +137,9 @@ def regist(request, form_class=RegistForm, template_name='wash/regist.html', ope
             return HttpResponseRedirect(request.POST.get('next', '/wash/'))
     else:
         form = form_class()
-        next = request.GET.get('next', '/')
+        next = request.GET.get('next', '')
+        if next and request.user.is_authenticated():
+            return HttpResponseRedirect(next, '/')
     return render(request, template_name, {
         'form': form,
         'open_id': open_id,

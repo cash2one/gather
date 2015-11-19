@@ -88,9 +88,9 @@ def photo_share(request, template_name='share/photo_wall.html'):
 
 def photo_share_more(request):
     """ 点击获取更多照片墙"""
+    results = {}
     if request.is_ajax():
         walls = get_photo_share(request)
-        results = {}
         if walls:
             data = []
             for wall in walls:
