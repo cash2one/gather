@@ -51,7 +51,7 @@ class ClickLogMiddleWare(object):
         else:
             ClickLog(
                 username='guest',
-                click_url=request.pathrequest.path[:90],
+                click_url=request.path[:50],
                 remote_ip=request.META['REMOTE_ADDR'],
             ).save()
             CLICK_LOG.info(gen_info_msg(request, action=u'点击', url=request.path, username='guest'))
