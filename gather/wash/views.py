@@ -130,6 +130,7 @@ def verify_code(request):
 
 @auto_login
 def regist(request, form_class=RegistForm, template_name='wash/regist.html', open_id=None):
+    next = '/wash/'
     if request.method == "POST":
         form = form_class(request, data=request.POST)
         if form.is_valid():
@@ -137,9 +138,9 @@ def regist(request, form_class=RegistForm, template_name='wash/regist.html', ope
             return HttpResponseRedirect(request.POST.get('next', '/wash/'))
     else:
         form = form_class()
-        next = request.GET.get('next', '')
+        next = request.GET.get('next', next)
         if next and request.user.is_authenticated():
-            return HttpResponseRedirect(next, '/')
+            return HttpResponseRedirect(next, next)
     return render(request, template_name, {
         'form': form,
         'open_id': open_id,
