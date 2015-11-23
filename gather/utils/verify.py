@@ -139,7 +139,6 @@ class Code(object):
         buf = StringIO.StringIO()
 
         im.save(buf, 'gif')
-
         return HttpResponse(buf.getvalue(), 'image/gif')
 
     def check(self, code):

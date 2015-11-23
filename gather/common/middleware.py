@@ -6,6 +6,7 @@ import logging
 from django.conf import settings
 from django.core.cache import get_cache
 from django.utils.importlib import import_module
+from django.core.exceptions import PermissionDenied
 
 from utils import gen_info_msg
 from account.models import ClickLog
@@ -36,6 +37,15 @@ class UserRestrictMiddleware(object):
 class ClickLogMiddleWare(object):
     def process_request(self, request):
         """ 用户点击纪录"""
+        user_agent = request.META.get('HTTP_USER_AGENT', '')
+        path = request.META.get('PATH_INFO', '')
+        print path
+
+        if settings.DEBUG == 'False' and 'wash' in path:
+            # 只允许微信访问wash
+            if 'MicroMessenger' not in user_agent:
+                raise PermissionDenied
+
         # 增加sessionid
         if not request.session.get('has_session'):
             request.session['has_session'] = True
