@@ -546,7 +546,8 @@ def verify_company(request, template_name='wash/verify_company.html'):
 
 
 @login_required(login_url=OAUTH_WASH_URL.format(next='/wash/user/order/'))
-def wechat_pay(request, order_id, template_name='wash/pay.html'):
+def wechat_pay(request, template_name='wash/pay.html'):
+    order_id = request.GET.get('order_id', 0)
     order = Order.objects.get(pk=order_id)
     weprofile = WeProfile.objects.get(user=request.user)
     pay = UnifiedOrder_pub()
