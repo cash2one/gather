@@ -22,6 +22,7 @@
 {% block content %}
 {% if orders %}
     {% for order in orders %}
+<div id="{{ order.id }}">
     <ul class="list-group" style="margin-top:10px;">
       <li class="list-group-item">
           <div class="row">
@@ -72,6 +73,7 @@
           <a href="{% url 'wash_user_order_detail' order.id %}" class="btn btn-success">交易记录</a>
       </li>
     </ul>
+</div>
     {% endfor %}
 {% else %}
 <center style="margin-top:100px;" ><a class='btn btn-success' href="{% url 'wash_show'%}">无订单~去下单</a></center>

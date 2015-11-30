@@ -33,7 +33,18 @@
             signType: 'MD5',
             paySign: '{{ paySign }}',
             success: function (res) {
-                alert(res);
+                $.ajax({
+                      url: '/pay/update/',
+                      type: 'GET',
+                      dataType: 'json',
+                      data: {'order_id': {{ order_id}} },
+                      success: function(Data) {
+                          window.location.href = "/wash/user/order/#{{ order_id }}"
+                      }
+                 })
+            },
+            cancel: function () {
+                window.location.href = "/wash/user/order/#{{ order_id }}"
             }
         });
     });

@@ -35,6 +35,7 @@ urlpatterns = patterns('wash.views',
     url(r'^advice/$', 'advice', name='wash_advice'),
 
     url(r'^pay/$', 'wechat_pay', name='wash_wechat_pay'),
+    url(r'^pay/update/$', 'update_pay_status', name='wash_wechat_pay_update'),
 
 
 )

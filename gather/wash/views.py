@@ -566,15 +566,20 @@ def wechat_pay(request, template_name='wash/pay.html'):
     js_pay.setUrl("{}{}".format(settings.SERVER_NAME, request.get_full_path()))
 
     parameters = js_pay.getParameters()
-    INFO_LOG.info(parameters)
-
     jsparameters = js_pay.getJSParameters()
-    INFO_LOG.info(jsparameters)
 
     parameters.update(jsparameters)
-    INFO_LOG.info(parameters)
+    parameters['order_id'] = order_id
 
     return render(request, template_name, parameters)
+
+def update_pay_status(request):
+    if request.method == "POST":
+        order_id = request.POST.get('order_id', '')
+        if Order.exists(order_id):
+            Order.objects.filter(pk=order_id).update(status=1)
+            return HttpResponse(json.dumps({'status': 'success'}))
+    return HttpResponse(json.dumps({'status': 'fail'}))
 
 
 
