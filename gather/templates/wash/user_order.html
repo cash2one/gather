@@ -61,13 +61,13 @@
             </div>
           {% endfor %}
           <div class="text-right" style="margin-top:10px;">
-              共{{ order.count }}件 合计:&nbsp;￥<label style="bold">{{ order.money }}</label>元(含运费￥10.00)
+              共{{ order.count }}件 合计:&nbsp;￥<label style="bold">{{ order.money }}</label>元(含运费￥8.00)
           </div>
       </li>
       <li class="list-group-item text-right">
           {% if order.status_id == 0 %}
           <a href="{% url 'wash_user_order_cancel' order.id %}" class="btn btn-default">取消</a>
-          <a href="{% url 'wash_wechat_pay' %}?order_id={{ order.id }}" class="btn btn-info">立即付款</a>
+          <a href="{% url 'wash_wechat_pay_test' %}?order_id={{ order.id }}" class="btn btn-info">立即付款</a>
           {% elif order.status_id == 1 %}
           <a class="btn btn-success">付款成功</a>
           {% endif %}

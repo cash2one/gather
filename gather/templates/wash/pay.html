@@ -35,7 +35,7 @@
             success: function (res) {
                 $.ajax({
                       url: '/pay/update/',
-                      type: 'GET',
+                      type: 'POST',
                       dataType: 'json',
                       data: {'order_id': {{ order_id}} },
                       success: function(Data) {

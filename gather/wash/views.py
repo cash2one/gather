@@ -251,7 +251,7 @@ def order(request, template_name="wash/order.html"):
     if wash_count < 30:
         price_sum += 8
 
-    # 合作账号优先使用提供给公司的、类型为全部的优惠
+    # 合作账号优先使用提供给公司的、类型为"全部"的优惠
     discount = None
     if profile.is_company_user:
         discount = Discount.get_discount(1, company=profile.company)
@@ -326,13 +326,12 @@ def get_show_info(request):
 
     param = {
         'belong': belong,
-        'is_for_company': False
     }
 
     if user.is_authenticated():
         try:
-            if user.wash_profile.is_company_user:
-                param['is_for_company'] = True
+            if not user.wash_profile.is_company_user:
+                param['is_for_company'] = False
         except:
             pass
 
