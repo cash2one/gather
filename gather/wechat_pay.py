@@ -181,16 +181,24 @@ class Common_util_pub(object):
         return "&".join(buff)
 
     def getSign(self, obj):
-        """生成签名"""
-        #签名步骤一：按字典序排序参数,formatBizQueryParaMap已做
+        """ 支付生成签名"""
+        # 签名步骤一：按字典序排序参数,formatBizQueryParaMap已做
         String = self.formatBizQueryParaMap(obj, False)
-        #签名步骤二：在string后加入KEY
+        # 签名步骤二：在string后加入KEY
         String = "{0}&key={1}".format(String, WxPayConf_pub.KEY)
-        #签名步骤三：MD5加密
+        # 签名步骤三：MD5加密
         String = hashlib.md5(String).hexdigest()
-        #签名步骤四：所有字符转为大写
+        # 签名步骤四：所有字符转为大写
         result_ = String.upper()
         return result_
+
+    def getJSSign(self, obj):
+        """ 调用js接口生成签名"""
+        # 签名步骤一：按字典序排序参数,formatBizQueryParaMap已做
+        String = self.formatBizQueryParaMap(obj, False)
+        # sha1加密签名
+        String = hashlib.sha1(String).hexdigest()
+        return String
 
     def arrayToXml(self, arr):
         """array转xml"""
@@ -224,8 +232,10 @@ class Common_util_pub(object):
 class JsApi_pub(Common_util_pub):
     """JSAPI支付——H5网页端调起支付接口"""
     code = None    #code码，用以获取openid
+    url = None    #当前页面地址，用于生成jsapi_ticket
     openid = None  #用户的openid
     parameters = None  #jsapi参数，格式为json
+    jsparameters = None  #jsapi配置参数，格式为json
     prepay_id = None  #使用统一支付接口得到的预支付id
     curl_timeout = None  #curl超时时间
 
@@ -278,9 +288,20 @@ class JsApi_pub(Common_util_pub):
         jsApiObj["package"] = "prepay_id={0}".format(self.prepay_id)
         jsApiObj["signType"] = "MD5"
         jsApiObj["paySign"] = self.getSign(jsApiObj)
-        self.parameters = json.dumps(jsApiObj)
-
+        self.parameters = jsApiObj
         return self.parameters
+
+    def getJSParameters(self):
+        """设置jsapi配置参数"""
+        jsApiObj = {}
+        timeStamp = int(time.time())
+        jsApiObj["timeStamp"] = "{0}".format(timeStamp)
+        jsApiObj["nonceStr"] = self.parameters['nonceStr']
+        jsApiObj["url"] = self.url
+        jsApiObj["jsapi_ticket"] = self.getJSSign(jsApiObj)
+        jsApiObj["appId"] = WxPayConf_pub.APPID
+        self.jsparameters = jsApiObj
+        return self.jsparameters
 
 
 class Wxpay_client_pub(Common_util_pub):

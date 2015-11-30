@@ -24,7 +24,7 @@ from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.signing import TimestampSigner, SignatureExpired
 
-from wechat.models import WeToken, WeProfile, WeLoginQR
+from wechat.models import WeToken, WeProfile, WeJsapi
 
 from utils import gen_password
 
@@ -51,6 +51,30 @@ def get_server_access_token():
             result = r.json()['access_token']
             expire_time = r.json()['expires_in'] + time.time() - 1200
             instance = WeToken(id=1, token=result, expire_time=expire_time)
+            if not we_token.exists():
+                instance.save()
+            else:
+                instance.save(force_update=True)
+        except:
+            result = None
+    else:
+        result = we_token.get(pk=1).token
+    return result
+
+
+def get_server_jsapi_ticket():
+    access_token = get_server_access_token()
+    we_token = WeJsapi.objects.all()
+    if not we_token.exists() or we_token.get(id=1).expire_time < time.time():
+        params = {
+            'type': 'jsapi',
+            'access_token': we_token,
+        }
+        r = requests.get('https://api.weixin.qq.com/cgi-bin/ticket/getticket', params=params)
+        try:
+            result = r.json()['ticket']
+            expire_time = r.json()['expires_in'] + time.time() - 1200
+            instance = WeJsapi(id=1, ticket=result, expire_time=expire_time)
             if not we_token.exists():
                 instance.save()
             else:

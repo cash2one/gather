@@ -13,6 +13,14 @@ class WeToken(models.Model):
     updated = models.DateTimeField('最后更新时间', auto_now=True)
 
 
+class WeJsapi(models.Model):
+    """ 微信jsapi"""
+    ticket = models.CharField('微信jsapi_ticket', max_length=1024, null=True, blank=True)
+    expire_time = models.IntegerField('Expire_time', max_length=1024, null=True, blank=True)
+    created = models.DateTimeField('创建时间', auto_now_add=True, null=True, blank=True)
+    updated = models.DateTimeField('最后更新时间', auto_now=True)
+
+
 class WeProfile(models.Model):
     """ 微信登录帐号的信息"""
     UNKNOW = 0

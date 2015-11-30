@@ -550,7 +550,9 @@ def wechat_pay(request, order_id, template_name='wash/pay.html'):
     order = Order.objects.get(pk=order_id)
     weprofile = WeProfile.objects.get(user=request.user)
     pay = UnifiedOrder_pub()
-    h5_pay = JsApi_pub()
+    js_pay = JsApi_pub()
+
+    # 获取preypay_id
     pay.setParameter("out_trade_no", datetime.datetime.now().strftime('%Y%m%d%H%M%S%f'))
     pay.setParameter("body", "test")
     pay.setParameter("total_fee", str(order.money*100))
@@ -558,11 +560,17 @@ def wechat_pay(request, order_id, template_name='wash/pay.html'):
     pay.setParameter("trade_type", "JSAPI")
     pay.setParameter("openid", 'oXP2qt4NT-izUpr_B86wbViypiqI')
     preypay_id = pay.getPrepayId()
-    # preypay_id = "wx201511091542253d0517f9b80856928950"
 
-    h5_pay.setPrepayId(preypay_id)
-    parameters = h5_pay.getParameters()
+    js_pay.setPrepayId(preypay_id)
+    js_pay.setUrl(request.get_full_path())
+
+    jsparameters = js_pay.getJSParameters()
+    INFO_LOG.info(jsparameters)
+    parameters = js_pay.getParameters()
     INFO_LOG.info(parameters)
+    parameters.update(jsparameters)
+    INFO_LOG.info(parameters)
+
     return render(request, template_name, parameters)
 
 

@@ -39,7 +39,6 @@ class ClickLogMiddleWare(object):
         """ 用户点击纪录"""
         user_agent = request.META.get('HTTP_USER_AGENT', '')
         path = request.META.get('PATH_INFO', '')
-        print path
 
         if settings.DEBUG == 'False' and 'wash' in path:
             # 只允许微信访问wash
