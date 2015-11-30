@@ -68,7 +68,7 @@ def get_server_jsapi_ticket():
     if not we_token.exists() or we_token.get(id=1).expire_time < time.time():
         params = {
             'type': 'jsapi',
-            'access_token': we_token,
+            'access_token': access_token,
         }
         r = requests.get('https://api.weixin.qq.com/cgi-bin/ticket/getticket', params=params)
         try:
@@ -82,7 +82,7 @@ def get_server_jsapi_ticket():
         except:
             result = None
     else:
-        result = we_token.get(pk=1).token
+        result = we_token.get(pk=1).ticket
     return result
 
 
