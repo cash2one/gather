@@ -271,8 +271,9 @@ def order(request, template_name="wash/order.html"):
         mark = request.POST.get('mark', '')
         pay = request.POST.get('pay', '0')
 
+        status = 0 if pay == '0' else 10
         order = Order(user=profile, address_id=address_id, mark=mark,
-                      money=price_sum, service_time=service_time,
+                      money=price_sum, service_time=service_time, status=status,
                       am_pm=am_pm, verify_code=gen_verify_code(), pay_method=pay)
         order.save()
         for wash in wash_list:
@@ -286,7 +287,7 @@ def order(request, template_name="wash/order.html"):
             data = {
                 'first': {'value': u'您好，您已下单成功。', 'color': '#173177'},
                 'keyword1': {'value': order.id, 'color': '#173177'},
-                'keyword2': {'value': u'创建成功', 'color': '#173177'},
+                'keyword2': {'value': u'创建成功,在线支付', 'color': '#173177'},
                 'keyword3': {'value': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'color': '#173177'},
                 'remark': {'value': u'请尽快支付订单', 'color': '#173177'},
             }
@@ -295,7 +296,7 @@ def order(request, template_name="wash/order.html"):
             data = {
                 'first': {'value': u'您好，您已下单成功。', 'color': '#173177'},
                 'keyword1': {'value': order.id, 'color': '#173177'},
-                'keyword2': {'value': u'创建成功', 'color': '#173177'},
+                'keyword2': {'value': u'创建成功, 货到付款', 'color': '#173177'},
                 'keyword3': {'value': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'color': '#173177'},
                 'remark': {'value': u'请耐心等待客服与您确认', 'color': '#173177'},
             }

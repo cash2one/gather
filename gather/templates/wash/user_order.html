@@ -65,11 +65,13 @@
           </div>
       </li>
       <li class="list-group-item text-right">
-          {% if order.status_id == 0 %}
+          {% if order.status_id == 0 or order.status == 10 %}
           <a href="{% url 'wash_user_order_cancel' order.id %}" class="btn btn-default">取消</a>
+              {% if order.pay_method == 0 %}
           <a href="{% url 'wash_wechat_pay_test' %}?order_id={{ order.id }}" class="btn btn-info">立即付款</a>
+              {% endif %}
           {% elif order.status_id == 1 %}
-          <a class="btn btn-success">付款成功</a>
+          <a class="btn btn-danger">已付款</a>
           {% endif %}
           <a href="{% url 'wash_user_order_detail' order.id %}" class="btn btn-success">交易记录</a>
       </li>
