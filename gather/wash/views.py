@@ -557,12 +557,12 @@ def wechat_pay(request, order_id, template_name='wash/pay.html'):
     pay.setParameter("notify_url", "1")
     pay.setParameter("trade_type", "JSAPI")
     pay.setParameter("openid", 'oXP2qt4NT-izUpr_B86wbViypiqI')
-    #preypay_id = pay.getPrepayId()
-    preypay_id = "wx201511091542253d0517f9b80856928950"
+    preypay_id = pay.getPrepayId()
+    # preypay_id = "wx201511091542253d0517f9b80856928950"
 
     h5_pay.setPrepayId(preypay_id)
     parameters = h5_pay.getParameters()
-    print parameters
+    INFO_LOG.info(parameters)
     return render(request, template_name, parameters)
 
 
