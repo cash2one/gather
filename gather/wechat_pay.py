@@ -40,6 +40,8 @@ import threading
 from urllib import quote
 import xml.etree.ElementTree as ET
 
+from wechat.views import get_server_jsapi_ticket
+
 try:
     import pycurl
     from cStringIO import StringIO
@@ -302,7 +304,8 @@ class JsApi_pub(Common_util_pub):
         jsApiObj["timestamp"] = "{0}".format(timeStamp)
         jsApiObj["noncestr"] = self.parameters['nonceStr']
         jsApiObj["url"] = self.url
-        jsApiObj["jsapi_ticket"] = self.getJSSign(jsApiObj)
+        jsApiObj["jsapi_ticket"] = get_server_jsapi_ticket()
+        jsApiObj["signature"] = self.getJSSign(jsApiObj)
         jsApiObj["appId"] = WxPayConf_pub.APPID
         self.jsparameters = jsApiObj
         return self.jsparameters
