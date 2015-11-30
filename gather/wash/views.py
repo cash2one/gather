@@ -564,10 +564,12 @@ def wechat_pay(request, order_id, template_name='wash/pay.html'):
     js_pay.setPrepayId(preypay_id)
     js_pay.setUrl(request.get_full_path())
 
-    jsparameters = js_pay.getJSParameters()
-    INFO_LOG.info(jsparameters)
     parameters = js_pay.getParameters()
     INFO_LOG.info(parameters)
+    
+    jsparameters = js_pay.getJSParameters()
+    INFO_LOG.info(jsparameters)
+
     parameters.update(jsparameters)
     INFO_LOG.info(parameters)
 
