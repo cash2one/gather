@@ -66,9 +66,10 @@
       </li>
       <li class="list-group-item text-right">
           {% if order.status_id == 0 %}
+          <a href="{% url 'wash_user_order_cancel' order.id %}" class="btn btn-default">取消</a>
           <a href="{% url 'wash_wechat_pay' %}?order_id={{ order.id }}" class="btn btn-info">立即付款</a>
           {% elif order.status_id == 1 %}
-          <a href="{% url 'wash_user_order_cancel' order.id %}" class="btn btn-default">取消</a>
+          <a class="btn btn-success">付款成功</a>
           {% endif %}
           <a href="{% url 'wash_user_order_detail' order.id %}" class="btn btn-success">交易记录</a>
       </li>
