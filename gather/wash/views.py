@@ -192,6 +192,7 @@ def user_order(request, template_name="wash/user_order.html"):
         o['money'] = order.money
         o['created'] = order.created
         o['status'] = order.get_status_display()
+        o['pay_method'] = order.pay_method
         o['status_id'] = order.status
         o['detail'] = detail_dict.get(order.id, [])
         o['count'] = sum(d['count'] for d in detail_dict.get(order.id, []))

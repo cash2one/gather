@@ -364,7 +364,7 @@ class Basket(models.Model):
 
 
 PAY = (
-    (0, '微信'),
+    (0, '在线支付'),
     (1, '货到付款')
 )
 
