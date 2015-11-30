@@ -572,6 +572,8 @@ def wechat_pay(request, template_name='wash/pay.html'):
 
     return render(request, template_name, parameters)
 
+
+@csrf_exempt
 def update_pay_status(request):
     if request.method == "POST":
         order_id = request.POST.get('order_id', '')
