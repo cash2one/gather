@@ -422,13 +422,30 @@ class Order(models.Model):
                     'status': order.status+1
                 }
                 user = order.user.user
-                if order.status == 1:
+                if order.status == 0:
+                    param['service_begin'] = datetime.datetime.now()
+                    param['hour'] = hour
+                    data = {
+                        'first': {'value': u'付款成功', 'color': '#173177'},
+                        'keyword1': {'value': order.id, 'color': '#173177'},
+                        'keyword2': {'value': u'您已付款成功', 'color': '#173177'},
+                        'keyword3': {
+                            'value': u"请耐心等待客服与您联系",
+                            'color': '#173177'
+                        },
+                        'remark': {
+                            'value': u'如果您不方便，请拨打{}'.format(settings.MY_PHONE),
+                            'color': '#173177'
+                        },
+                    }
+                    send_wechat_msg(user, 'order_get', oid, data)
+                elif order.status in [1, 10]:
                     param['service_begin'] = datetime.datetime.now()
                     param['hour'] = hour
                     data = {
                         'first': {'value': u'卖家已确认', 'color': '#173177'},
                         'keyword1': {'value': order.id, 'color': '#173177'},
-                        'keyword2': {'value': u'工作人员等待取货中', 'color': '#173177'},
+                        'keyword2': {'value': u'等待工作人员取货中', 'color': '#173177'},
                         'keyword3': {
                             'value': u"取货时间{},{},{}".format(order.service_time.strftime('%Y-%m-%d'), order.get_am_pm_display(), hour),
                             'color': '#173177'
@@ -439,6 +456,7 @@ class Order(models.Model):
                         },
                     }
                     send_wechat_msg(user, 'order_get', oid, data)
+                    order.status = 1
                 elif order.status == 3:
                     data = {
                         'first': {'value': u'送货通知', 'color': '#173177'},
@@ -454,7 +472,7 @@ class Order(models.Model):
                         },
                     }
                     send_wechat_msg(user, 'order_post', oid, data)
-                if order.status == 4:
+                elif order.status == 4:
                     if verify_code == str(order.verify_code):
                         data = {
                             'first': {'value': u'交易成功', 'color': '#173177'},

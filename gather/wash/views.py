@@ -265,14 +265,15 @@ def order(request, template_name="wash/order.html"):
             price_sum *= float(discount.price)
 
     if request.method == "POST":
-        address_id = request.POST.get('address_id')
-        service_time = request.POST.get('service_time')
-        am_pm = request.POST.get('am_pm')
-        mark = request.POST.get('mark')
+        address_id = request.POST.get('address_id', '')
+        service_time = request.POST.get('service_time', '')
+        am_pm = request.POST.get('am_pm', )
+        mark = request.POST.get('mark', '')
+        pay = request.POST.get('pay', '0')
 
         order = Order(user=profile, address_id=address_id, mark=mark,
                       money=price_sum, service_time=service_time,
-                      am_pm=am_pm, verify_code=gen_verify_code())
+                      am_pm=am_pm, verify_code=gen_verify_code(), pay_method=pay)
         order.save()
         for wash in wash_list:
             OrderDetail(order=order, wash_type_id=wash['id'],
@@ -280,14 +281,24 @@ def order(request, template_name="wash/order.html"):
                         photo=wash['photo'], measure=wash['measure_id'],
                         name=wash['name'], belong=wash['belong_id']).save()
         Basket.submit(request.session.session_key)
-        OrderLog.create(order.id, 1)
-        data = {
-            'first': {'value': u'您好，您已下单成功。', 'color': '#173177'},
-            'keyword1': {'value': order.id, 'color': '#173177'},
-            'keyword2': {'value': u'创建成功', 'color': '#173177'},
-            'keyword3': {'value': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'color': '#173177'},
-            'remark': {'value': u'请耐心等待客服与您确认', 'color': '#173177'},
-        }
+        if pay == '0':
+            OrderLog.create(order.id, 0)
+            data = {
+                'first': {'value': u'您好，您已下单成功。', 'color': '#173177'},
+                'keyword1': {'value': order.id, 'color': '#173177'},
+                'keyword2': {'value': u'创建成功', 'color': '#173177'},
+                'keyword3': {'value': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'color': '#173177'},
+                'remark': {'value': u'请尽快支付订单', 'color': '#173177'},
+            }
+        else:
+            OrderLog.create(order.id, 10)
+            data = {
+                'first': {'value': u'您好，您已下单成功。', 'color': '#173177'},
+                'keyword1': {'value': order.id, 'color': '#173177'},
+                'keyword2': {'value': u'创建成功', 'color': '#173177'},
+                'keyword3': {'value': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'color': '#173177'},
+                'remark': {'value': u'请耐心等待客服与您确认', 'color': '#173177'},
+            }
         send_wechat_msg(request.user, 'order_create', order.id, data)
         return HttpResponseRedirect(reverse('wash.views.user_order'))
     else:
