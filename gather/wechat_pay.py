@@ -299,8 +299,8 @@ class JsApi_pub(Common_util_pub):
         """设置jsapi配置参数"""
         jsApiObj = {}
         timeStamp = int(time.time())
-        jsApiObj["timeStamp"] = "{0}".format(timeStamp)
-        jsApiObj["nonceStr"] = self.parameters['nonceStr']
+        jsApiObj["timestamp"] = "{0}".format(timeStamp)
+        jsApiObj["noncestr"] = self.parameters['nonceStr']
         jsApiObj["url"] = self.url
         jsApiObj["jsapi_ticket"] = self.getJSSign(jsApiObj)
         jsApiObj["appId"] = WxPayConf_pub.APPID
