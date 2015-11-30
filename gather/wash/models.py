@@ -494,7 +494,7 @@ class Order(models.Model):
             order = cls.objects.get(pk=oid)
             user = order.user.user
             if is_buyer:
-                if cls.objects.get(pk=oid).status == 1:
+                if cls.objects.get(pk=oid).status == 0:
                     OrderLog.create(oid, 7)
                     cls.objects.filter(pk=oid).update(status=7)
                     data = {
