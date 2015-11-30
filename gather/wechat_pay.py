@@ -278,6 +278,10 @@ class JsApi_pub(Common_util_pub):
         """设置code"""
         self.code = code
 
+    def setUrl(self, url):
+        """设置jsapi配置url"""
+        self.url = url
+
     def getParameters(self):
         """设置jsapi的参数"""
         jsApiObj = {}
