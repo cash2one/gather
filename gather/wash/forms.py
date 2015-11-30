@@ -110,6 +110,7 @@ class WashTypeForm(forms.ModelForm):
     is_for_company = forms.IntegerField(label=u'是否公司合作', )
 
     def clean(self):
+        print self.errors
         return self.cleaned_data
 
     def save(self, commit=True):
