@@ -294,7 +294,7 @@ class Discount(models.Model):
             discounts = cls.objects.filter(begin__lte=today, end__gte=today, status=True, is_for_user=False)
             return cls.format_discounts(discounts)
         else:
-            return None
+            return {'all': {}, 'class': {}, 'single': {}}
 
     @classmethod
     def format_discounts(cls, discounts):
