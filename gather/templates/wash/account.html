@@ -1,6 +1,6 @@
 {% extends 'wash/base.html' %}
 {% load staticfiles %}
-
+{% load util_tag %}
 {% block extra_css %}
 <style>
     .account_img{
@@ -25,11 +25,30 @@
             {% if profile %}
                 <img class="img-circle" src="/static/img/av1.png" style="width: 64px; height: 64px;"/>
                 <label>{{ profile.phone }}</label>
+                <a style="margin-left:20%" href="{% url 'wash_recharge'%}">
+                    <span class="label label-danger">
+                       充值
+                    </span>
+                </a>
             {% else %}
                 <img class="account_img" src="/static/images/wash/head.png"/>
-                <a href="{% url 'wash_regist' %}">登录</a>&nbsp;/&nbsp;<a href="{% url 'wash_regist' %}">注册</a>
+                <a href="{% url 'wash_regist' %}">登录/注册</a>
             {% endif %}
        </div>
+        <div href="#" class="list-group-item row">
+            <div class="col-xs-6 text-center">
+                余额&nbsp;<label style="color:red">{{ profile.cash|default:'0.0'|money_format }}</label>元&nbsp;&nbsp;&nbsp;
+            </div>
+            <div class="col-xs-6 text-center">
+                {% if profile.cash > 100000 %}
+                <label style="color:yellow">黄金会员</label>
+                {% elif profile.cash > 50000 %}
+                <label style="color:#999999 ">白银会员</label>
+                {% else %}
+                <label style="color:grey">普通会员</label>
+                {% endif %}
+            </div>
+       </a>
     </div>
     <div class="list-group">
        <!--<a href="#" class="list-group-item">
@@ -66,6 +85,5 @@
     <div class="text-center" style="margin-top:50px;">
         <label style="bold;color:grey">北京兰香丽洁&nbsp;&nbsp;版权所有</label>
     </div>
-{% endblock %}
 
-{% block account %}on{% endblock %}
+{% endblock %}

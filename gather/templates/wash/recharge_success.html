@@ -1,0 +1,51 @@
+{% extends 'wash/base.html' %}
+{% load util_tag %}
+{% block extra_css %}
+<style>
+    .form-control {
+        position: relative;
+        height: auto;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        padding: 10px;
+        font-size: 16px;
+    }
+    .form-control:focus {
+        z-index: 2;
+    }
+    input {
+        margin-bottom: -1px;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    </style>
+{% endblock %}
+
+{% block title_center %}
+<img class="top-logo" src="/static/images/wash/address_title.png" width="100">
+{% endblock %}
+
+{% block title_left %}
+    {% if order.pay_method == 2 %}
+    <a href="{% url 'wash_account' %}"><img class="label_img" src="/static/images/wash/label_left.png" /></a>
+    {% else %}
+    <a href="{% url 'wash_user_order' %}"><img class="label_img" src="/static/images/wash/label_left.png" /></a>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="alert {% if order %}alert-success{% else %}alert-danger{% endif %} text-center" role="alert" style="margin-top:50px;">
+    {{ msg }}
+</div>
+{% if order %}
+<div class="text-right" style="margin-top:50px;margin-right:50px;">
+    余额:&nbsp;<span class="label label-info">{{ profile.cash|money_format }}</span>元
+</div>
+{% endif %}
+
+{% endblock %}
+
+

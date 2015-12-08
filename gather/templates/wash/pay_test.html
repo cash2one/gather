@@ -1,0 +1,33 @@
+{% extends 'wash/base.html' %}
+
+{% block title_center %}
+<img class="top-logo" src="/static/images/wash/address_title.png" width="100">
+{% endblock %}
+
+{% block title_left %}
+    <a href="{% url 'wash_user_order' %}"><img class="label_img" src="/static/images/wash/label_left.png" /></a>
+{% endblock %}
+
+{% block content %}
+
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+
+    $.ajax({
+          url: '/wash/pay/update/',
+          type: 'POST',
+          dataType: 'json',
+          data: {'order_id': {{ order_id }} },
+          success: function(Data) {
+              window.location.href = "/wash/pay/success/?oid={{ order_id }}"
+          }
+     });
+
+
+
+</script>
+{% endblock %}

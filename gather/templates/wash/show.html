@@ -1,5 +1,5 @@
 {% extends 'wash/base.html' %}
-
+{% load util_tag %}
     {% block navbar %}
     <ul class="nav nav-tabs text-center">
         <li role="presentation" class="active" value="2"><a href="#">上衣</a></li>
@@ -41,7 +41,7 @@
                         <h4>
                             &nbsp;&nbsp;
                             <label style="color:red">￥</label>
-                            <label class="media-heading">{{ wash.new_price }}</label>元({{ wash.measure }})
+                            <label class="media-heading">{{ wash.new_price|money_format }}</label>元({{ wash.measure }})
                             {% if wash.is_for_company %}
                             {% if wash.short_desc %}
                             <span class="label label-danger">

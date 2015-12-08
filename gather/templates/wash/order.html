@@ -1,6 +1,6 @@
 {% extends 'wash/base.html' %}
 {% load staticfiles %}
-
+{% load util_tag %}
 {% block title_center %}
 <a href="{% url 'wash_show' %}">
     <img class="top-logo" src="{% static 'images/wash/order_create_title.png' %}" width="100">
@@ -133,7 +133,7 @@
                 <label class="media-heading">{{ wash.belong }}</label>
                 <h4>
                     <label style="color:red">￥</label>
-                    <label class="media-heading" name="price" value="{{ wash.id }}">{{ wash.new_price }}</label>元({{ wash.measure }})
+                    <label class="media-heading" name="price" value="{{ wash.id }}">{{ wash.new_price|money_format }}</label>元({{ wash.measure }})
                     {% if wash.is_for_company %}
                     {% if wash.short_desc %}
                     <span class="label label-danger">

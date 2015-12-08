@@ -219,7 +219,7 @@ def discount(request, template_name="wash/manage/discount.html"):
     :param template_name:
     :return:
     """
-    discounts_list = Discount.objects.all().order_by("-updated")
+    discounts_list = Discount.objects.all().order_by("-status", "-updated")
     discounts, page_numbers = adjacent_paginator(discounts_list, page=request.GET.get('page', 1))
 
     return render(request, template_name, {

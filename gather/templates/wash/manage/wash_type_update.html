@@ -1,5 +1,5 @@
 {% extends 'wash/manage/base.html' %}
-
+{% load util_tag %}
 {% block nav_bar %}
 <ul class="breadcrumb">
     <li>
@@ -24,11 +24,11 @@
                     </tr>
                     <tr>
                         <td>*现价(元)</td>
-                        <td>{{ form.new_price }}</td>
+                        <td><input type="text" value="{{ type.new_price|money_format }}" name="new_price"/></td>
                     </tr>
                     <tr>
                         <td>*原价(元)</td>
-                        <td>{{ form.old_price }}</td>
+                        <td><input type="text" value="{{ type.old_price|money_format }}" name="old_price"/></td>
                     </tr>
                     <tr>
                         <td>单位</td>

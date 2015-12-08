@@ -13,7 +13,7 @@ from account.models import LoginLog
 from wash.models import WashUserProfile, VerifyCode, WashType, Discount, IndexBanner
 from wash.models import Company
 from wechat.models import WeProfile
-from utils import gen_info_msg, gen_photo_name
+from utils import gen_info_msg, gen_photo_name, yuan_to_fen
 from qn import Qiniu
 
 LOGIN_LOG = logging.getLogger('login')
@@ -110,7 +110,10 @@ class WashTypeForm(forms.ModelForm):
     is_for_company = forms.IntegerField(label=u'是否公司合作', )
 
     def clean(self):
-        print self.errors
+        new_price = yuan_to_fen(self.cleaned_data['new_price'])
+        old_price = yuan_to_fen(self.cleaned_data['old_price'])
+        self.cleaned_data['new_price'] = new_price
+        self.cleaned_data['old_price'] = old_price
         return self.cleaned_data
 
     def save(self, commit=True):
@@ -159,19 +162,19 @@ class DiscountForm(forms.ModelForm):
         if range_type == u'1':
             # 全部类型 折扣和减钱只能有一个
             if Discount.objects.filter(status=True, range_type=range_type, begin__lte=today,
-                                       end__gte=today, company_id=company_id).exists():
+                                       end__gte=today, company_id=company_id, is_for_user=False).exists():
                 raise forms.ValidationError(u'已存在同类型的有效优惠券或折扣和减钱只能有一个!')
         elif range_type == u'2':
             # 一类 折扣和减钱只能有一个
             if Discount.objects.filter(wash_type=wash_type, status=True, range_type=range_type,
                                        begin__lte=today, end__gte=today,
-                                       company_id=company_id).exists():
+                                       company_id=company_id, is_for_user=False).exists():
                 raise forms.ValidationError(u'已存在同类型的有效优惠券或折扣和减钱只能有一个!')
         elif range_type == u'3':
             # 某一个产品
             if Discount.objects.filter(wash_type=wash_type, status=True, wash_id=wash_id,
                                        range_type=range_type, begin__lte=today, end__gte=today,
-                                       company_id=company_id).exists():
+                                       company_id=company_id, is_for_user=False).exists():
                 raise forms.ValidationError(u'已存在同类型的有效优惠券或折扣和减钱只能有一个!')
         return self.cleaned_data
 
@@ -179,10 +182,14 @@ class DiscountForm(forms.ModelForm):
         m = super(DiscountForm, self).save(commit=False)
         company_id = self._request.POST.get('company', '0')
         wash_id = self._request.POST.get('wash', '0')
+
         if company_id != '0':
             m.company_id = company_id
         if wash_id != '0':
             m.wash_id = wash_id
+
+        is_for_user = self._request.POST.get('is_for_user', '0')
+        m.is_for_user = True if is_for_user == '1' else False
         m.save()
 
 

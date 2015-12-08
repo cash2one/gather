@@ -1,6 +1,6 @@
 {% extends 'wash/base.html' %}
 {% load staticfiles %}
-
+{% load util_tag %}
 {% block extra_css %}
 <style>
     body, .main{
@@ -51,7 +51,7 @@
                         <h4 class="media-heading text-left">{{ wash.name }}</h4>
                         <label class="media-heading">{{ wash.belong }}</label>
                         <h4>
-                            <label style="color:red">￥</label><label class="media-heading" name="price" value="{{ wash.id }}">{{ wash.price }}</label>元({{ wash.measure }})
+                            <label style="color:red">￥</label><label class="media-heading" name="price" value="{{ wash.id }}">{{ wash.price|money_format }}</label>元({{ wash.measure }})
                         </h4>
                     </div>
                     <div class="col-xs-3 text-right" style="margin-top:20%">
@@ -61,7 +61,7 @@
             </div>
           {% endfor %}
           <div class="text-right" style="margin-top:10px;">
-              共{{ order.count }}件 合计:&nbsp;￥<label style="bold">{{ order.money }}</label>元(含运费￥8.00)
+              共{{ order.count }}件 合计:&nbsp;￥<label style="bold">{{ order.money|money_format }}</label>元(含运费￥8.00)
           </div>
       </li>
       <li class="list-group-item text-right">

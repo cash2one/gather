@@ -23,7 +23,7 @@
                 <table class="table table-striped table-bordered table-hover">
                     <tbody>
                     <tr>
-                        <td>*名称</td>
+                        <td>*名称(唯一,不重复)</td>
                         <td>{{ form.name }}</td>
                     </tr>
                     <tr>
@@ -52,6 +52,15 @@
                         <td>针对某一产品</td>
                         <td>
                             {{ discount.wash.desc|default:'无' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>是否为赠送用户的优惠券</td>
+                        <td>
+                            <select name="is_for_user">
+                                <option value="0" {% if discount.is_for_user %}selected{% endif %}>否</option>
+                                <option value="1" {% if not discount.is_for_user %}selected{% endif %}>是</option>
+                            </select>
                         </td>
                     </tr>
                     <tr>

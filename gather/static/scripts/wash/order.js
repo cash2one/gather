@@ -27,6 +27,14 @@ function get_show_info(belong){
                 $("#wash_"+belong).attr("name", "true");
                 for(i=0;i<Data['result'].length;i++){
                     var d = Data['result'][i];
+                    var desc = '';
+                    if(d['is_for_company']){
+                        if(d['short_desc'] != ''){
+                            desc = "<span class='label label-danger'>" + d['short_desc'] + "</span>";
+                        }else{
+                            desc = "<span class='label label-success'>合作</span>";
+                        }
+                    }
                     var html = "<div class='container-fluid' style='border-bottom:solid 1px #CCCCCC;margin-top:10px;'>"+
                                     "<div clss='row'>"+
                                         "<div class='col-xs-2 text-left'>"+
@@ -52,7 +60,8 @@ function get_show_info(belong){
                                             "<div clss='row'>"+
                                                 "<div class='col-xs-12 text-left'>"+
                                                     "<h4>"+
-                                                        "<label style='color:red'>￥</label><label class='media-heading'>"+ d['new_price']+"</label>元("+ d['measure']+")"+
+                                                        "<label style='color:red'>￥</label><label class='media-heading'>"+ (d['new_price']/100).toFixed(1)+"</label>元("+ d['measure']+")"+
+                                                        desc +
                                                     "</h4>"+
                                                 "</div>"+
                                             "</div>"+
@@ -142,9 +151,9 @@ function update_order_ajax(key, flag){
 function price_sum(){
     var sum = 0;
     $("label[name='price']").each(function(){
-        sum += parseInt($(this).html()) * parseInt($("#wash_count_"+$(this).attr("value")).html());
+        sum += parseFloat($(this).html()) * parseFloat($("#wash_count_"+$(this).attr("value")).html());
     });
-    $("#price_total").html(sum).show();
+    $("#price_total").html(sum.toFixed(2)).show();
 }
 
 

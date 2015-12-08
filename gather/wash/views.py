@@ -17,7 +17,7 @@ from django.contrib.auth import login, authenticate
 
 from wash.models import VerifyCode, WashUserProfile, WashType, IndexBanner
 from wash.models import Basket, UserAddress, Address, Order, OrderDetail, OrderLog
-from wash.models import Discount, MyDiscount, Advice, Company
+from wash.models import Discount, MyDiscount, Advice, Company, PayRecord
 from wash.forms import RegistForm
 from CCPRestSDK import REST
 from utils import gen_verify_code, adjacent_paginator
@@ -26,6 +26,7 @@ from wechat.views import code_get_openid
 from wechat.models import WeProfile
 from gather.celery import send_wechat_msg
 from wechat_pay import UnifiedOrder_pub, JsApi_pub
+from utils import money_format, get_encrypt_cash
 
 WASH_URL = settings.WASH_URL
 OAUTH_WASH_URL = settings.OAUTH_WASH_URL
@@ -164,7 +165,7 @@ def user_order(request, template_name="wash/user_order.html"):
     profile = request.user.wash_profile
 
     company_discounts_dict = Discount.short_descs(request.user)
-    order_list = Order.objects.filter(user=profile).order_by('-updated')
+    order_list = Order.objects.filter(user=profile, pay_method__in=[0, 1]).order_by('-updated')
     order_id_arr = list(set([order.id for order in order_list]))
     order_detail_list = OrderDetail.objects.filter(order_id__in=order_id_arr)
 
@@ -238,6 +239,14 @@ def basket(request, template_name='wash/basket.html'):
     })
 
 
+def discount_price(wash_price, discount_type, discount_price):
+    if discount_type == 1:
+        wash_price -= float(discount_price) * 100
+    else:
+        wash_price *= discount_price * 0.1
+    return wash_price
+
+
 @login_required(login_url=OAUTH_WASH_URL.format(next='/wash/order/'))
 def order(request, template_name="wash/order.html"):
     """
@@ -247,23 +256,36 @@ def order(request, template_name="wash/order.html"):
     """
     profile = request.user.wash_profile
     wash_list = basket_info(request)
-    price_sum = reduce(lambda x, y: x+y, [wash['count']*wash['new_price']for wash in wash_list])
-    wash_count = reduce(lambda x, y: x+y, [wash['count'] for wash in wash_list])
-    if wash_count < 30:
-        price_sum += 8
 
     # 合作账号优先使用提供给公司的、类型为"全部"的优惠
-    discount = None
-    if profile.is_company_user:
-        discount = Discount.get_discount(1, company=profile.company)
-    else:
-        discount = Discount.get_discount(1)
+    # 优惠券各个类别的只能用一个
 
-    if discount is not None:
-        if discount.discount_type == 1:
-            price_sum -= int(discount.price)
+    # 获取各个类别的优惠券
+    discount_dict = Discount.get_discounts()
+    discount_all = discount_dict['all']
+    discount_class = discount_dict['class']
+    discount_single = discount_dict['single']
+
+    # 对有优惠的进行优惠，三种类别的优惠叠加
+    for wash in wash_list:
+        if wash['belong_id'] in discount_class:
+            discount = discount_class[wash['belong_id']]
+            wash['new_price'] = discount_price(wash['new_price'], discount['discount_type'], discount['price'])
+        if wash['id'] in discount_single:
+            discount = discount_single[wash['id']]
+            wash['new_price'] = discount_price(wash['new_price'], discount['discount_type'], discount['price'])
+
+    price_sum = reduce(lambda x, y: x+y, [wash['count']*wash['new_price']for wash in wash_list])
+    wash_count = reduce(lambda x, y: x+y, [wash['count'] for wash in wash_list])
+    if wash_count < settings.TRANS_COUNT:
+        price_sum += settings.TRANS_PRICE_FEN  # 800分
+
+    # 优惠券中price为元，wash中为分
+    if discount_all:
+        if discount_all['discount_type'] == 1:
+            price_sum -= int(discount_all['price'])*100
         else:
-            price_sum *= float(discount.price)
+            price_sum *= float(discount_all['price']) * 0.1
 
     if request.method == "POST":
         address_id = request.POST.get('address_id', '')
@@ -301,7 +323,8 @@ def order(request, template_name="wash/order.html"):
                 'keyword3': {'value': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'color': '#173177'},
                 'remark': {'value': u'请耐心等待客服与您确认', 'color': '#173177'},
             }
-        send_wechat_msg(request.user, 'order_create', order.id, data)
+        if not settings.DEBUG:
+            send_wechat_msg(request.user, 'order_create', order.id, data)
         return HttpResponseRedirect(reverse('wash.views.user_order'))
     else:
         choose = request.GET.get('choose', None)
@@ -310,9 +333,9 @@ def order(request, template_name="wash/order.html"):
         'address': address,
         'profile': profile,
         'wash_list': wash_list,
-        'price_sum': price_sum,
+        'price_sum': money_format(price_sum),
         'today': datetime.datetime.now(),
-        'discount': discount,
+        'discount': discount_all,
     })
 
 
@@ -347,6 +370,8 @@ def get_show_info(request):
                 param['is_for_company'] = False
         except:
             pass
+    else:
+        param['is_for_company'] = False
 
     washes = WashType.objects.filter(**param)
 
@@ -515,6 +540,153 @@ def discount_get(request):
             messages.error(request, u'不存在')
 
 
+@login_required(login_url=OAUTH_WASH_URL.format(next='/wash/user/order/'))
+def wechat_pay(request, template_name='wash/pay.html'):
+    order_id = request.GET.get('order_id', 0)
+    profile = request.user.wash_profile
+    order = Order.objects.get(pk=order_id)
+
+    # 预付款
+    order_price = order.money
+    my_account = profile.cash
+    if my_account > 0:
+        if my_account >= order_price:
+            PayRecord(user=request.user, order=order, pay_type=3, money=order_price).save()
+        else:
+            PayRecord(user=request.user, order=order, pay_type=3, money=my_account).save()
+            PayRecord(user=request.user, order=order, pay_type=2, money=order_price-my_account).save()
+    else:
+        PayRecord(user=request.user, order=order, pay_type=2, money=order_price).save()
+
+    if settings.DEBUG:
+        template_name = 'wash/pay_test.html'
+        parameters = {}
+        parameters['order_id'] = order_id
+    else:
+        open_id = profile.open_id
+        pay = UnifiedOrder_pub()
+        js_pay = JsApi_pub()
+
+        # 获取preypay_id
+        pay.setParameter("out_trade_no", datetime.datetime.now().strftime('%Y%m%d%H%M%S%f'))
+        pay.setParameter("body", order.desc)
+        pay.setParameter("total_fee", str(order.money))
+        pay.setParameter("notify_url", "1")
+        pay.setParameter("trade_type", "JSAPI")
+        pay.setParameter("openid", open_id)
+        preypay_id = pay.getPrepayId()
+
+        js_pay.setPrepayId(preypay_id)
+        js_pay.setUrl("{}{}".format(settings.SERVER_NAME, request.get_full_path()))
+
+        parameters = js_pay.getParameters()
+        jsparameters = js_pay.getJSParameters()
+
+        parameters.update(jsparameters)
+        parameters['order_id'] = order_id
+
+    return render(request, template_name, parameters)
+
+
+@csrf_exempt
+def update_pay_status(request):
+    if request.method == "POST":
+        order_id = request.POST.get('order_id', '')
+        if Order.exists(order_id):
+            order = Order.objects.get(pk=order_id)
+            profile = request.user.wash_profile
+
+            if order.pay_method == 2:  # 充值
+                if profile.verify_cash == get_encrypt_cash(profile):
+                    # 预付款成功
+                    if PayRecord.objects.filter(order_id=order_id, pay_type=1).exists():
+                        PayRecord.objects.filter(order_id=order_id, pay_type=1).update(status=True)
+                        order.status = 11  # 充值成功
+                        order.save()
+                        OrderLog.create(order.id, 11)
+                    else:
+                        return HttpResponse(json.dumps({'status': 'fail'}))
+            else:
+                # 预付款成功
+                pay_records = PayRecord.objects.filter(order_id=order_id)
+                for pay in pay_records:
+                    if pay.pay_type == 3:
+                        # 余额校验, 扣款
+                        if profile.verify_cash == get_encrypt_cash(profile):
+                            profile.cash -= pay.money
+                            profile.verify_cash = get_encrypt_cash(profile)
+                            profile.save()
+                        else:
+                            return HttpResponse(json.dumps({'status': 'fail'}))
+
+                PayRecord.objects.filter(order_id=order_id).update(status=True)
+
+                order.status = 1  # 付款成功
+                order.save()
+                OrderLog.create(order.id, 1)
+
+                # 交易成功后赠送优惠券，通过名字获取优惠券
+                today = datetime.datetime.now()
+                discount = Discount.objects.filter(begin__lte=today, end__gte=today,
+                                                   name=u'交易后赠送', status=True,
+                                                   is_for_user=True)
+                if discount:
+                    discount = discount[0]
+                    # 优惠券有效并且用户未领取
+                    if Discount.is_valid(discount.id) and not \
+                            MyDiscount.objects.filter(discount=discount).exists():
+                        MyDiscount.create(request.user.wash_profile.phone, discount)
+
+        return HttpResponse(json.dumps({'status': 'success'}))
+    return HttpResponse(json.dumps({'status': 'fail'}))
+
+
+@login_required(login_url=OAUTH_WASH_URL.format(next='/wash/user/account/'))
+def recharge(request):
+    """ 充值
+    """
+    profile = request.user.wash_profile
+    if request.method == "POST":
+        cash_yuan = request.POST.get('cash', '0')
+        cash_fen = int(float(cash_yuan) * 100.0)
+        if cash_fen >= 20000:
+            cash_fen += 5000  # 冲200送50
+        elif cash_fen >= 10000:
+            cash_fen += 2000  # 冲100送20
+        profile.cash += cash_fen
+        profile.verify_cash = get_encrypt_cash(profile)
+        profile.save()
+        order = Order(user=profile, money=cash_fen, status=0,
+                      service_time=datetime.datetime.now(), pay_method=2)
+        order.save()
+        OrderLog.create(order.id, 0)
+        return HttpResponseRedirect('{}?order_id={}'.format(reverse('wash.views.wechat_pay'), order.id))
+    else:
+        return render(request, 'wash/recharge.html')
+
+
+@login_required(login_url=OAUTH_WASH_URL.format(next='/wash/user/account/'))
+def wechat_pay_success(request):
+    profile = request.user.wash_profile
+    order_id = request.GET.get('oid', '')
+    type = request.GET.get('type', 'pay')
+    if Order.exists(order_id):
+        order = Order.objects.get(pk=order_id)
+        if order.pay_method == 2:
+            msg = u'已成功充值{}元'.format(money_format(order.money))
+        else:
+            msg = u'消费{}元'.format(money_format(order.money))
+    else:
+        order = ''
+        msg = u'无此信息'
+
+    return render(request, 'wash/recharge_success.html', {
+        'profile': profile,
+        'order': order,
+        'msg': msg,
+    })
+
+
 def advice(request, template_name='wash/advice.html'):
     """
     意见建议
@@ -555,46 +727,4 @@ def verify_company(request, template_name='wash/verify_company.html'):
     return render(request, template_name, {
         'profile': profile,
     })
-
-
-@login_required(login_url=OAUTH_WASH_URL.format(next='/wash/user/order/'))
-def wechat_pay(request, template_name='wash/pay.html'):
-    order_id = request.GET.get('order_id', 0)
-    order = Order.objects.get(pk=order_id)
-    weprofile = WeProfile.objects.get(user=request.user)
-    pay = UnifiedOrder_pub()
-    js_pay = JsApi_pub()
-
-    # 获取preypay_id
-    pay.setParameter("out_trade_no", datetime.datetime.now().strftime('%Y%m%d%H%M%S%f'))
-    pay.setParameter("body", "test")
-    pay.setParameter("total_fee", str(order.money*100))
-    pay.setParameter("notify_url", "1")
-    pay.setParameter("trade_type", "JSAPI")
-    pay.setParameter("openid", 'oXP2qt4NT-izUpr_B86wbViypiqI')
-    preypay_id = pay.getPrepayId()
-
-    js_pay.setPrepayId(preypay_id)
-    js_pay.setUrl("{}{}".format(settings.SERVER_NAME, request.get_full_path()))
-
-    parameters = js_pay.getParameters()
-    jsparameters = js_pay.getJSParameters()
-
-    parameters.update(jsparameters)
-    parameters['order_id'] = order_id
-
-    return render(request, template_name, parameters)
-
-
-@csrf_exempt
-def update_pay_status(request):
-    if request.method == "POST":
-        order_id = request.POST.get('order_id', '')
-        if Order.exists(order_id):
-            Order.objects.filter(pk=order_id).update(status=1)
-            return HttpResponse(json.dumps({'status': 'success'}))
-    return HttpResponse(json.dumps({'status': 'fail'}))
-
-
-
 

@@ -1,5 +1,5 @@
 {% extends 'wash/manage/base.html' %}
-
+{% load util_tag %}
 {% block nav_bar %}
 <ul class="breadcrumb">
     <li>
@@ -57,8 +57,8 @@
                 <tr>
                     <td>{{ type.id }}</td>
                     <td>{{ type.name }}</td>
-                    <td>{{ type.new_price }}</td>
-                    <td>{{ type.old_price }}</td>
+                    <td>{{ type.new_price|money_format }}</td>
+                    <td>{{ type.old_price|money_format }}</td>
                     <td>{{ type.get_measure_display }}</td>
                     <td>{{ type.get_belong_display }}</td>
                     <td><img src="{{ type.get_photo_url }}" style="width:80px;height:100px;"/></td>

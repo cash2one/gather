@@ -5,11 +5,12 @@ import logging
 import traceback
 import base64
 import os
-
+import hashlib
 import string
 import time
 import random
 
+from decimal import Decimal
 from PIL import Image
 from datetime import datetime
 from django.core.signing import TimestampSigner, SignatureExpired, BadSignature
@@ -29,6 +30,32 @@ ONE_DAY = 24 * 60 * 60
 def financial_round(amount):
     """ 金额四舍五入"""
     return int(round(amount))
+
+
+def yuan_to_fen(amount):
+    """ 元转化为分"""
+    try:
+        return int(str(float(amount) * 100).split('.')[0])
+    except ValueError:
+        return amount
+
+
+def fen_to_yuan(amount):
+    """ 分转化为元"""
+    try:
+        return int(amount) / 100.00
+    except ValueError:
+        return amount
+
+
+def money_format(value):
+    """ 分转换为元"""
+    try:
+        value = str(int(value) / 100.00)
+        return '{0:,}'.format(Decimal(value.rstrip('0').rstrip('.')))
+    except (ValueError, TypeError):
+        return value
+
 
 
 def gen_info_msg(request, action, **kwargs):
@@ -182,6 +209,12 @@ def get_encrypt_code(username):
     signer = TimestampSigner()
     code = base64.b64encode(signer.sign(username))
     return code
+
+
+def get_encrypt_cash(profile):
+    key_value = "phone={}&created={}&cash={}".format(profile.phone, profile.created, profile.cash)
+    ency_s = hashlib.md5(key_value).hexdigest()
+    return ency_s
 
 
 def main():

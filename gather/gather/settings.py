@@ -260,6 +260,11 @@ BROKER_URL = 'redis://localhost:6379/0'
 CELERY_DISABLE_RATE_LIMITS = True
 # celery worker --app=project.celery:app --loglevel=INFO
 
+# 件数之上包邮（件）
+TRANS_COUNT = 30
+# 邮费（分）
+TRANS_PRICE_FEN = 800
+
 # 验证码过期时间 2分钟
 VERIFY_CODE_EXPIRE = 120
 

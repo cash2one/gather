@@ -61,15 +61,19 @@
 
 {% block bottom %}
 <nav class="main-nav am-topbar am-topbar-fixed-bottom" style="background-color:#FF6600 ">
-    <div class="text-center" id="verify_btn">
+    {% if profile.company %}
+    <div class="text-center">
         <h4 style="color:white;margin-top:15px;">
-            {% if profile.company %}
             <a href="{% url 'wash_verify_company'%}?rebind=true" style="color:white">重新绑定</a>
-            {% else %}
-             保存
-            {% endif %}
         </h4>
     </div>
+    {% else %}
+    <div class="text-center" id="verify_btn">
+        <h4 style="color:white;margin-top:15px;">
+            <label>保存</label>
+        </h4>
+    </div>
+    {% endif %}
 
 </nav>
 {% endblock %}

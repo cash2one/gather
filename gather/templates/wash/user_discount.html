@@ -12,13 +12,20 @@
 {% if discounts %}
 <div class="list-group">
     {% for discount in discounts %}
-      <div class="list-group-item {% if address.is_default %}disabled{% endif %}">
+      <div class="list-group-item {% if not discount.is_valid %}disabled{% endif %}" style="margin-top:10px;border:#FFCC00 1px solid">
           <div class="row">
-              <div class="col-xs-6">
-                  {{ discount.desc }}
+              <div class="col-xs-6 text">
+                  <span class="label label-danger">优惠范围</span>&nbsp;&nbsp;
+                  {{ discount.title }}
               </div>
               <div class="col-xs-6">
-                  {{ discount.begin|date:'Y-m-d H:i:s' }}
+                  <span class="label label-danger">优惠力度</span>&nbsp;&nbsp;
+                  {{ discount.desc }}
+              </div>
+          </div>
+          <div class="row" style="margin-top:10px;">
+              <div class="col-xs-12">
+                  <span class="label label-info">截止日期</span>&nbsp;&nbsp;
                   {{ discount.end|date:'Y-m-d H:i:s' }}
               </div>
           </div>
