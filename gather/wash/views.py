@@ -543,12 +543,13 @@ def discount_get(request):
 @login_required(login_url=OAUTH_WASH_URL.format(next='/wash/user/order/'))
 def wechat_pay(request, template_name='wash/pay.html'):
     order_id = request.GET.get('order_id', 0)
-    profile = request.user.wash_profile
+    we_profile = request.user.we_profile
+    wash_profile = request.user.wash_profile
     order = Order.objects.get(pk=order_id)
 
     # 预付款
     order_price = order.money
-    my_account = profile.cash
+    my_account = wash_profile.cash
     if my_account > 0:
         if my_account >= order_price:
             PayRecord(user=request.user, order=order, pay_type=3, money=order_price).save()
@@ -563,7 +564,7 @@ def wechat_pay(request, template_name='wash/pay.html'):
         parameters = {}
         parameters['order_id'] = order_id
     else:
-        open_id = profile.open_id
+        open_id = we_profile.open_id
         pay = UnifiedOrder_pub()
         js_pay = JsApi_pub()
 
