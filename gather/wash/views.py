@@ -572,7 +572,7 @@ def wechat_pay(request, template_name='wash/pay.html'):
         pay.setParameter("out_trade_no", datetime.datetime.now().strftime('%Y%m%d%H%M%S%f'))
         pay.setParameter("body", 'success')
         pay.setParameter("total_fee", str(order.money))
-        pay.setParameter("notify_url", "1")
+        pay.setParameter("notify_url", "{}/wash/pay/update/".format(settings.SERVER_NAME))
         pay.setParameter("trade_type", "JSAPI")
         pay.setParameter("openid", open_id)
         preypay_id = pay.getPrepayId()
@@ -591,6 +591,7 @@ def wechat_pay(request, template_name='wash/pay.html'):
 
 @csrf_exempt
 def update_pay_status(request):
+    INFO_LOG.info(request)
     if request.method == "POST":
         order_id = request.POST.get('order_id', '')
         if Order.exists(order_id):
