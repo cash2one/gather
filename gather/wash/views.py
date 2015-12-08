@@ -570,7 +570,7 @@ def wechat_pay(request, template_name='wash/pay.html'):
 
         # 获取preypay_id
         pay.setParameter("out_trade_no", datetime.datetime.now().strftime('%Y%m%d%H%M%S%f'))
-        pay.setParameter("body", order.desc)
+        pay.setParameter("body", order.desc.decode('utf8'))
         pay.setParameter("total_fee", str(order.money))
         pay.setParameter("notify_url", "1")
         pay.setParameter("trade_type", "JSAPI")
