@@ -467,7 +467,7 @@ class Order(models.Model):
             return self.get_pay_method_display()
         else:
             names = [detail.name for detail in OrderDetail.objects.filter(order_id=self.id)]
-            return ','.join(names)
+            return u','.join(names)
 
     @classmethod
     def exists(cls, oid):
