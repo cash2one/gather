@@ -560,7 +560,7 @@ def wechat_pay(request, template_name='wash/pay.html'):
         PayRecord(user=request.user, order=order, pay_type=2, money=order_price).save()
 
     if settings.DEBUG:
-        template_name = 'wash/pay_test.html'
+        template_name = 'wash/pay.html'
         parameters = {}
         parameters['order_id'] = order_id
     else:
@@ -601,9 +601,17 @@ def update_pay_status(request):
                 if profile.verify_cash == get_encrypt_cash(profile):
                     # 预付款成功
                     if PayRecord.objects.filter(order_id=order_id, pay_type=1).exists():
-                        PayRecord.objects.filter(order_id=order_id, pay_type=1).update(status=True)
+                        record = PayRecord.objects.get(order_id=order_id, pay_type=1)
+                        record.status = True  # 充值记录状态为True
+                        record.save()
+
                         order.status = 11  # 充值成功
                         order.save()
+
+                        profile.cash += record.money  # 到账
+                        profile.verify_cash = get_encrypt_cash(profile)
+                        profile.save()
+
                         OrderLog.create(order.id, 11)
                     else:
                         return HttpResponse(json.dumps({'status': 'fail'}))
@@ -654,13 +662,13 @@ def recharge(request):
             cash_fen += 5000  # 冲200送50
         elif cash_fen >= 10000:
             cash_fen += 2000  # 冲100送20
-        profile.cash += cash_fen
-        profile.verify_cash = get_encrypt_cash(profile)
-        profile.save()
+
         order = Order(user=profile, money=cash_fen, status=0,
                       service_time=datetime.datetime.now(), pay_method=2)
         order.save()
         OrderLog.create(order.id, 0)
+
+        PayRecord(user=request.user, order=order, pay_type=1, money=cash_fen).save()
         return HttpResponseRedirect('{}?order_id={}'.format(reverse('wash.views.wechat_pay'), order.id))
     else:
         return render(request, 'wash/recharge.html')
