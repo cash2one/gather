@@ -68,7 +68,7 @@
           {% if order.status_id == 0 or order.status == 10 %}
           <a href="{% url 'wash_user_order_cancel' order.id %}" class="btn btn-default">取消</a>
               {% if order.pay_method == 0 %}
-          <a href="{% url 'wash_wechat_pay_test' %}?order_id={{ order.id }}" class="btn btn-info">立即付款</a>
+          <a href="{% url 'wash_wechat_pay' %}?order_id={{ order.id }}" class="btn btn-info">立即付款</a>
               {% endif %}
           {% elif order.status_id == 1 %}
           <a class="btn btn-danger">已付款</a>
