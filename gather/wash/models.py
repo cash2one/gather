@@ -457,6 +457,8 @@ class Order(models.Model):
     pay_date = models.DateTimeField('付款日期', blank=True, null=True)
     status = models.IntegerField('订单状态', choices=STATUS, default=0)
     verify_code = models.IntegerField('订单确认码', default=0)
+    pay_sign = models.CharField('签名', max_length=150, null=True)
+    out_trade_no = models.CharField('时间戳', max_length=150, null=True)
 
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
     updated = models.DateTimeField('最后更新时间', auto_now=True)

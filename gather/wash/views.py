@@ -586,19 +586,26 @@ def wechat_pay(request, template_name='wash/pay.html'):
 
         parameters.update(jsparameters)
         parameters['order_id'] = order_id
+        order.pay_sign = parameters['paySign']
+        order.out_trade_no = parameters['out_trade_no']
+        order.save()
 
     return render(request, template_name, parameters)
 
 
 @csrf_exempt
 def update_pay_status(request):
-    INFO_LOG.info(request.body)
-    INFO_LOG.info(parse_msg(request.body))
+    """微信支付回调接口"""
+    # 分析微信反馈信息
+    msg = parse_msg(request.body)
+    pay_sign = msg['sign']
+    out_trade_no = msg['out_trade_no']
 
-    if request.method == "POST":
-        order_id = request.POST.get('order_id', '')
-        if Order.exists(order_id):
-            order = Order.objects.get(pk=order_id)
+    if Order.objects.filter(out_trade_no=out_trade_no).exists():
+        order = Order.objects.get(out_trade_no=out_trade_no)
+
+        if pay_sign == order.pay_sign and msg['return_code'] == 'SUCCESS':  # 校验签名
+            order_id = order.id
             profile = request.user.wash_profile
 
             if order.pay_method == 2:  # 充值
