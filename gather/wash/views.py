@@ -604,8 +604,10 @@ def update_pay_status(request):
     INFO_LOG.info("msg paysign={}&out_trade_no={}".format(pay_sign, out_trade_no))
 
     if request.method == "POST":
+        INFO_LOG.info("request.method post")
         return HttpResponse(True)
 
+    INFO_LOG.info("order exitst. {}".format(Order.objects.filter(out_trade_no=out_trade_no).exists()))
     if Order.objects.filter(out_trade_no=out_trade_no).exists():
         order = Order.objects.get(out_trade_no=out_trade_no)
         INFO_LOG.info("order paysign={}&out_trade_no={}".format(order.pay_sign, order.out_trade_no))
