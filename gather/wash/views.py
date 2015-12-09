@@ -22,7 +22,7 @@ from wash.forms import RegistForm
 from CCPRestSDK import REST
 from utils import gen_verify_code, adjacent_paginator
 from utils.verify import Code
-from wechat.views import code_get_openid
+from wechat.views import code_get_openid, parse_msg
 from wechat.models import WeProfile
 from gather.celery import send_wechat_msg
 from wechat_pay import UnifiedOrder_pub, JsApi_pub
@@ -550,14 +550,15 @@ def wechat_pay(request, template_name='wash/pay.html'):
     # 预付款
     order_price = order.money
     my_account = wash_profile.cash
-    if my_account > 0:
-        if my_account >= order_price:
-            PayRecord(user=request.user, order=order, pay_type=3, money=order_price).save()
+    if order.pay_method != 2:
+        if my_account > 0:
+            if my_account >= order_price:
+                PayRecord(user=request.user, order=order, pay_type=3, money=order_price).save()
+            else:
+                PayRecord(user=request.user, order=order, pay_type=3, money=my_account).save()
+                PayRecord(user=request.user, order=order, pay_type=2, money=order_price-my_account).save()
         else:
-            PayRecord(user=request.user, order=order, pay_type=3, money=my_account).save()
-            PayRecord(user=request.user, order=order, pay_type=2, money=order_price-my_account).save()
-    else:
-        PayRecord(user=request.user, order=order, pay_type=2, money=order_price).save()
+            PayRecord(user=request.user, order=order, pay_type=2, money=order_price).save()
 
     if settings.DEBUG:
         template_name = 'wash/pay.html'
@@ -591,7 +592,9 @@ def wechat_pay(request, template_name='wash/pay.html'):
 
 @csrf_exempt
 def update_pay_status(request):
-    INFO_LOG.info(request)
+    INFO_LOG.info(request.body)
+    INFO_LOG.info(parse_msg(request.body))
+
     if request.method == "POST":
         order_id = request.POST.get('order_id', '')
         if Order.exists(order_id):
