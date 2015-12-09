@@ -553,12 +553,12 @@ def wechat_pay(request, template_name='wash/pay.html'):
     if order.pay_method != 2:
         if my_account > 0:
             if my_account >= order_price:
-                PayRecord(user=request.user, order=order, pay_type=3, money=order_price).save()
+                PayRecord(user=wash_profile, order=order, pay_type=3, money=order_price).save()
             else:
-                PayRecord(user=request.user, order=order, pay_type=3, money=my_account).save()
-                PayRecord(user=request.user, order=order, pay_type=2, money=order_price-my_account).save()
+                PayRecord(user=wash_profile, order=order, pay_type=3, money=my_account).save()
+                PayRecord(user=wash_profile, order=order, pay_type=2, money=order_price-my_account).save()
         else:
-            PayRecord(user=request.user, order=order, pay_type=2, money=order_price).save()
+            PayRecord(user=wash_profile, order=order, pay_type=2, money=order_price).save()
 
     if settings.DEBUG:
         template_name = 'wash/pay.html'
@@ -682,7 +682,7 @@ def recharge(request):
         order.save()
         OrderLog.create(order.id, 0)
 
-        PayRecord(user=request.user, order=order, pay_type=1, money=cash_fen).save()
+        PayRecord(user=profile, order=order, pay_type=1, money=cash_fen).save()
         return HttpResponseRedirect('{}?order_id={}'.format(reverse('wash.views.wechat_pay'), order.id))
     else:
         return render(request, 'wash/recharge.html')
