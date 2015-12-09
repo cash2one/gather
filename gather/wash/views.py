@@ -568,7 +568,7 @@ def wechat_pay(request, template_name='wash/pay.html'):
         open_id = we_profile.open_id
         pay = UnifiedOrder_pub()
         js_pay = JsApi_pub()
-        pay_desc = u'我要洗鞋-充值' if order.pay_method == 2 else u'我要洗鞋-下单'
+        pay_desc = '我要洗鞋-充值' if order.pay_method == 2 else '我要洗鞋-下单'
 
         # 获取preypay_id
         pay.setParameter("out_trade_no", datetime.datetime.now().strftime('%Y%m%d%H%M%S%f'))
