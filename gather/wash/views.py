@@ -587,7 +587,7 @@ def wechat_pay(request, template_name='wash/pay.html'):
         parameters.update(jsparameters)
         parameters['order_id'] = order_id
         order.pay_sign = parameters['paySign']
-        order.out_trade_no = parameters['out_trade_no']
+        order.out_trade_no = pay.parameters['out_trade_no']
         order.save()
 
     return render(request, template_name, parameters)
