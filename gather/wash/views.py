@@ -603,8 +603,11 @@ def update_pay_status(request):
     pay_sign = msg.get('sign', '')
     out_trade_no = msg.get('out_trade_no', '')
 
+    INFO_LOG.info(msg)
+    INFO_LOG.info("msg pay_sign {} out {}".format(pay_sign, out_trade_no))
     if Order.objects.filter(out_trade_no=out_trade_no).exists():
         order = Order.objects.get(out_trade_no=out_trade_no)
+        INFO_LOG.info("order pay_sign {} out {}".format(order.pay_sign, order.out_trade_no))
 
         if pay_sign == order.pay_sign and msg['return_code'] == 'SUCCESS':  # 校验签名
             order_id = order.id
@@ -628,9 +631,11 @@ def update_pay_status(request):
                         OrderLog.create(order.id, 11)
             else:
                 # 预付款成功
-                pay_records = PayRecord.objects.filter(order_id=order_id)
+                INFO_LOG.info("yufukuan")
+
+                pay_records = PayRecord.objects.filter(order_id=order_id)  # 可能包含多个同一个order_id
                 for pay in pay_records:
-                    if pay.pay_type == 3:
+                    if pay.pay_type == 3:  # 账户扣款
                         # 余额校验, 扣款
                         if profile.verify_cash == get_encrypt_cash(profile):
                             profile.cash -= pay.money
