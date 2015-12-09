@@ -653,7 +653,7 @@ class PayRecord(models.Model):
         (3, u'账户余额扣费')
     )
 
-    user = models.ForeignKey(User, related_name='pay_record')
+    user = models.ForeignKey(WashUserProfile, related_name='pay_record')
     order = models.ForeignKey(Order, related_name='pay_order')
     money = models.IntegerField(verbose_name='交易金额', default=0)
     pay_type = models.IntegerField(verbose_name='交易类型', choices=PAY_TYPE_CHOICES, default=1)
@@ -664,7 +664,7 @@ class PayRecord(models.Model):
 
 
 class Advice(models.Model):
-    user = models.ForeignKey(User, related_name='advice', null=True)
+    user = models.ForeignKey(WashUserProfile, related_name='advice', null=True)
     content = models.TextField()
 
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
