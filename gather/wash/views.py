@@ -568,10 +568,11 @@ def wechat_pay(request, template_name='wash/pay.html'):
         open_id = we_profile.open_id
         pay = UnifiedOrder_pub()
         js_pay = JsApi_pub()
+        pay_desc = u'我要洗鞋-充值' if order.pay_method == 2 else u'我要洗鞋-下单'
 
         # 获取preypay_id
         pay.setParameter("out_trade_no", datetime.datetime.now().strftime('%Y%m%d%H%M%S%f'))
-        pay.setParameter("body", 'woyaoxixie')
+        pay.setParameter("body", pay_desc)
         pay.setParameter("total_fee", str(order.money))
         pay.setParameter("notify_url", "{}/wash/pay/update/".format(settings.SERVER_NAME))
         pay.setParameter("trade_type", "JSAPI")
@@ -586,6 +587,7 @@ def wechat_pay(request, template_name='wash/pay.html'):
 
         parameters.update(jsparameters)
         parameters['order_id'] = order_id
+        parameters['pay_method'] = order.pay_method
         order.pay_sign = parameters['paySign']
         order.out_trade_no = pay.parameters['out_trade_no']
         order.save()
@@ -598,19 +600,11 @@ def update_pay_status(request):
     """微信支付回调接口"""
     # 分析微信反馈信息
     msg = parse_msg(request.body)
-    pay_sign = msg['sign']
-    out_trade_no = msg['out_trade_no']
+    pay_sign = msg.get('sign', '')
+    out_trade_no = msg.get('out_trade_no', '')
 
-    INFO_LOG.info("msg paysign={}&out_trade_no={}".format(pay_sign, out_trade_no))
-
-    if request.method == "POST":
-        INFO_LOG.info("request.method post")
-        return HttpResponse(True)
-
-    INFO_LOG.info("order exitst. {}".format(Order.objects.filter(out_trade_no=out_trade_no).exists()))
     if Order.objects.filter(out_trade_no=out_trade_no).exists():
         order = Order.objects.get(out_trade_no=out_trade_no)
-        INFO_LOG.info("order paysign={}&out_trade_no={}".format(order.pay_sign, order.out_trade_no))
 
         if pay_sign == order.pay_sign and msg['return_code'] == 'SUCCESS':  # 校验签名
             order_id = order.id
