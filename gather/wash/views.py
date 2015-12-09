@@ -571,7 +571,7 @@ def wechat_pay(request, template_name='wash/pay.html'):
 
         # 获取preypay_id
         pay.setParameter("out_trade_no", datetime.datetime.now().strftime('%Y%m%d%H%M%S%f'))
-        pay.setParameter("body", 'success')
+        pay.setParameter("body", 'woyaoxixie')
         pay.setParameter("total_fee", str(order.money))
         pay.setParameter("notify_url", "{}/wash/pay/update/".format(settings.SERVER_NAME))
         pay.setParameter("trade_type", "JSAPI")
@@ -601,8 +601,14 @@ def update_pay_status(request):
     pay_sign = msg['sign']
     out_trade_no = msg['out_trade_no']
 
+    INFO_LOG.info("msg paysign={}&out_trade_no={}".format(pay_sign, out_trade_no))
+
+    if request.method == "POST":
+        return HttpResponse(True)
+
     if Order.objects.filter(out_trade_no=out_trade_no).exists():
         order = Order.objects.get(out_trade_no=out_trade_no)
+        INFO_LOG.info("order paysign={}&out_trade_no={}".format(order.pay_sign, order.out_trade_no))
 
         if pay_sign == order.pay_sign and msg['return_code'] == 'SUCCESS':  # 校验签名
             order_id = order.id
@@ -624,8 +630,6 @@ def update_pay_status(request):
                         profile.save()
 
                         OrderLog.create(order.id, 11)
-                    else:
-                        return HttpResponse(json.dumps({'status': 'fail'}))
             else:
                 # 预付款成功
                 pay_records = PayRecord.objects.filter(order_id=order_id)
@@ -636,8 +640,6 @@ def update_pay_status(request):
                             profile.cash -= pay.money
                             profile.verify_cash = get_encrypt_cash(profile)
                             profile.save()
-                        else:
-                            return HttpResponse(json.dumps({'status': 'fail'}))
 
                 PayRecord.objects.filter(order_id=order_id).update(status=True)
 
@@ -657,8 +659,13 @@ def update_pay_status(request):
                             MyDiscount.objects.filter(discount=discount).exists():
                         MyDiscount.create(request.user.wash_profile.phone, discount)
 
-        return HttpResponse(json.dumps({'status': 'success'}))
-    return HttpResponse(json.dumps({'status': 'fail'}))
+    return HttpResponse(
+        """<xml>
+              <return_code><![CDATA[SUCCESS]]></return_code>
+              <return_msg><![CDATA[OK]]></return_msg>
+            </xml>
+        """
+    )
 
 
 @login_required(login_url=OAUTH_WASH_URL.format(next='/wash/user/account/'))

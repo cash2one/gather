@@ -33,6 +33,7 @@
             signType: 'MD5',
             paySign: '{{ paySign }}',
             success: function (res) {
+                sleep(2000);
                 $.ajax({
                       url: '/wash/pay/update/',
                       type: 'POST',
@@ -48,6 +49,16 @@
             }
         });
     });
+
+        function sleep(n)
+        {
+            var start = new Date().getTime();
+            while(true){
+                if(new Date().getTime()-start> n){
+                    break;
+                }
+            }
+        }
 
 </script>
 {% endblock %}
