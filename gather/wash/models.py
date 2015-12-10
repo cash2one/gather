@@ -53,11 +53,11 @@ class WashUserProfile(models.Model):
         # 用户名保密
         return self.phone[:3] + "******"
 
-    @property
-    def pay(self, money):
-        self.cash -= money  # 付款
-        self.verify_cash = get_encrypt_cash(self)
-        self.save()
+    @classmethod
+    def pay(cls, profile, money):
+        profile.cash -= money  # 付款
+        profile.verify_cash = get_encrypt_cash(profile)
+        profile.save()
 
         # 交易成功后赠送优惠券，通过名字获取优惠券
         today = datetime.datetime.now()
@@ -68,13 +68,13 @@ class WashUserProfile(models.Model):
             # 优惠券有效并且用户未领取
             if Discount.is_valid(discount.id) and not \
                     MyDiscount.objects.filter(discount=discount).exists():
-                MyDiscount.create(self.phone, discount)
+                MyDiscount.create(profile.phone, discount)
 
-    @property
-    def recharge(self, money):
-        self.cash += money  # 到账
-        self.verify_cash = get_encrypt_cash(self)
-        self.save()
+    @classmethod
+    def recharge(cls, profile, money):
+        profile.cash += money  # 到账
+        profile.verify_cash = get_encrypt_cash(profile)
+        profile.save()
 
     @classmethod
     def user_valid(cls, user):
