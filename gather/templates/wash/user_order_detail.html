@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block title_left %}
-    <a href="{% url 'wash_user_order' %}"><img class="label_img" src="/static/images/wash/label_left.png" /></a>
+    <a href="{% url 'wash_user_order' %}#{{ order.id }}"><img class="label_img" src="/static/images/wash/label_left.png" /></a>
 {% endblock %}
 
 {% block content %}

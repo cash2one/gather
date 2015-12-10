@@ -556,7 +556,6 @@ def wechat_pay(request, template_name='wash/pay.html'):
             if my_account >= order_price:
                 PayRecord(user=wash_profile, order=order, pay_type=3, money=order_price).save()
                 WashUserProfile.pay(wash_profile, order_price)  # 付款 直接跳到成功页面
-                OrderLog.create(order.id, 1)
                 Order.status_next(order.id)  # 更新状态并发送微信提示信息
                 return HttpResponseRedirect('{}?oid={}'.format(reverse('wash.views.wechat_pay_success'), order.id))
             else:
@@ -622,7 +621,6 @@ def update_pay_status(request):
 
                         WashUserProfile.recharge(profile, record.money)  # 到账
                         Order.status_next(order.id)  # 更新状态并发送微信提示信息
-                        OrderLog.create(order.id, 11)
             else:
                 # 预付款成功
                 pay_records = PayRecord.objects.filter(order_id=order_id)  # 可能包含多个同一个order_id
@@ -632,7 +630,6 @@ def update_pay_status(request):
                         if profile.verify_cash == get_encrypt_cash(profile):
                             WashUserProfile.pay(profile, pay.money)  # 付款
                             PayRecord.objects.filter(order_id=order_id).update(status=True)
-                            OrderLog.create(order.id, 1)
                             Order.status_next(order.id)  # 更新状态并发送微信提示信息
 
     return HttpResponse(
