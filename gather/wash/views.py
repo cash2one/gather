@@ -585,12 +585,9 @@ def wechat_pay(request, template_name='wash/pay.html'):
         parameters = js_pay.getParameters()
         jsparameters = js_pay.getJSParameters()
 
-        INFO_LOG.info(pay.getSign(pay.parameters))
-
         parameters.update(jsparameters)
         parameters['order_id'] = order_id
         parameters['pay_method'] = order.pay_method
-        order.pay_sign = pay.getSign(pay.parameters)
         order.out_trade_no = pay.parameters['out_trade_no']
         order.save()
 
@@ -605,23 +602,17 @@ def update_pay_status(request):
     pay_sign = msg.get('sign', '')
     out_trade_no = msg.get('out_trade_no', '')
 
-    INFO_LOG.info(msg)
-    INFO_LOG.info("msg pay_sign {} out {}".format(pay_sign, out_trade_no))
-    if Order.objects.filter(out_trade_no=out_trade_no).exists():
+    if Order.objects.filter(out_trade_no=out_trade_no).exists() and request.user.is_authenticated():
         order = Order.objects.get(out_trade_no=out_trade_no)
-        INFO_LOG.info("order pay_sign {} out {}".format(order.pay_sign, order.out_trade_no))
 
-        if pay_sign == order.pay_sign and msg['return_code'] == 'SUCCESS':  # 校验签名
+        if msg['return_code'] == 'SUCCESS' and order.user == request.user.wash_profile:  # 校验签名
             order_id = order.id
             profile = request.user.wash_profile
 
             if order.pay_method == 2:  # 充值
                 if profile.verify_cash == get_encrypt_cash(profile):
-                    INFO_LOG.info("recharge")
                     # 预付款成功
                     if PayRecord.objects.filter(order_id=order_id, pay_type=1).exists():
-                        INFO_LOG.info("success")
-
                         record = PayRecord.objects.get(order_id=order_id, pay_type=1)
                         record.status = True  # 充值记录状态为True
                         record.save()
@@ -635,23 +626,17 @@ def update_pay_status(request):
                         OrderLog.create(order.id, 11)
             else:
                 # 预付款成功
-                INFO_LOG.info("yufukuan")
-
                 pay_records = PayRecord.objects.filter(order_id=order_id)  # 可能包含多个同一个order_id
                 for pay in pay_records:
                     if pay.pay_type == 3:  # 账户扣款
                         # 余额校验, 扣款
-                        INFO_LOG.info("yufukuan success")
-
                         if profile.verify_cash == get_encrypt_cash(profile):
                             profile.cash -= pay.money
                             profile.verify_cash = get_encrypt_cash(profile)
                             profile.save()
 
                 PayRecord.objects.filter(order_id=order_id).update(status=True)
-
                 OrderLog.create(order.id, 1)
-
                 order.status_next()  # 更新状态并发送微信提示信息
 
                 # 交易成功后赠送优惠券，通过名字获取优惠券

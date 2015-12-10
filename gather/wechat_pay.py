@@ -182,7 +182,6 @@ class Common_util_pub(object):
         buff = []
         for k in slist:
             v = quote(paraMap[k]) if urlencode else paraMap[k]
-            INFO_LOG.info(k, v)
             buff.append("{0}={1}".format(k, v))
 
         return "&".join(buff)
@@ -380,7 +379,6 @@ class UnifiedOrder_pub(Wxpay_client_pub):
         self.parameters["mch_id"] = WxPayConf_pub.MCHID  #商户号
         self.parameters["spbill_create_ip"] = "127.0.0.1"  #终端ip      
         self.parameters["nonce_str"] = self.createNoncestr()  #随机字符串
-        INFO_LOG.info(self.parameters)
         self.parameters["sign"] = self.getSign(self.parameters)  #签名
         return self.arrayToXml(self.parameters)
 
