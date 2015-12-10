@@ -607,8 +607,7 @@ def update_pay_status(request):
             order_id = order.id
             profile = order.user
             if order.pay_method == 2:  # 充值
-                if profile.verify_cash == get_encrypt_cash(profile):
-                    # 预付款成功
+                if profile.verify_cash == get_encrypt_cash(profile) or profile.cash == 0:
                     if PayRecord.objects.filter(order_id=order_id, pay_type=1).exists():
                         record = PayRecord.objects.get(order_id=order_id, pay_type=1)
                         record.status = True  # 充值记录状态为True
