@@ -554,7 +554,8 @@ def wechat_pay(request, template_name='wash/pay.html'):
         if my_account > 0:
             if my_account >= order_price:
                 PayRecord(user=wash_profile, order=order, pay_type=3, money=order_price).save()
-                should_pay = 0
+                order.user.pay(order_price)  # 付款 直接跳到成功页面
+                return HttpResponseRedirect('{}?oid={}'.format(reverse('wash.views.wechat_pay_success'), order.id))
             else:
                 should_pay = order_price-my_account
                 PayRecord(user=wash_profile, order=order, pay_type=3, money=my_account).save()
@@ -616,12 +617,8 @@ def update_pay_status(request):
                         record.status = True  # 充值记录状态为True
                         record.save()
 
-                        profile.cash += record.money  # 到账
-                        profile.verify_cash = get_encrypt_cash(profile)
-                        profile.save()
-
+                        profile.recharge(record.money)  # 到账
                         Order.status_next(order.id)  # 更新状态并发送微信提示信息
-
                         OrderLog.create(order.id, 11)
             else:
                 # 预付款成功
@@ -630,25 +627,10 @@ def update_pay_status(request):
                     if pay.pay_type == 3:  # 账户扣款
                         # 余额校验, 扣款
                         if profile.verify_cash == get_encrypt_cash(profile):
-                            profile.cash -= pay.money
-                            profile.verify_cash = get_encrypt_cash(profile)
-                            profile.save()
-
-                PayRecord.objects.filter(order_id=order_id).update(status=True)
-                OrderLog.create(order.id, 1)
-                Order.status_next(order.id)  # 更新状态并发送微信提示信息
-
-                # 交易成功后赠送优惠券，通过名字获取优惠券
-                today = datetime.datetime.now()
-                discount = Discount.objects.filter(begin__lte=today, end__gte=today,
-                                                   name=u'交易后赠送', status=True,
-                                                   is_for_user=True)
-                if discount:
-                    discount = discount[0]
-                    # 优惠券有效并且用户未领取
-                    if Discount.is_valid(discount.id) and not \
-                            MyDiscount.objects.filter(discount=discount).exists():
-                        MyDiscount.create(request.user.wash_profile.phone, discount)
+                            profile.pay(pay.money)  # 付款
+                            PayRecord.objects.filter(order_id=order_id).update(status=True)
+                            OrderLog.create(order.id, 1)
+                            Order.status_next(order.id)  # 更新状态并发送微信提示信息
 
     return HttpResponse(
         """<xml>
@@ -687,7 +669,6 @@ def recharge(request):
 def wechat_pay_success(request):
     profile = request.user.wash_profile
     order_id = request.GET.get('oid', '')
-    type = request.GET.get('type', 'pay')
     if Order.exists(order_id):
         order = Order.objects.get(pk=order_id)
         if order.pay_method == 2:

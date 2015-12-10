@@ -9,7 +9,7 @@ from django.conf import settings
 from django.db.models import Sum
 
 from gather.celery import send_wechat_msg
-from utils import money_format
+from utils import money_format, get_encrypt_cash
 
 
 class Company(models.Model):
@@ -52,6 +52,29 @@ class WashUserProfile(models.Model):
     def get_mask_username(self):
         # 用户名保密
         return self.phone[:3] + "******"
+
+    @property
+    def pay(self, money):
+        self.cash -= money  # 付款
+        self.verify_cash = get_encrypt_cash(self)
+        self.save()
+
+        # 交易成功后赠送优惠券，通过名字获取优惠券
+        today = datetime.datetime.now()
+        discount = Discount.objects.filter(begin__lte=today, end__gte=today,
+                                           name=u'交易后赠送', status=True, is_for_user=True)
+        if discount:
+            discount = discount[0]
+            # 优惠券有效并且用户未领取
+            if Discount.is_valid(discount.id) and not \
+                    MyDiscount.objects.filter(discount=discount).exists():
+                MyDiscount.create(self.phone, discount)
+
+    @property
+    def recharge(self, money):
+        self.cash += money  # 到账
+        self.verify_cash = get_encrypt_cash(self)
+        self.save()
 
     @classmethod
     def user_valid(cls, user):
