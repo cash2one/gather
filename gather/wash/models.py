@@ -510,7 +510,7 @@ class Order(models.Model):
                             'keyword1': {'value': order.id, 'color': '#173177'},
                             'keyword2': {'value': u'您已付款成功', 'color': '#173177'},
                             'keyword3': {
-                                'value': u"请耐心等待客服与您联系",
+                                'value': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                                 'color': '#173177'
                             },
                             'remark': {
