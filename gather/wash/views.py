@@ -554,11 +554,14 @@ def wechat_pay(request, template_name='wash/pay.html'):
         if my_account > 0:
             if my_account >= order_price:
                 PayRecord(user=wash_profile, order=order, pay_type=3, money=order_price).save()
+                should_pay = 0
             else:
+                should_pay = order_price-my_account
                 PayRecord(user=wash_profile, order=order, pay_type=3, money=my_account).save()
-                PayRecord(user=wash_profile, order=order, pay_type=2, money=order_price-my_account).save()
+                PayRecord(user=wash_profile, order=order, pay_type=2, money=should_pay).save()
         else:
             PayRecord(user=wash_profile, order=order, pay_type=2, money=order_price).save()
+            should_pay = order_price
 
     if settings.DEBUG:
         template_name = 'wash/pay.html'
@@ -573,7 +576,7 @@ def wechat_pay(request, template_name='wash/pay.html'):
         # 获取preypay_id
         pay.setParameter("out_trade_no", datetime.datetime.now().strftime('%Y%m%d%H%M%S%f'))
         pay.setParameter("body", pay_desc)
-        pay.setParameter("total_fee", str(order.money))
+        pay.setParameter("total_fee", str(should_pay))
         pay.setParameter("notify_url", "{}/wash/pay/update/".format(settings.SERVER_NAME))
         pay.setParameter("trade_type", "JSAPI")
         pay.setParameter("openid", open_id)
@@ -613,11 +616,11 @@ def update_pay_status(request):
                         record.status = True  # 充值记录状态为True
                         record.save()
 
-                        Order.status_next(order.id)  # 更新状态并发送微信提示信息
-
                         profile.cash += record.money  # 到账
                         profile.verify_cash = get_encrypt_cash(profile)
                         profile.save()
+
+                        Order.status_next(order.id)  # 更新状态并发送微信提示信息
 
                         OrderLog.create(order.id, 11)
             else:
