@@ -631,7 +631,9 @@ def update_pay_status(request):
                             WashUserProfile.pay(profile, pay.money)  # 付款
                             PayRecord.objects.filter(order_id=order_id).update(status=True)
                             Order.status_next(order.id)  # 更新状态并发送微信提示信息
-
+                    else:
+                        PayRecord.objects.filter(order_id=order_id).update(status=True)
+                        Order.status_next(order.id)  # 更新状态并发送微信提示信息
     return HttpResponse(
         """<xml>
               <return_code><![CDATA[SUCCESS]]></return_code>
