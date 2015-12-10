@@ -585,6 +585,9 @@ def wechat_pay(request, template_name='wash/pay.html'):
         parameters = js_pay.getParameters()
         jsparameters = js_pay.getJSParameters()
 
+        INFO_LOG.info(parameters)
+        INFO_LOG.info(jsparameters)
+
         parameters.update(jsparameters)
         parameters['order_id'] = order_id
         parameters['pay_method'] = order.pay_method
