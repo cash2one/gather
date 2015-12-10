@@ -587,11 +587,12 @@ def wechat_pay(request, template_name='wash/pay.html'):
 
         INFO_LOG.info(parameters)
         INFO_LOG.info(jsparameters)
+        INFO_LOG.info(pay.parameters)
 
         parameters.update(jsparameters)
         parameters['order_id'] = order_id
         parameters['pay_method'] = order.pay_method
-        order.pay_sign = jsparameters['signature']
+        order.pay_sign = pay.parameters["sign"]
         order.out_trade_no = pay.parameters['out_trade_no']
         order.save()
 
