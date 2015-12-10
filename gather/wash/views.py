@@ -615,14 +615,16 @@ def update_pay_status(request):
 
             if order.pay_method == 2:  # 充值
                 if profile.verify_cash == get_encrypt_cash(profile):
+                    INFO_LOG.info("recharge")
                     # 预付款成功
                     if PayRecord.objects.filter(order_id=order_id, pay_type=1).exists():
+                        INFO_LOG.info("success")
+
                         record = PayRecord.objects.get(order_id=order_id, pay_type=1)
                         record.status = True  # 充值记录状态为True
                         record.save()
 
-                        order.status = 11  # 充值成功
-                        order.save()
+                        order.status_next()  # 更新状态并发送微信提示信息
 
                         profile.cash += record.money  # 到账
                         profile.verify_cash = get_encrypt_cash(profile)
@@ -637,6 +639,8 @@ def update_pay_status(request):
                 for pay in pay_records:
                     if pay.pay_type == 3:  # 账户扣款
                         # 余额校验, 扣款
+                        INFO_LOG.info("yufukuan success")
+
                         if profile.verify_cash == get_encrypt_cash(profile):
                             profile.cash -= pay.money
                             profile.verify_cash = get_encrypt_cash(profile)
@@ -644,9 +648,9 @@ def update_pay_status(request):
 
                 PayRecord.objects.filter(order_id=order_id).update(status=True)
 
-                order.status = 1  # 付款成功
-                order.save()
                 OrderLog.create(order.id, 1)
+
+                order.status_next()  # 更新状态并发送微信提示信息
 
                 # 交易成功后赠送优惠券，通过名字获取优惠券
                 today = datetime.datetime.now()

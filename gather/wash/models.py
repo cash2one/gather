@@ -485,25 +485,44 @@ class Order(models.Model):
                 }
                 user = order.user.user
                 if order.status == 0:
-                    param['service_begin'] = datetime.datetime.now()
-                    param['hour'] = hour
-                    data = {
-                        'first': {'value': u'付款成功', 'color': '#173177'},
-                        'keyword1': {'value': order.id, 'color': '#173177'},
-                        'keyword2': {'value': u'您已付款成功', 'color': '#173177'},
-                        'keyword3': {
-                            'value': u"请耐心等待客服与您联系",
-                            'color': '#173177'
-                        },
-                        'remark': {
-                            'value': u'如果您不方便，请拨打{}'.format(settings.MY_PHONE),
-                            'color': '#173177'
-                        },
-                    }
-                    send_wechat_msg(user, 'order_get', oid, data)
+                    # 充值成功与付款成功
+                    if order.pay_method == 2:
+                        param['status'] = 11
+                        data = {
+                            'first': {'value': u'充值成功', 'color': '#173177'},
+                            'keyword1': {'value': order.id, 'color': '#173177'},
+                            'keyword2': {'value': u'您已充值成功{}元'.format(money_format(order.money)), 'color': '#173177'},
+                            'keyword3': {
+                                'value': u"您的账户余额为{}".format(money_format(order.user.cash)),
+                                'color': '#173177'
+                            },
+                            'remark': {
+                                'value': u'如果您有其他问题，请拨打{}'.format(settings.MY_PHONE),
+                                'color': '#173177'
+                            },
+                        }
+                        send_wechat_msg(user, 'order_get', oid, data)
+                    else:
+                        param['service_begin'] = datetime.datetime.now()
+                        param['hour'] = hour
+                        data = {
+                            'first': {'value': u'付款成功', 'color': '#173177'},
+                            'keyword1': {'value': order.id, 'color': '#173177'},
+                            'keyword2': {'value': u'您已付款成功', 'color': '#173177'},
+                            'keyword3': {
+                                'value': u"请耐心等待客服与您联系",
+                                'color': '#173177'
+                            },
+                            'remark': {
+                                'value': u'如果您不方便或其他问题，请拨打{}'.format(settings.MY_PHONE),
+                                'color': '#173177'
+                            },
+                        }
+                        send_wechat_msg(user, 'order_get', oid, data)
                 elif order.status in [1, 10]:
                     param['service_begin'] = datetime.datetime.now()
                     param['hour'] = hour
+                    param['status'] = 2
                     data = {
                         'first': {'value': u'卖家已确认', 'color': '#173177'},
                         'keyword1': {'value': order.id, 'color': '#173177'},
@@ -513,12 +532,12 @@ class Order(models.Model):
                             'color': '#173177'
                         },
                         'remark': {
-                            'value': u'如果您不方便，请拨打{}'.format(settings.MY_PHONE),
+                            'value': u'如果您不方便或其他问题，请拨打{}'.format(settings.MY_PHONE),
                             'color': '#173177'
                         },
                     }
                     send_wechat_msg(user, 'order_get', oid, data)
-                    order.status = 1
+
                 elif order.status == 3:
                     data = {
                         'first': {'value': u'送货通知', 'color': '#173177'},
@@ -529,7 +548,7 @@ class Order(models.Model):
                             'color': '#173177'
                         },
                         'remark': {
-                            'value': u'请将该验证码（{}）给予送货员;如果您不方便，请拨打{}'.format(order.verify_code, settings.MY_PHONE),
+                            'value': u'请将该验证码（{}）给予送货员;如果您不方便或其他问题，请拨打{}'.format(order.verify_code, settings.MY_PHONE),
                             'color': '#173177'
                         },
                     }
