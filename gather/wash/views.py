@@ -550,6 +550,7 @@ def wechat_pay(request, template_name='wash/pay.html'):
     # 预付款
     order_price = order.money
     my_account = wash_profile.cash
+    should_pay = order_price
     if order.pay_method != 2:
         if my_account > 0:
             if my_account >= order_price:
@@ -559,7 +560,7 @@ def wechat_pay(request, template_name='wash/pay.html'):
                 Order.status_next(order.id)  # 更新状态并发送微信提示信息
                 return HttpResponseRedirect('{}?oid={}'.format(reverse('wash.views.wechat_pay_success'), order.id))
             else:
-                should_pay = order_price-my_account
+                should_pay = order_price - my_account
                 PayRecord(user=wash_profile, order=order, pay_type=3, money=my_account).save()
                 PayRecord(user=wash_profile, order=order, pay_type=2, money=should_pay).save()
         else:
