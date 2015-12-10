@@ -601,20 +601,13 @@ def update_pay_status(request):
     msg = parse_msg(request.body)
     pay_sign = msg.get('sign', '')
     out_trade_no = msg.get('out_trade_no', '')
-    INFO_LOG.info("1{}".format(Order.objects.filter(out_trade_no=out_trade_no).exists()))
-    INFO_LOG.info("2{}".format(request.user.is_authenticated()))
-    if Order.objects.filter(out_trade_no=out_trade_no).exists() and request.user.is_authenticated():
+    if Order.objects.filter(out_trade_no=out_trade_no).exists():
         order = Order.objects.get(out_trade_no=out_trade_no)
-        INFO_LOG.info("3{}".format(msg['return_code']))
-        INFO_LOG.info("4{}".format(order.user == request.user.wash_profile))
-        if msg['return_code'] == 'SUCCESS' and order.user == request.user.wash_profile:  # 校验签名
+        if msg['return_code'] == 'SUCCESS':  # 校验签名
             order_id = order.id
-            profile = request.user.wash_profile
-
+            profile = order.user
             if order.pay_method == 2:  # 充值
                 if profile.verify_cash == get_encrypt_cash(profile):
-                    INFO_LOG.info("2verify_code={}".format(profile.verify_cash == get_encrypt_cash(profile)))
-
                     # 预付款成功
                     if PayRecord.objects.filter(order_id=order_id, pay_type=1).exists():
                         record = PayRecord.objects.get(order_id=order_id, pay_type=1)
@@ -634,7 +627,6 @@ def update_pay_status(request):
                 for pay in pay_records:
                     if pay.pay_type == 3:  # 账户扣款
                         # 余额校验, 扣款
-                        INFO_LOG.info("1verify_code={}".format(profile.verify_cash == get_encrypt_cash(profile)))
                         if profile.verify_cash == get_encrypt_cash(profile):
                             profile.cash -= pay.money
                             profile.verify_cash = get_encrypt_cash(profile)
