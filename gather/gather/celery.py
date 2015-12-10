@@ -77,7 +77,7 @@ def send_wechat_msg(user, msg_type, order_id, data=None):
     json_data = {
        "touser": str(open_id),
        "template_id": template_id,
-       "url":  "http://{url}/wash/user/order/detail/{order_id}".format(url=settings.SERVER_NAME, order_id=order_id),
+       "url":  "{url}/wash/user/order/detail/{order_id}".format(url=settings.SERVER_NAME, order_id=order_id),
        "data": data
     }
     access_token = get_server_access_token()
