@@ -155,6 +155,7 @@ class DiscountForm(forms.ModelForm):
         wash_id = self._request.POST.get('wash', '0')
         u = self._request.POST.get('update', 'no')
         company_id = self._request.POST.get('company', '0')
+        is_for_user = self._request.POST.get('is_for_user', '0')
         company_id = None if company_id == '0' else company_id
         wash_id = None if wash_id == '0' else wash_id
         today = datetime.datetime.now()
@@ -162,19 +163,19 @@ class DiscountForm(forms.ModelForm):
         if range_type == u'1':
             # 全部类型 折扣和减钱只能有一个
             if Discount.objects.filter(status=True, range_type=range_type, begin__lte=today,
-                                       end__gte=today, company_id=company_id, is_for_user=False).exists():
+                                       end__gte=today, company_id=company_id, is_for_user=is_for_user).exists():
                 raise forms.ValidationError(u'已存在同类型的有效优惠券或折扣和减钱只能有一个!')
         elif range_type == u'2':
             # 一类 折扣和减钱只能有一个
             if Discount.objects.filter(wash_type=wash_type, status=True, range_type=range_type,
                                        begin__lte=today, end__gte=today,
-                                       company_id=company_id, is_for_user=False).exists():
+                                       company_id=company_id, is_for_user=is_for_user).exists():
                 raise forms.ValidationError(u'已存在同类型的有效优惠券或折扣和减钱只能有一个!')
         elif range_type == u'3':
             # 某一个产品
             if Discount.objects.filter(wash_type=wash_type, status=True, wash_id=wash_id,
                                        range_type=range_type, begin__lte=today, end__gte=today,
-                                       company_id=company_id, is_for_user=False).exists():
+                                       company_id=company_id, is_for_user=is_for_user).exists():
                 raise forms.ValidationError(u'已存在同类型的有效优惠券或折扣和减钱只能有一个!')
         return self.cleaned_data
 
