@@ -554,7 +554,7 @@ def wechat_pay(request, template_name='wash/pay.html'):
         if my_account > 0:
             if my_account >= order_price:
                 PayRecord(user=wash_profile, order=order, pay_type=3, money=order_price).save()
-                order.user.pay(order_price)  # 付款 直接跳到成功页面
+                wash_profile.pay(order_price)  # 付款 直接跳到成功页面
                 return HttpResponseRedirect('{}?oid={}'.format(reverse('wash.views.wechat_pay_success'), order.id))
             else:
                 should_pay = order_price-my_account
