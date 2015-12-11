@@ -315,7 +315,7 @@ def order(request, template_name="wash/manage/order.html"):
         if close:
             Order.status_close(oid, is_buyer=False)
 
-    order_list = Order.objects.all().order_by("-updated")
+    order_list = Order.objects.filter(pay_method__in=[0, 1]).order_by("-updated")
     orders, page_numbers = adjacent_paginator(order_list, page=request.GET.get('page', 1))
 
     return render(request, template_name, {

@@ -1,4 +1,5 @@
 {% extends 'wash/manage/base.html' %}
+{% load util_tag %}
 {% block extra_css %}
 <style>
 .btn {
@@ -70,7 +71,7 @@
                 <tr>
                     <td>{{ order.id }}</td>
                     <td>{{ order.user.phone }}</td>
-                    <td>{{ order.money }}</td>
+                    <td>{{ order.money|money_format }}</td>
                     <td>{{ order.get_pay_method_display }}</td>
                     <td>{{ order.service_begin|default:'未开始' }}</td>
                     <td>{{ order.service_end|default:'未开始' }}</td>
