@@ -10,7 +10,7 @@
 
 {% block content %}
 <div class="text-center" style="margin-top:200px;">
-    <h3><span class="label label-info">加载中...</span></h3>
+    <h3><span class="label label-info">加载较慢, 请等待...</span></h3>
 </div>
 
 {% endblock %}
@@ -39,7 +39,7 @@
             },
             cancel: function () {
                 {% if pay_method == 2 %}
-                window.location.href = "/wash/user/account/"
+                window.location.href = "/wash/account/"
                 {% else %}
                 window.location.href = "/wash/user/order/#{{ order_id }}"
                 {% endif %}
