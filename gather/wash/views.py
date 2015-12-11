@@ -650,7 +650,10 @@ def recharge(request):
     profile = request.user.wash_profile
     if request.method == "POST":
         cash_yuan = request.POST.get('cash', '0')
-        cash_fen = int(float(cash_yuan) * 100.0)
+        try:
+            cash_fen = int(float(cash_yuan) * 100.0)
+        except:
+            return render(request, 'wash/recharge.html')
         if cash_fen >= 20000:
             cash_fen += 5000  # 冲200送50
         elif cash_fen >= 10000:
