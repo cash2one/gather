@@ -162,6 +162,7 @@ class UserAddress(models.Model):
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
     updated = models.DateTimeField('最后更新时间', auto_now=True)
 
+    @property
     def detail(self):
         return u"{} {} {} {} {}".format(self.province, self.city, self.country, self.street, self.mark)
 
@@ -541,7 +542,30 @@ class Order(models.Model):
                                 'color': '#173177'
                             },
                         }
+                        # 发送给商家
+                        seller_data = {
+                            'first': {'value': u'有新订单支付成功', 'color': '#173177'},
+                            'keyword1': {'value': order.desc, 'color': '#173177'},
+                            'keyword2': {'value': order.user.phone, 'color': '#173177'},
+                            'keyword3': {
+                                'value': UserAddress.get_default(order.user),
+                                'color': '#173177'
+                            },
+                            'keyword4': {
+                                'value': order.user.phone,
+                                'color': '#173177'
+                            },
+                            'keyword5': {
+                                'value': money_format(order.money),
+                                'color': '#173177'
+                            },
+                            'remark': {
+                                'value': u"取货时间{},{}".format(order.service_time.strftime('%Y-%m-%d'), order.get_am_pm_display()),
+                                'color': '#173177'
+                            },
+                        }
                         send_wechat_msg(user, 'order_get', oid, data)
+                        send_wechat_msg(user, 'order_seller', oid, seller_data)
                 elif order.status in [1, 10]:
                     param['service_begin'] = datetime.datetime.now()
                     param['hour'] = hour

@@ -73,7 +73,10 @@ def send_wechat_msg(user, msg_type, order_id, data=None):
         template_id = settings.ORDER_UPDATE_ID
     elif msg_type == 'order_close':
         template_id = settings.ORDER_CLOSE_ID
-
+    elif msg_type == 'order_seller':
+        template_id = settings.ORDER_SELLER_ID
+        open_id = 'oXP2qt5mU7eZF0twnxEkSpdITDhQ'
+        
     json_data = {
        "touser": str(open_id),
        "template_id": template_id,
