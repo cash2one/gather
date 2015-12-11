@@ -548,7 +548,7 @@ class Order(models.Model):
                             'keyword1': {'value': order.desc, 'color': '#173177'},
                             'keyword2': {'value': order.user.phone, 'color': '#173177'},
                             'keyword3': {
-                                'value': UserAddress.get_default(order.user),
+                                'value': UserAddress.get_default(order.user).detail,
                                 'color': '#173177'
                             },
                             'keyword4': {
@@ -556,7 +556,7 @@ class Order(models.Model):
                                 'color': '#173177'
                             },
                             'keyword5': {
-                                'value': money_format(order.money),
+                                'value': u'{}元'.format(money_format(order.money)),
                                 'color': '#173177'
                             },
                             'remark': {
@@ -589,7 +589,7 @@ class Order(models.Model):
                             'keyword1': {'value': order.desc, 'color': '#173177'},
                             'keyword2': {'value': order.user.phone, 'color': '#173177'},
                             'keyword3': {
-                                'value': UserAddress.get_default(order.user),
+                                'value': UserAddress.get_default(order.user).detail,
                                 'color': '#173177'
                             },
                             'keyword4': {
@@ -597,7 +597,7 @@ class Order(models.Model):
                                 'color': '#173177'
                             },
                             'keyword5': {
-                                'value': money_format(order.money),
+                                'value': u'{}元'.format(money_format(order.money)),
                                 'color': '#173177'
                             },
                             'remark': {
