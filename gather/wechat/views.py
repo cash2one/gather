@@ -137,11 +137,11 @@ def create_menu():
            {
                "name": "服务中心",
                "sub_button": [
-                   #{
-                   #    "type": "view",
-                   #    "name": "常见问题",
-                   #    "url": "http://www.jacsice.cn/wash/"
-                   #},
+                   {
+                       "type": "view",
+                       "name": "我的微店",
+                       "url": "http://weidian.com/?userid=310979492&wfr=c"
+                   },
                   {
                        "type": "click",
                        "name": "联系客服",
