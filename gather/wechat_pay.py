@@ -386,6 +386,7 @@ class UnifiedOrder_pub(Wxpay_client_pub):
         """获取prepay_id"""
         self.postXml()
         self.result = self.xmlToArray(self.response)
+        INFO_LOG.info(self.result)
         prepay_id = self.result["prepay_id"]
         return prepay_id
 
