@@ -117,7 +117,7 @@ def create_menu():
             {
                "type": "view",
                "name": "一键下单",
-               "url": "{server_name}/wash/show/".format(server_name=SERVER_NAME)
+               "url": settings.OAUTH_WASH_URL.format(next="{server_name}/wash/show/".format(server_name=SERVER_NAME))
             },
             {
                "name": "会员中心",
