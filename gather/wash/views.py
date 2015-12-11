@@ -615,11 +615,14 @@ def update_pay_status(request):
             if order.pay_method == 2:  # 充值
                 if profile.verify_cash == get_encrypt_cash(profile) or profile.cash == 0:
                     if PayRecord.objects.filter(order_id=order_id, pay_type=1).exists():
-                        record = PayRecord.objects.get(order_id=order_id, pay_type=1)
-                        record.status = True  # 充值记录状态为True
-                        record.save()
+                        records = PayRecord.objects.filter(order_id=order_id)
+                        recharge_sum = 0
+                        for record in records:
+                            record.status = True  # 充值记录状态为True
+                            record.save()
+                            recharge_sum += record.money
+                        WashUserProfile.recharge(profile, recharge_sum)  # 到账
 
-                        WashUserProfile.recharge(profile, record.money)  # 到账
                         Order.status_next(order.id)  # 更新状态并发送微信提示信息
             else:
                 # 预付款成功
@@ -652,12 +655,13 @@ def recharge(request):
         cash_yuan = request.POST.get('cash', '0')
         try:
             cash_fen = int(float(cash_yuan) * 100.0)
+            cash_extra = 0
         except:
             return render(request, 'wash/recharge.html')
         if cash_fen >= 20000:
-            cash_fen += 5000  # 冲200送50
+            cash_extra = 5000  # 冲200送50
         elif cash_fen >= 10000:
-            cash_fen += 2000  # 冲100送20
+            cash_extra = 2000  # 冲100送20
 
         order = Order(user=profile, money=cash_fen, status=0,
                       service_time=datetime.datetime.now(), pay_method=2)
@@ -665,6 +669,8 @@ def recharge(request):
         OrderLog.create(order.id, 0)
 
         PayRecord(user=profile, order=order, pay_type=1, money=cash_fen).save()
+        if cash_extra > 0:
+            PayRecord(user=profile, order=order, pay_type=4, money=cash_extra).save()
         return HttpResponseRedirect('{}?order_id={}'.format(reverse('wash.views.wechat_pay'), order.id))
     else:
         return render(request, 'wash/recharge.html')
