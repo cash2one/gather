@@ -544,7 +544,7 @@ class Order(models.Model):
                         }
                         # 发送给商家
                         seller_data = {
-                            'first': {'value': u'有新订单支付成功', 'color': '#173177'},
+                            'first': {'value': u'有新订单支付成功(未确认)', 'color': '#173177'},
                             'keyword1': {'value': order.desc, 'color': '#173177'},
                             'keyword2': {'value': order.user.phone, 'color': '#173177'},
                             'keyword3': {
@@ -583,8 +583,30 @@ class Order(models.Model):
                             'color': '#173177'
                         },
                     }
+                    # 发送给商家
+                    seller_data = {
+                            'first': {'value': u'订单已确认', 'color': '#173177'},
+                            'keyword1': {'value': order.desc, 'color': '#173177'},
+                            'keyword2': {'value': order.user.phone, 'color': '#173177'},
+                            'keyword3': {
+                                'value': UserAddress.get_default(order.user),
+                                'color': '#173177'
+                            },
+                            'keyword4': {
+                                'value': order.user.phone,
+                                'color': '#173177'
+                            },
+                            'keyword5': {
+                                'value': money_format(order.money),
+                                'color': '#173177'
+                            },
+                            'remark': {
+                                'value': u"取货时间{},{},{}".format(order.service_time.strftime('%Y-%m-%d'), order.get_am_pm_display(), hour),
+                                'color': '#173177'
+                            },
+                        }
                     send_wechat_msg(user, 'order_get', oid, data)
-
+                    send_wechat_msg(user, 'order_seller', oid, seller_data)
                 elif order.status == 3:
                     data = {
                         'first': {'value': u'送货通知', 'color': '#173177'},
