@@ -15,7 +15,7 @@ from django.conf import settings
 from django.contrib.auth import login, authenticate
 
 from wash.models import WashType, WashUserProfile, Discount, Order, OrderDetail
-from wash.models import IndexBanner, Company
+from wash.models import IndexBanner, Company, Config
 from account.models import LoginLog
 from wash.forms import WashTypeForm, DiscountForm, IndexForm
 from utils import adjacent_paginator
@@ -83,6 +83,10 @@ def model_del(request, model_type, type_id):
         elif model_type == 'discount':
             model = Discount
             url = "wash.mviews.discount"
+        elif model_type == 'config':
+            model = Config
+            url = 'wash.mviews.config'
+
         m = model.objects.get(id=type_id)
         m.delete()
         return HttpResponseRedirect(reverse(url))
@@ -376,5 +380,21 @@ def company_discount(request, template_name="wash/manage/company_discount.html")
     discounts = Discount.objects.filter(status=True, **param).order_by('company')
     return render(request, template_name, {
         'discounts': discounts
+    })
+
+
+@login_required(login_url=WASH_MURL)
+def config(request, template_name='wash/manage/config.html'):
+    if request.method == "POST":
+        key = request.POST.get('key', '')
+        value = request.POST.get('value', '')
+        is_single = request.POST.get('is_single', '')
+        is_single = True if is_single == '1' else False
+        Config(key=key, value=value, is_single=is_single).save()
+
+    configs = Config.objects.all()
+    return render(request, template_name, {
+        'configs': configs,
+        'keys': Config.KEY_CHOICES
     })
 

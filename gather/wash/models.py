@@ -759,3 +759,15 @@ class Advice(models.Model):
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
     updated = models.DateTimeField('最后更新时间', auto_now=True)
 
+
+class Config(models.Model):
+    KEY_CHOICES = (
+        (1, '接收订单信息人员'),
+        (2, '邮费'),
+        (3, '是否需要邮费'),
+        (4, '包邮件数'),
+    )
+    key = models.IntegerField(choices=KEY_CHOICES)
+    value = models.CharField('值', max_length=150)
+    is_single = models.BooleanField('是否可多个', default=True)
+

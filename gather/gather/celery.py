@@ -62,6 +62,7 @@ def async_send_html_email(self, subject, recipient_list, template_name, context)
 #@app.task(bind=True, default_retry_delay=300, max_retries=1)
 def send_wechat_msg(user, msg_type, order_id, data=None):
     open_id = WeProfile.objects.get(user=user).open_id
+    url = "{url}/wash/user/order/detail/{order_id}".format(url=settings.SERVER_NAME, order_id=order_id)
 
     if msg_type == 'order_create':
         template_id = settings.ORDER_CREATE_ID
@@ -77,11 +78,12 @@ def send_wechat_msg(user, msg_type, order_id, data=None):
         template_id = settings.ORDER_SELLER_ID
         # open_id = 'oXP2qt5mU7eZF0twnxEkSpdITDhQ'
         open_id = 'oXP2qt4NT-izUpr_B86wbViypiqI'
+        url = "{}/wash/manage/".format(settings.SERVER_NAME)
 
     json_data = {
        "touser": str(open_id),
        "template_id": template_id,
-       "url":  "{url}/wash/user/order/detail/{order_id}".format(url=settings.SERVER_NAME, order_id=order_id),
+       "url":  url,
        "data": data
     }
     access_token = get_server_access_token()

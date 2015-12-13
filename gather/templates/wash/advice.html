@@ -48,11 +48,19 @@
 {% block bottom %}
 <nav class="main-nav am-topbar am-topbar-fixed-bottom" style="background-color:#FF6600 ">
     <div class="text-center">
-        <h4 style="color:white;margin-top:15px;" onclick="order()">
+        <h4 style="color:white;margin-top:15px;" onclick="advice()">
              保存
         </h4>
     </div>
 
 </nav>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function advice(){
+        $('form').submit();
+    }
+</script>
 {% endblock %}
 

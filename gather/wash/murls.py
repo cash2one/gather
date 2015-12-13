@@ -38,6 +38,8 @@ urlpatterns = patterns('wash.mviews',
     url(r'^company/$', 'company', name='manage_company'),
     url(r'^company_discount/$', 'company_discount', name='manage_company_discount'),
 
+    # 配置信息
+    url(r'^config/$', 'config', name='manage_config'),
 
 
 )
