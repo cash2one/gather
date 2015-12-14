@@ -622,7 +622,7 @@ def update_pay_status(request):
                     status = WashUserProfile.recharge(profile, recharge_sum)  # 到账
                     if status:
                         records.update(status=True)
-                        if len(records) == 1:
+                        if len(records) == 1 and recharge_sum > 10000:
                             # 非第一次充值，送优惠券
                             MyDiscount.present_after_recharge(profile)
                         Order.status_next(order.id)  # 更新状态并发送微信提示信息
@@ -636,7 +636,7 @@ def update_pay_status(request):
                 if status:
                     pay_records.update(status=True)
                     Order.status_next(order.id)  # 更新状态并发送微信提示信息
-                    MyDiscount.present_after_trade(profile)  # 交易成功送优惠券
+                    MyDiscount.present_after_trade(profile)  # 交易成功送优惠券(仅第一次)
 
     return HttpResponse(
         """<xml>
@@ -661,7 +661,7 @@ def recharge(request):
             return render(request, 'wash/recharge.html')
         #if cash_fen >= 20000:
         #    cash_extra = 5000  # 冲200送50
-        if cash_fen >= 1:  # 测试
+        if cash_fen >= 10000:  # 测试
             cash_extra = 3000  # 冲100送30
 
         order = Order(user=profile, money=cash_fen, status=0,

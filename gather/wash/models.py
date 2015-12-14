@@ -400,12 +400,12 @@ class MyDiscount(models.Model):
     @classmethod
     def present_after_trade(cls, profile):
         # 交易后赠送优惠券
-        cls.present(profile, 1, is_single=True)
+        cls.present(profile, 1)
 
     @classmethod
     def present_after_recharge(cls, profile):
         # 充值后赠送优惠券
-        cls.present(profile, 2)
+        cls.present(profile, 2, is_single=True)
 
     @classmethod
     def present(cls, profile, present_type, is_single=False):
@@ -415,7 +415,7 @@ class MyDiscount(models.Model):
         if discount:
             discount = discount[0]
             # 优惠券有效, 只能得一次
-            if Discount.is_valid(discount.id) and\
+            if is_single or Discount.is_valid(discount.id) and\
                     not cls.objects.filter(discount_id=discount.id, phone=profile.phone).exists():
                 cls.create(profile.phone, discount)
 
