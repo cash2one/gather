@@ -229,15 +229,19 @@ class Discount(models.Model):
     """ 优惠券"""
     DISCOUNT_TYPE = (
         (1, u'元'),
-        (2, u'折扣')
+        (2, u'折扣'),
     )
 
     RANGE_TYPE = (
         (1, u'全部'),
         (2, u'一类'),
         (3, u'单个'),
-        (4, u'交易后赠送'),
-        (5, u'充值后赠送'),
+    )
+
+    PRESENT_TYPE = (
+        (0, u'非赠送'),
+        (1, u'交易后赠送'),
+        (2, u'充值后赠送'),
     )
 
     company = models.ForeignKey(Company, related_name='company_discount', null=True)
@@ -251,6 +255,7 @@ class Discount(models.Model):
     discount_type = models.IntegerField('折扣类型', choices=DISCOUNT_TYPE, default=1)
     status = models.BooleanField('是否有效', default=True)
     is_for_user = models.BooleanField('是否是赠送给用户的', default=False)
+    present_type = models.IntegerField('赠送类型', choices=PRESENT_TYPE, default=0)
 
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
     updated = models.DateTimeField('最后更新时间', auto_now=True)
@@ -395,23 +400,24 @@ class MyDiscount(models.Model):
     @classmethod
     def present_after_trade(cls, profile):
         # 交易后赠送优惠券
-        cls.present(profile, 4)
+        cls.present(profile, 1, is_single=True)
 
     @classmethod
     def present_after_recharge(cls, profile):
         # 充值后赠送优惠券
-        cls.present(profile, 5)
+        cls.present(profile, 2)
 
     @classmethod
-    def present(cls, profile, range_type):
+    def present(cls, profile, present_type, is_single=False):
         today = datetime.datetime.now()
-        discount = Discount.objects.filter(begin__lte=today, end__gte=today,
-                                           range_type=range_type, status=True, is_for_user=True)
+        discount = Discount.objects.filter(begin__lte=today, end__gte=today, present_type=present_type,
+                                           range_type=1, status=True, is_for_user=True)
         if discount:
             discount = discount[0]
-            # 优惠券有效
-            if Discount.is_valid(discount.id):
-                MyDiscount.create(profile.phone, discount)
+            # 优惠券有效, 只能得一次
+            if Discount.is_valid(discount.id) and\
+                    not cls.objects.filter(discount_id=discount.id, phone=profile.phone).exists():
+                cls.create(profile.phone, discount)
 
 
 

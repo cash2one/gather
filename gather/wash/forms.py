@@ -138,7 +138,7 @@ class DiscountForm(forms.ModelForm):
 
     class Meta:
         model = Discount
-        fields = ('name', 'price', 'begin', 'end', 'wash_type', 'discount_type', 'range_type')
+        fields = ('name', 'price', 'begin', 'end', 'wash_type', 'discount_type', 'range_type', 'present_type')
 
     name = forms.CharField(label='名称', widget=forms.TextInput(attrs={'placeholder': '请输入名称'}), error_messages={'required': '请输入名称'})
     price = forms.CharField(label='优惠规格', widget=forms.TextInput(attrs={'placeholder': '输入优惠价格或者折扣'}), error_messages={'required': '请输入名称'})
@@ -147,10 +147,10 @@ class DiscountForm(forms.ModelForm):
     wash_type = forms.ChoiceField(label=u'优惠对象', choices=WashType.WASH_TYPE, widget=forms.RadioSelect())
     discount_type = forms.ChoiceField(label=u'优惠类型', choices=Discount.DISCOUNT_TYPE, widget=forms.RadioSelect())
     range_type = forms.ChoiceField(label=u'优惠范围', choices=Discount.RANGE_TYPE, widget=forms.RadioSelect())
+    present_type = forms.ChoiceField(label=u'赠送范围', choices=Discount.PRESENT_TYPE, widget=forms.RadioSelect())
 
     def clean(self):
         wash_type = self.cleaned_data['wash_type']
-        discount_type = self.cleaned_data['discount_type']
         range_type = self.cleaned_data['range_type']
         wash_id = self._request.POST.get('wash', '0')
         u = self._request.POST.get('update', 'no')
