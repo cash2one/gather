@@ -661,7 +661,7 @@ def recharge(request):
             return render(request, 'wash/recharge.html')
         #if cash_fen >= 20000:
         #    cash_extra = 5000  # 冲200送50
-        if cash_fen >= 100:  # 测试
+        if cash_fen >= 1:  # 测试
             cash_extra = 3000  # 冲100送30
 
         order = Order(user=profile, money=cash_fen, status=0,
