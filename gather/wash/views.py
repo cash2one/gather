@@ -306,6 +306,8 @@ def order(request, template_name="wash/order.html"):
         else:
             price_sum *= float(m_discount.price) * 0.1
 
+    price_sum = 0 if price_sum < 0 else price_sum
+
     if request.method == "POST":
         address_id = request.POST.get('address_id', '')
         service_time = request.POST.get('service_time', '')
