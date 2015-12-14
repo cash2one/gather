@@ -59,17 +59,6 @@ class WashUserProfile(models.Model):
         profile.verify_cash = get_encrypt_cash(profile)
         profile.save()
 
-        # 交易成功后赠送优惠券，通过名字获取优惠券
-        today = datetime.datetime.now()
-        discount = Discount.objects.filter(begin__lte=today, end__gte=today,
-                                           name=u'交易后赠送', status=True, is_for_user=True)
-        if discount:
-            discount = discount[0]
-            # 优惠券有效并且用户未领取
-            if Discount.is_valid(discount.id) and not \
-                    MyDiscount.objects.filter(discount=discount).exists():
-                MyDiscount.create(profile.phone, discount)
-
     @classmethod
     def recharge(cls, profile, money):
         profile.cash += money  # 到账
@@ -232,6 +221,8 @@ class Discount(models.Model):
         (1, u'全部'),
         (2, u'一类'),
         (3, u'单个'),
+        (4, u'交易后赠送'),
+        (5, u'充值后赠送'),
     )
 
     company = models.ForeignKey(Company, related_name='company_discount', null=True)
@@ -385,6 +376,28 @@ class MyDiscount(models.Model):
     def create(cls, phone, discount):
         cls(phone=phone, discount_id=discount.id,
             begin=discount.begin, end=discount.end).save()
+
+    @classmethod
+    def present_after_trade(cls, profile):
+        # 交易后赠送优惠券
+        cls.present(profile, 4)
+
+    @classmethod
+    def present_after_recharge(cls, profile):
+        # 充值后赠送优惠券
+        cls.present(profile, 5)
+
+    @classmethod
+    def present(cls, profile, range_type):
+        today = datetime.datetime.now()
+        discount = Discount.objects.filter(begin__lte=today, end__gte=today,
+                                           range_type=range_type, status=True, is_for_user=True)
+        if discount:
+            discount = discount[0]
+            # 优惠券有效
+            if Discount.is_valid(discount.id):
+                MyDiscount.create(profile.phone, discount)
+
 
 
 class Basket(models.Model):
@@ -750,6 +763,10 @@ class PayRecord(models.Model):
 
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
     updated = models.DateTimeField('最后更新时间', auto_now=True)
+
+    @classmethod
+    def has_recharge(cls, user):
+        return cls.objects.filter(user=user, pay_type=4).exists()
 
 
 class Advice(models.Model):

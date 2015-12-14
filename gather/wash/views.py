@@ -622,6 +622,9 @@ def update_pay_status(request):
                             record.save()
                             recharge_sum += record.money
                         WashUserProfile.recharge(profile, recharge_sum)  # 到账
+                        if recharge_sum == 10000:
+                            # 非第一次充值，送优惠券
+                            MyDiscount.present_after_recharge(profile)
 
                         Order.status_next(order.id)  # 更新状态并发送微信提示信息
             else:
@@ -634,6 +637,7 @@ def update_pay_status(request):
                             WashUserProfile.pay(profile, pay.money)  # 付款
                             PayRecord.objects.filter(order_id=order_id).update(status=True)
                             Order.status_next(order.id)  # 更新状态并发送微信提示信息
+                            MyDiscount.present_after_trade(profile)  # 交易成功送优惠券
                     else:
                         PayRecord.objects.filter(order_id=order_id).update(status=True)
                         Order.status_next(order.id)  # 更新状态并发送微信提示信息
@@ -658,10 +662,10 @@ def recharge(request):
             cash_extra = 0
         except:
             return render(request, 'wash/recharge.html')
-        if cash_fen >= 20000:
-            cash_extra = 5000  # 冲200送50
-        elif cash_fen >= 10000:
-            cash_extra = 2000  # 冲100送20
+        #if cash_fen >= 20000:
+        #    cash_extra = 5000  # 冲200送50
+        if cash_fen >= 1:  # 测试
+            cash_extra = 3000  # 冲100送30
 
         order = Order(user=profile, money=cash_fen, status=0,
                       service_time=datetime.datetime.now(), pay_method=2)
@@ -669,7 +673,8 @@ def recharge(request):
         OrderLog.create(order.id, 0)
 
         PayRecord(user=profile, order=order, pay_type=1, money=cash_fen).save()
-        if cash_extra > 0:
+        # 第一次充值赠送钱，之后赠送优惠券
+        if cash_extra > 0 and not PayRecord.has_recharge(profile):
             PayRecord(user=profile, order=order, pay_type=4, money=cash_extra).save()
         return HttpResponseRedirect('{}?order_id={}'.format(reverse('wash.views.wechat_pay'), order.id))
     else:

@@ -33,12 +33,11 @@
 
 {% block content %}
 <div class="alert alert-success text-center" role="alert" style="margin-top:10px;padding:10px;">
-    充值&nbsp;<span class="label label-info">100</span>&nbsp;
-    送&nbsp;<span class="label label-danger">20</span>&nbsp;元！！！
+    首次充值&nbsp;<span class="label label-info">100</span>&nbsp;
+    送&nbsp;<span class="label label-danger">30</span>&nbsp;元！！！
     <br>
     <br>
-    充值&nbsp;<span class="label label-info">200</span>&nbsp;
-    送&nbsp;<span class="label label-danger">50</span>&nbsp;元！！！
+    第二次充值赠送优惠券！
 </div>
 <form action="{% url 'wash_recharge'%}" method="post">
     {% csrf_token %}
