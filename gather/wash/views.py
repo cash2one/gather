@@ -300,10 +300,11 @@ def order(request, template_name="wash/order.html"):
         my_discount = MyDiscount.objects.get(pk=my_discount_id)
 
     if my_discount:
-        if my_discount.discount_type == 1:
-            price_sum -= int(my_discount.price)*100
+        m_discount = my_discount.discount
+        if m_discount.discount_type == 1:
+            price_sum -= int(m_discount.price)*100
         else:
-            price_sum *= float(my_discount.price) * 0.1
+            price_sum *= float(m_discount.price) * 0.1
 
     if request.method == "POST":
         address_id = request.POST.get('address_id', '')
