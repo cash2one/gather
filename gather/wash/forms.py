@@ -156,14 +156,15 @@ class DiscountForm(forms.ModelForm):
         u = self._request.POST.get('update', 'no')
         company_id = self._request.POST.get('company', '0')
         is_for_user = self._request.POST.get('is_for_user', '0')
+        is_for_user = True if is_for_user == '1' else False
         company_id = None if company_id == '0' else company_id
         wash_id = None if wash_id == '0' else wash_id
         today = datetime.datetime.now()
 
-        if range_type == u'1':
+        if range_type == u'1' and not is_for_user:
             # 非赠送 全部类型 折扣和减钱只能有一个
             if Discount.objects.filter(status=True, range_type=range_type, begin__lte=today,
-                                       end__gte=today, company_id=company_id, is_for_user=False).exists():
+                                       end__gte=today, company_id=company_id, is_for_user=is_for_user).exists():
                 raise forms.ValidationError(u'已存在同类型的有效优惠券或折扣和减钱只能有一个!')
         elif range_type == u'2':
             # 一类 折扣和减钱只能有一个
