@@ -26,7 +26,7 @@
           <div class="row" style="margin-top:10px;">
               <div class="col-xs-12">
                   <span class="label label-info">截止日期</span>&nbsp;&nbsp;
-                  {{ discount.end|date:'Y-m-d H:i:s' }}
+                  {{ discount.end|date:'Y-m-d H:i:s' }}{% if not discount.is_valid %}(已失效){% endif %}
               </div>
           </div>
       </div>
