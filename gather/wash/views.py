@@ -685,7 +685,7 @@ def wechat_pay_success(request):
     status = request.GET.get('status', 'True')
     if Order.exists(order_id):
         order = Order.objects.get(pk=order_id)
-        if status == 'True':
+        if status == 'true':
             if order.pay_method == 2:
                 msg = u'已成功充值{}元'.format(money_format(order.money))
             else:

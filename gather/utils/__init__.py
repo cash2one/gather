@@ -24,6 +24,7 @@ from django.conf import settings
 
 
 ERROR_LOG = logging.getLogger('err')
+INFO_LOG = logging.getLogger('info')
 ONE_DAY = 24 * 60 * 60
 
 
@@ -213,6 +214,7 @@ def get_encrypt_code(username):
 
 def get_encrypt_cash(profile):
     key_value = "phone={}&created={}&cash={}".format(profile.phone, profile.created, profile.cash)
+    INFO_LOG.info("cash {}".format(profile.cash))
     ency_s = hashlib.md5(key_value).hexdigest()
     return ency_s
 
