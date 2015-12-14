@@ -622,7 +622,7 @@ def update_pay_status(request):
                             record.save()
                             recharge_sum += record.money
                         WashUserProfile.recharge(profile, recharge_sum)  # 到账
-                        if recharge_sum == 10000:
+                        if len(records) == 1:
                             # 非第一次充值，送优惠券
                             MyDiscount.present_after_recharge(profile)
 
@@ -664,7 +664,7 @@ def recharge(request):
             return render(request, 'wash/recharge.html')
         #if cash_fen >= 20000:
         #    cash_extra = 5000  # 冲200送50
-        if cash_fen >= 1:  # 测试
+        if cash_fen >= 100:  # 测试
             cash_extra = 3000  # 冲100送30
 
         order = Order(user=profile, money=cash_fen, status=0,
