@@ -368,7 +368,7 @@ class MyDiscount(models.Model):
     def is_valid(self):
         if self.status:
             today = datetime.datetime.now()
-            if today < self.end and self.begin < today:
+            if today < self.end and self.begin < today and self.discount.status:
                 return True
         return False
 
@@ -422,8 +422,8 @@ class MyDiscount(models.Model):
     @classmethod
     def get_discounts(cls):
         today = datetime.datetime.now()
-        if cls.objects.filter(begin__lte=today, end__gte=today, status=True).exists():
-            discounts = cls.objects.filter(begin__lte=today, end__gte=today, status=True)
+        if cls.objects.filter(begin__lte=today, end__gte=today, discount__status=True).exists():
+            discounts = cls.objects.filter(begin__lte=today, end__gte=today, discount__status=True)
             return discounts
         else:
             return None
