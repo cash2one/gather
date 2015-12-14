@@ -110,7 +110,7 @@
                     <label style="color:red">我的优惠券:</label>
                     <select name="my_discount_id" id="my_discount_select">
                         {% for my in my_discounts %}
-                        <option value="{{ my.id }}" {% if my_discount.id == my.id %}selected{% endfor %}>{{ my.desc }}</option>
+                        <option value="{{ my.id }}" {% if my_discount.id == my.id %}selected{% endif %}>{{ my.desc }}</option>
                         {% endfor %}
                     </select>
 
