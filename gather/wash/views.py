@@ -682,10 +682,10 @@ def recharge(request):
 def wechat_pay_success(request):
     profile = request.user.wash_profile
     order_id = request.GET.get('oid', '')
-    status = request.GET.get('status', '')
+    status = request.GET.get('status', 'True')
     if Order.exists(order_id):
         order = Order.objects.get(pk=order_id)
-        if status:
+        if status == 'True':
             if order.pay_method == 2:
                 msg = u'已成功充值{}元'.format(money_format(order.money))
             else:

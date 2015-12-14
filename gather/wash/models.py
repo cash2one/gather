@@ -64,7 +64,7 @@ class WashUserProfile(models.Model):
             profile.save()
             status = True
         status = False
-        INFO_LOG.info("{}pay{},status{}".format(profile.phone, money, status))
+        INFO_LOG.info("{} pay {},status {}".format(profile.phone, money_format(money), status))
         return status
 
     @classmethod
@@ -75,7 +75,7 @@ class WashUserProfile(models.Model):
             profile.save()
             status = True
         status = False
-        INFO_LOG.info("{}recharge{},status{}".format(profile.phone, money, status))
+        INFO_LOG.info("{} recharge {},status {}".format(profile.phone, money_format(money), status))
         return status
 
     @classmethod
