@@ -63,7 +63,8 @@ class WashUserProfile(models.Model):
             profile.verify_cash = get_encrypt_cash(profile)
             profile.save()
             status = True
-        status = False
+        else:
+            status = False
         INFO_LOG.info("{} pay {},status {}".format(profile.phone, money_format(money), status))
         return status
 
@@ -74,8 +75,9 @@ class WashUserProfile(models.Model):
             profile.verify_cash = get_encrypt_cash(profile)
             profile.save()
             status = True
-        status = False
-        INFO_LOG.info("{} recharge {},status {}, verify_cash {}".format(profile.phone, money_format(money), status, profile.verify_cash))
+        else:
+            status = False
+        INFO_LOG.info("{} recharge {},status {}".format(profile.phone, money_format(money), status))
         return status
 
     @classmethod
