@@ -161,9 +161,9 @@ class DiscountForm(forms.ModelForm):
         today = datetime.datetime.now()
 
         if range_type == u'1':
-            # 全部类型 折扣和减钱只能有一个
+            # 非赠送 全部类型 折扣和减钱只能有一个
             if Discount.objects.filter(status=True, range_type=range_type, begin__lte=today,
-                                       end__gte=today, company_id=company_id, is_for_user=is_for_user).exists():
+                                       end__gte=today, company_id=company_id, is_for_user=False).exists():
                 raise forms.ValidationError(u'已存在同类型的有效优惠券或折扣和减钱只能有一个!')
         elif range_type == u'2':
             # 一类 折扣和减钱只能有一个
