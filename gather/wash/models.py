@@ -2,6 +2,7 @@
 #!-*- coding: UTF-8 -*-
 
 import datetime
+import logging
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -10,6 +11,8 @@ from django.db.models import Sum
 
 from gather.celery import send_wechat_msg
 from utils import money_format, get_encrypt_cash
+
+INFO_LOG = logging.getLogger('info')
 
 
 class Company(models.Model):
@@ -55,15 +58,25 @@ class WashUserProfile(models.Model):
 
     @classmethod
     def pay(cls, profile, money):
-        profile.cash -= money  # 付款
-        profile.verify_cash = get_encrypt_cash(profile)
-        profile.save()
+        if profile.verify_cash == get_encrypt_cash(profile):
+            profile.cash -= money  # 付款
+            profile.verify_cash = get_encrypt_cash(profile)
+            profile.save()
+            status = True
+        status = False
+        INFO_LOG.info("{}pay{},status{}".format(profile.phone, money, status))
+        return status
 
     @classmethod
     def recharge(cls, profile, money):
-        profile.cash += money  # 到账
-        profile.verify_cash = get_encrypt_cash(profile)
-        profile.save()
+        if profile.verify_cash == get_encrypt_cash(profile) or profile.cash == 0:
+            profile.cash += money  # 到账
+            profile.verify_cash = get_encrypt_cash(profile)
+            profile.save()
+            status = True
+        status = False
+        INFO_LOG.info("{}recharge{},status{}".format(profile.phone, money, status))
+        return status
 
     @classmethod
     def user_valid(cls, user):

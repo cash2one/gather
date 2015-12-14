@@ -14,6 +14,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.conf import settings
 from django.contrib.auth import login, authenticate
+from django.db.models import Sum
 
 from wash.models import VerifyCode, WashUserProfile, WashType, IndexBanner
 from wash.models import Basket, UserAddress, Address, Order, OrderDetail, OrderLog
@@ -555,9 +556,11 @@ def wechat_pay(request, template_name='wash/pay.html'):
         if my_account > 0:
             if my_account >= order_price:
                 PayRecord(user=wash_profile, order=order, pay_type=3, money=order_price).save()
-                WashUserProfile.pay(wash_profile, order_price)  # 付款 直接跳到成功页面
-                Order.status_next(order.id)  # 更新状态并发送微信提示信息
-                return HttpResponseRedirect('{}?oid={}'.format(reverse('wash.views.wechat_pay_success'), order.id))
+                status = WashUserProfile.pay(wash_profile, order_price)  # 付款 直接跳到成功页面
+                if status:
+                    Order.status_next(order.id)  # 更新状态并发送微信提示信息
+                    MyDiscount.present_after_trade(wash_profile)  # 交易成功送优惠券
+                return HttpResponseRedirect('{}?oid={}&status={}'.format(reverse('wash.views.wechat_pay_success'), order.id, status))
             else:
                 should_pay = order_price - my_account
                 PayRecord(user=wash_profile, order=order, pay_type=3, money=my_account).save()
@@ -613,34 +616,28 @@ def update_pay_status(request):
             order_id = order.id
             profile = order.user
             if order.pay_method == 2:  # 充值
-                if profile.verify_cash == get_encrypt_cash(profile) or profile.cash == 0:
-                    if PayRecord.objects.filter(order_id=order_id, pay_type=1).exists():
-                        records = PayRecord.objects.filter(order_id=order_id)
-                        recharge_sum = 0
-                        for record in records:
-                            record.status = True  # 充值记录状态为True
-                            record.save()
-                            recharge_sum += record.money
-                        WashUserProfile.recharge(profile, recharge_sum)  # 到账
+                if PayRecord.objects.filter(order_id=order_id, pay_type=1).exists():
+                    records = PayRecord.objects.filter(order_id=order_id)
+                    recharge_sum = records.aggregate(Sum('money'))['money__sum']
+                    status = WashUserProfile.recharge(profile, recharge_sum)  # 到账
+                    if status:
+                        records.update(status=True)
                         if len(records) == 1:
                             # 非第一次充值，送优惠券
                             MyDiscount.present_after_recharge(profile)
-
                         Order.status_next(order.id)  # 更新状态并发送微信提示信息
             else:
                 # 预付款成功
                 pay_records = PayRecord.objects.filter(order_id=order_id)  # 可能包含多个同一个order_id
+                status = True
                 for pay in pay_records:
                     if pay.pay_type == 3:  # 账户扣款
-                        # 余额校验, 扣款
-                        if profile.verify_cash == get_encrypt_cash(profile):
-                            WashUserProfile.pay(profile, pay.money)  # 付款
-                            PayRecord.objects.filter(order_id=order_id).update(status=True)
-                            Order.status_next(order.id)  # 更新状态并发送微信提示信息
-                            MyDiscount.present_after_trade(profile)  # 交易成功送优惠券
-                    else:
-                        PayRecord.objects.filter(order_id=order_id).update(status=True)
-                        Order.status_next(order.id)  # 更新状态并发送微信提示信息
+                        status = WashUserProfile.pay(profile, pay.money)  # 付款
+                if status:
+                    pay_records.update(status=True)
+                    Order.status_next(order.id)  # 更新状态并发送微信提示信息
+                    MyDiscount.present_after_trade(profile)  # 交易成功送优惠券
+
     return HttpResponse(
         """<xml>
               <return_code><![CDATA[SUCCESS]]></return_code>
@@ -685,12 +682,16 @@ def recharge(request):
 def wechat_pay_success(request):
     profile = request.user.wash_profile
     order_id = request.GET.get('oid', '')
+    status = request.GET.get('status', '')
     if Order.exists(order_id):
         order = Order.objects.get(pk=order_id)
-        if order.pay_method == 2:
-            msg = u'已成功充值{}元'.format(money_format(order.money))
+        if status:
+            if order.pay_method == 2:
+                msg = u'已成功充值{}元'.format(money_format(order.money))
+            else:
+                msg = u'消费{}元'.format(money_format(order.money))
         else:
-            msg = u'消费{}元'.format(money_format(order.money))
+            msg = u'账户异常'
     else:
         order = ''
         msg = u'无此信息'
