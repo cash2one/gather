@@ -290,10 +290,12 @@ def order(request, template_name="wash/order.html"):
 
     # 个人优惠券
     my_discount_id = request.GET.get('my_discount_id', None)
-    my_discount = None
-    my_discounts = None
     if my_discount_id is None:
-        my_discounts = MyDiscount.get_discounts()
+        my_discount_id = request.POST.get('my_discount_id', None)
+
+    my_discount = None
+    my_discounts = MyDiscount.get_discounts()
+    if my_discount_id is None:
         if my_discounts:
             my_discount = my_discounts[0]
     else:
@@ -316,7 +318,8 @@ def order(request, template_name="wash/order.html"):
         pay = request.POST.get('pay', '0')
 
         status = 0 if pay == '0' else 10
-        order = Order(user=profile, address_id=address_id, mark=mark,
+        discount = None if my_discount is None else my_discount.discount
+        order = Order(user=profile, address_id=address_id, mark=mark, discount=discount,
                       money=price_sum, service_time=service_time, status=status,
                       am_pm=am_pm, verify_code=gen_verify_code(), pay_method=pay)
         order.save()

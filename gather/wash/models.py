@@ -606,6 +606,12 @@ class Order(models.Model):
                                 'color': '#173177'
                             },
                         }
+                        # 如果有优惠券，则修改状态为已失效
+                        if order.discount is not None:
+                            discount = order.discount
+                            discount.status = False
+                            discount.save()
+
                         send_wechat_msg(user, 'order_get', oid, data)
                         send_wechat_msg(user, 'order_seller', oid, seller_data)
                 elif order.status in [1, 10]:
