@@ -205,7 +205,7 @@
     });
 
     $("#my_discount_select").change(function(){
-        location.href = '.?my_discount_id=' + $(this).attr('value');
+        location.href = '.?my_discount_id=' + $(this).children('option:selected').val();
     });
 </script>
 {% endblock %}
