@@ -281,12 +281,29 @@ def order(request, template_name="wash/order.html"):
     if wash_count < settings.TRANS_COUNT:
         price_sum += settings.TRANS_PRICE_FEN  # 800分
 
-    # 优惠券中price为元，wash中为分
+    # 非个人的全部优惠 优惠券中price为元，wash中为分
     if discount_all:
         if discount_all['discount_type'] == 1:
             price_sum -= int(discount_all['price'])*100
         else:
             price_sum *= float(discount_all['price']) * 0.1
+
+    # 个人优惠券
+    my_discount_id = request.GET.get('my_discount_id', None)
+    my_discount = None
+    my_discounts = None
+    if my_discount_id is None:
+        my_discounts = MyDiscount.get_discounts()
+        if my_discounts:
+            my_discount = my_discounts[0]
+    else:
+        my_discount = MyDiscount.objects.get(pk=my_discount_id)
+
+    if my_discount:
+        if my_discount.discount_type == 1:
+            price_sum -= int(my_discount.price)*100
+        else:
+            price_sum *= float(my_discount.price) * 0.1
 
     if request.method == "POST":
         address_id = request.POST.get('address_id', '')
@@ -337,6 +354,8 @@ def order(request, template_name="wash/order.html"):
         'price_sum': money_format(price_sum),
         'today': datetime.datetime.now(),
         'discount': discount_all,
+        'my_discount': my_discount,
+        'my_discounts': my_discounts
     })
 
 

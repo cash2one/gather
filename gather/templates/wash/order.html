@@ -100,6 +100,24 @@
             </div>
         </div>
         {% endif %}
+         {% if my_discounts %}
+        <div class="bs-callout bs-callout-danger">
+            <div class="media">
+                <div class="media-left">
+                    <span class="glyphicon glyphicon-heart" aria-hidden="true" style="margin-top:5px; color:red"></span>
+                </div>
+                <div class="media-body">
+                    <label style="color:red">我的优惠券:</label>
+                    <select name="my_discount_id" id="my_discount_select">
+                        {% for my in my_discounts %}
+                        <option value="{{ my.id }}" {% if my_discount.id == my.id %}selected{% endfor %}>{{ my.desc }}</option>
+                        {% endfor %}
+                    </select>
+
+                </div>
+            </div>
+        </div>
+        {% endif %}
 
         <!--<div class="bs-callout bs-callout-danger">
             <div class="media">
@@ -184,6 +202,10 @@
         }else{
             $("#order_form").submit();
         }
+    });
+
+    $("#my_discount_select").change(function(){
+        location.href = '.?my_discount_id=' + $(this).attr('value');
     });
 </script>
 {% endblock %}

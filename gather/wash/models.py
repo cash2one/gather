@@ -419,6 +419,14 @@ class MyDiscount(models.Model):
                     not cls.objects.filter(discount_id=discount.id, phone=profile.phone).exists():
                 cls.create(profile.phone, discount)
 
+    @classmethod
+    def get_discounts(cls):
+        today = datetime.datetime.now()
+        if cls.objects.filter(begin__lte=today, end__gte=today, status=True).exists():
+            discounts = cls.objects.filter(begin__lte=today, end__gte=today, status=True)
+            return discounts
+        else:
+            return None
 
 
 class Basket(models.Model):
