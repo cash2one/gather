@@ -142,14 +142,14 @@
                     <span class="glyphicon glyphicon-file" aria-hidden="true" style="margin-top:5px; color:white"></span>
                 </div>
                 <div class="media-body">
-                   <a href="{% url 'wash_aggreement' %}">用户协议</a>
+                   <input type="checkbox" checked/><a href="{% url 'wash_aggreement' %}">用户协议</a>
                 </div>
             </div>
         </div>
     </form>
 
     {% for wash in wash_list %}
-    <div class="container-fluid" style="border-bottom:solid 1px #CCCCCC;margin-top:10px;">
+    <div class="container-fluid" style="border-bottom:solid 1px #CCCCCC;margin-top:20px;">
         <div clss="row well">
             <div class="col-xs-3 text-left">
                 <a href="#">
