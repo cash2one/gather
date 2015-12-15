@@ -590,6 +590,7 @@ def wechat_pay(request, template_name='wash/pay.html'):
                 record.save()
                 status = WashUserProfile.pay(wash_profile, order_price)  # 付款 直接跳到成功页面
                 if status:
+                    record.status = True
                     record.balance = wash_profile.cash
                     record.save()
                     Order.status_next(order.id)  # 更新状态并发送微信提示信息
