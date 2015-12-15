@@ -786,7 +786,7 @@ class PayRecord(models.Model):
     PAY_TYPE_CHOICES = (
         (1, u'充值'),
         (2, u'银行卡扣费'),
-        (3, u'账户余额扣费'),
+        (3, u'账户扣费'),
         (4, u'充值赠送')
     )
 
