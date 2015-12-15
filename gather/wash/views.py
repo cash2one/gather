@@ -585,18 +585,22 @@ def wechat_pay(request, template_name='wash/pay.html'):
     if order.pay_method != 2:
         if my_account > 0:
             if my_account >= order_price:
-                PayRecord(user=wash_profile, order=order, pay_type=3, money=order_price).save()
+                record = PayRecord(user=wash_profile, order=order, pay_type=3,
+                                   money=order_price, balance=wash_profile.cash)
+                record.save()
                 status = WashUserProfile.pay(wash_profile, order_price)  # 付款 直接跳到成功页面
                 if status:
+                    record.balance = wash_profile.cash
+                    record.save()
                     Order.status_next(order.id)  # 更新状态并发送微信提示信息
                     MyDiscount.present_after_trade(wash_profile)  # 交易成功送优惠券
                 return HttpResponseRedirect('{}?oid={}&status={}'.format(reverse('wash.views.wechat_pay_success'), order.id, status))
             else:
                 should_pay = order_price - my_account
-                PayRecord(user=wash_profile, order=order, pay_type=3, money=my_account).save()
-                PayRecord(user=wash_profile, order=order, pay_type=2, money=should_pay).save()
+                PayRecord(user=wash_profile, order=order, pay_type=3, money=my_account, balance=wash_profile.cash).save()
+                PayRecord(user=wash_profile, order=order, pay_type=2, money=should_pay, balance=wash_profile.cash).save()
         else:
-            PayRecord(user=wash_profile, order=order, pay_type=2, money=order_price).save()
+            PayRecord(user=wash_profile, order=order, pay_type=2, money=order_price, balance=wash_profile.cash).save()
             should_pay = order_price
 
     if settings.DEBUG:
@@ -651,10 +655,10 @@ def update_pay_status(request):
                     recharge_sum = records.aggregate(Sum('money'))['money__sum']
                     status = WashUserProfile.recharge(profile, recharge_sum)  # 到账
                     if status:
-                        records.update(status=True)
                         if len(records) == 1 and recharge_sum > 10000:
                             # 非第一次充值，送优惠券
                             MyDiscount.present_after_recharge(profile)
+                        records.update(status=True, balance=profile.cash)
                         Order.status_next(order.id)  # 更新状态并发送微信提示信息
             else:
                 # 预付款成功
@@ -663,6 +667,8 @@ def update_pay_status(request):
                 for pay in pay_records:
                     if pay.pay_type == 3:  # 账户扣款
                         status = WashUserProfile.pay(profile, pay.money)  # 付款
+                        pay.balance = profile.cash
+                        pay.save()
                 if status:
                     pay_records.update(status=True)
                     Order.status_next(order.id)  # 更新状态并发送微信提示信息
@@ -702,7 +708,7 @@ def recharge(request):
         PayRecord(user=profile, order=order, pay_type=1, money=cash_fen).save()
         # 第一次充值赠送钱，之后赠送优惠券
         if cash_extra > 0 and not PayRecord.has_recharge(profile):
-            PayRecord(user=profile, order=order, pay_type=4, money=cash_extra).save()
+            PayRecord(user=profile, order=order, pay_type=4, money=cash_extra, balance=profile.cash).save()
         return HttpResponseRedirect('{}?order_id={}'.format(reverse('wash.views.wechat_pay'), order.id))
     else:
         return render(request, 'wash/recharge.html')
@@ -730,6 +736,18 @@ def wechat_pay_success(request):
         'profile': profile,
         'order': order,
         'msg': msg,
+    })
+
+
+@login_required(login_url=OAUTH_WASH_URL.format(next='/wash/user/trade/'))
+def user_trade(request, temlate_name='wash/trade.html'):
+    """交易记录"""
+    profile = request.user.wash_profile
+    trade_list = PayRecord.objects.filter(user=profile).order_by("-created")
+    trades, page_numbers = adjacent_paginator(trade_list, page=request.GET.get('page', 1))
+    return render(request, temlate_name, {
+        'trades': trades,
+        'page_numbers': page_numbers
     })
 
 

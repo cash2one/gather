@@ -41,9 +41,9 @@
                     余额&nbsp;<label style="color:red">{{ profile.cash|default:'0.0'|money_format }}</label>元&nbsp;&nbsp;&nbsp;
                 </div>
                 <div class="col-xs-6 text-center">
-                    {% if profile.cash > 100000 %}
+                    {% if profile.cash > 50000 %}
                     <label style="color:yellow">黄金会员</label>
-                    {% elif profile.cash > 50000 %}
+                    {% elif profile.cash > 10000 %}
                     <label style="color:#999999 ">白银会员</label>
                     {% else %}
                     <label style="color:grey">普通会员</label>
@@ -71,6 +71,10 @@
        </a>
         <a href="{% url 'wash_verify_company'%}" class="list-group-item">
           <img class="account_img img-circle" src="/static/images/wash/verify.png"/>绑定公司
+          <img class="label_img" src="/static/images/wash/label_right.png"/>
+       </a>
+        <a href="{% url 'wash_user_trade'%}" class="list-group-item">
+          <img class="account_img" src="/static/images/wash/order.png"/>交易记录
           <img class="label_img" src="/static/images/wash/label_right.png"/>
        </a>
     </div>

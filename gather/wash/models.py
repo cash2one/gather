@@ -793,11 +793,16 @@ class PayRecord(models.Model):
     user = models.ForeignKey(WashUserProfile, related_name='pay_record')
     order = models.ForeignKey(Order, related_name='pay_order')
     money = models.IntegerField(verbose_name='交易金额', default=0)
+    balance = models.IntegerField(verbose_name='余额', default=0)
     pay_type = models.IntegerField(verbose_name='交易类型', choices=PAY_TYPE_CHOICES, default=1)
     status = models.BooleanField(verbose_name='状态', default=False)
 
     created = models.DateTimeField('创建时间', auto_now_add=True, blank=True, null=True)
     updated = models.DateTimeField('最后更新时间', auto_now=True)
+
+    @property
+    def get_status_display(self):
+        return u"<label style='color:green'>成功</label>" if self.status else u"<label style='color:grey'>确认中</label>"
 
     @classmethod
     def has_recharge(cls, user):

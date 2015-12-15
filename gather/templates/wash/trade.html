@@ -1,0 +1,47 @@
+{% extends 'wash/base.html' %}
+{% load util_tag %}
+{% block title_center %}
+<img class="top-logo" src="/static/images/wash/account_title.png" width="100">
+{% endblock %}
+
+{% block title_left %}
+    <a href="{% url 'wash_account' %}"><img class="label_img" src="/static/images/wash/label_left.png" /></a>
+{% endblock %}
+
+{% block content %}
+<table class="table table-hover">
+  <thead>
+    <tr>
+        <th>-</th>
+        <th>日期</th>
+        <th>￥</th>
+        <th>余额</th>
+        <th>类型</th>
+        <th>状态</th>
+    </tr>
+  </thead>
+    <tbody>
+    {% for trade in trades %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ trade.created|date:'Y-m-d H:i:s'}}</td>
+            <td>
+                <label style="color:{% if trade.pay_type == 1 or trade.pay_type == 4 %}green{% else %}red{% endif %}">
+                    {{ trade.money|money_format }}
+                </label>
+            </td>
+            <td>{{ trade.balance|money_format }}</td>
+            <td>{{ trade.get_pay_type_display }}</td>
+            <td>{{ trade.get_status_display|safe }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+<tr>
+</table>
+
+{% endblock %}
+
+
+
+
+
