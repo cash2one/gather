@@ -277,9 +277,11 @@ def order(request, template_name="wash/order.html"):
             wash['new_price'] = discount_price(wash['new_price'], discount['discount_type'], discount['price'])
 
     price_sum = reduce(lambda x, y: x+y, [wash['count']*wash['new_price']for wash in wash_list])
-    wash_count = reduce(lambda x, y: x+y, [wash['count'] for wash in wash_list])
-    if wash_count < settings.TRANS_COUNT:
-        price_sum += settings.TRANS_PRICE_FEN  # 800分
+
+    # 件数大于30 包邮
+    #wash_count = reduce(lambda x, y: x+y, [wash['count'] for wash in wash_list])
+    #if wash_count < settings.TRANS_COUNT:
+    #    price_sum += settings.TRANS_PRICE_FEN  # 800分
 
     # 非个人的全部优惠 优惠券中price为元，wash中为分
     if discount_all:
@@ -309,6 +311,9 @@ def order(request, template_name="wash/order.html"):
             price_sum *= float(m_discount.price) * 0.1
 
     price_sum = 0 if price_sum < 0 else price_sum
+
+    # 总价大于30则包送
+    price_sum = price_sum + settings.TRANS_PRICE_FEN if price_sum < settings.TRANS_FOR_FREE else price_sum
 
     if request.method == "POST":
         address_id = request.POST.get('address_id', '')

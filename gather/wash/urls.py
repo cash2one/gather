@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from django.conf.urls import patterns, url
-
+from django.views.generic import TemplateView
 
 urlpatterns = patterns('wash.views',
     url(r'^$', 'index', name='wash_index'),
@@ -33,6 +33,7 @@ urlpatterns = patterns('wash.views',
     url(r'^discount/get/$', 'discount_get', name='wash_discount_get'),
 
     url(r'^advice/$', 'advice', name='wash_advice'),
+    url(r'^agreement/$', TemplateView.as_view(template_name='wash/aggreement.html'), name='wash_aggreement'),
 
     url(r'^pay/$', 'wechat_pay', name='wash_wechat_pay'),
     url(r'^pay/update/$', 'update_pay_status', name='wash_wechat_pay_update'),

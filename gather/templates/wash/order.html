@@ -73,7 +73,7 @@
                     <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true" style="margin-top:5px;"></span>
                 </div>
                 <div class="media-body">
-                    <span class="label label-danger">注意</span> <label style="color:grey">衣服小于30件加收8元运费</label>
+                    <span class="label label-danger">注意</span> <label style="color:grey">消费总额小于30元加收8元运费</label>
                 </div>
             </div>
         </div>
@@ -134,6 +134,16 @@
          <div class="bs-callout bs-callout-danger">
             <div class="media">
                 <textarea class="form-control" rows="3" name="mark" placeholder="请填写注意事项(选填)"></textarea>
+            </div>
+        </div>
+        <div class="bs-callout bs-callout-danger">
+            <div class="media text-left">
+                <div class="media-left">
+                    <span class="glyphicon glyphicon-file" aria-hidden="true" style="margin-top:5px; color:white"></span>
+                </div>
+                <div class="media-body">
+                   <a href="{% url 'wash_aggreement' %}">用户协议</a>
+                </div>
             </div>
         </div>
     </form>
