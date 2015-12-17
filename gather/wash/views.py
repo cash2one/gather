@@ -405,7 +405,6 @@ def get_show_info(request):
         param['is_for_company'] = False
 
     washes = WashType.objects.filter(**param)
-
     return basket_info(request, washes)
 
 
