@@ -395,7 +395,7 @@ class MyDiscount(models.Model):
     @classmethod
     def create(cls, phone, discount):
         cls(phone=phone, discount_id=discount.id,
-            begin=discount.begin, end=discount.end).save()
+            begin=discount.begin, end=discount.end, status=True).save()
 
     @classmethod
     def present_after_trade(cls, profile):
@@ -415,8 +415,7 @@ class MyDiscount(models.Model):
         if discount:
             discount = discount[0]
             # 优惠券有效, 只能得一次
-            if is_single or Discount.is_valid(discount.id) and\
-                    not cls.objects.filter(discount_id=discount.id, phone=profile.phone).exists():
+            if is_single or Discount.is_valid(discount.id) and not cls.objects.filter(discount_id=discount.id, phone=profile.phone).exists():
                 cls.create(profile.phone, discount)
 
     @classmethod
