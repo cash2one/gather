@@ -652,7 +652,7 @@ def update_pay_status(request):
             profile = order.user
             if order.pay_method == 2:  # 充值
                 if PayRecord.objects.filter(order_id=order_id, pay_type=1).exists():
-                    records = PayRecord.objects.filter(order_id=order_id)
+                    records = PayRecord.objects.filter(order_id=order_id, status=False)
                     recharge_sum = records.aggregate(Sum('money'))['money__sum']
                     status = WashUserProfile.recharge(profile, recharge_sum)  # 到账
                     if status:
@@ -663,7 +663,7 @@ def update_pay_status(request):
                         Order.status_next(order.id)  # 更新状态并发送微信提示信息
             else:
                 # 预付款成功
-                pay_records = PayRecord.objects.filter(order_id=order_id)  # 可能包含多个同一个order_id
+                pay_records = PayRecord.objects.filter(order_id=order_id, status=False)  # 可能包含多个同一个order_id
                 status = True
                 for pay in pay_records:
                     if pay.pay_type == 3:  # 账户扣款
