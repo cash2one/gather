@@ -656,6 +656,7 @@ def update_pay_status(request):
                     recharge_sum = records.aggregate(Sum('money'))['money__sum']
                     status = WashUserProfile.recharge(profile, recharge_sum)  # 到账
                     if status:
+                        INFO_LOG.info("recharge_test={},{}".format(len(records), recharge_sum))
                         if len(records) == 1 and recharge_sum >= 100:
                             # 非第一次充值，送优惠券
                             MyDiscount.present_after_recharge(profile)
