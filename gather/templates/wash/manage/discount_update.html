@@ -55,12 +55,18 @@
                         </td>
                     </tr>
                     <tr>
+                        <td>是否有效</td>
+                        <td>
+                            <input type="radio" name="status" value="1"{% if discount.status %}checked{% endif %}/>&nbsp;是&nbsp;&nbsp;
+                            <input type="radio" name="status" value="0"{% if not discount.status %}checked{% endif %}/>&nbsp;否
+                        </td>
+                    </tr>
+                    <tr>
                         <td>是否为赠送用户的优惠券</td>
                         <td>
-                            <select name="is_for_user">
-                                <option value="0" {% if discount.is_for_user %}selected{% endif %}>否</option>
-                                <option value="1" {% if not discount.is_for_user %}selected{% endif %}>是</option>
-                            </select>
+                            <input type="radio" name="is_for_user" value="1"{% if discount.is_for_user %}checked{% endif %}/>&nbsp;是&nbsp;&nbsp;
+                            <input type="radio" name="is_for_user" value="0"{% if not discount.is_for_user %}checked{% endif %}/>&nbsp;否
+
                         </td>
                     </tr>
                     <tr>
