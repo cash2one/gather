@@ -77,7 +77,7 @@ def send_wechat_msg(user, msg_type, order_id, data=None):
     elif msg_type == 'order_seller':
         template_id = settings.ORDER_SELLER_ID
         # open_id = 'oXP2qt5mU7eZF0twnxEkSpdITDhQ'
-        open_id = 'oXP2qt4NT-izUpr_B86wbViypiqI'
+        open_id = 'oXP2qt5mU7eZF0twnxEkSpdITDhQ'
         url = "{}/wash/manage/".format(settings.SERVER_NAME)
 
     json_data = {
