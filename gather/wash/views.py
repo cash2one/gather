@@ -582,7 +582,6 @@ def wechat_pay(request, template_name='wash/pay.html'):
     order_price = order.money
     my_account = wash_profile.cash
     should_pay = order_price
-    INFO_LOG.info("should_pay={}".format(should_pay))
     if order.pay_method != 2:
         if my_account > 0:
             if my_account >= order_price:
@@ -657,8 +656,7 @@ def update_pay_status(request):
                     recharge_sum = records.aggregate(Sum('money'))['money__sum']
                     status = WashUserProfile.recharge(profile, recharge_sum)  # 到账
                     if status:
-                        INFO_LOG.info("recharge_test={},{}".format(len(records), recharge_sum))
-                        if len(records) == 1 and recharge_sum >= 1:
+                        if len(records) == 1 and recharge_sum >= 10000:
                             # 非第一次充值，送优惠券
                             MyDiscount.present_after_recharge(profile)
                         records.update(status=True, balance=profile.cash)
@@ -700,7 +698,7 @@ def recharge(request):
             return render(request, 'wash/recharge.html')
         #if cash_fen >= 20000:
         #    cash_extra = 5000  # 冲200送50
-        if cash_fen >= 1:
+        if cash_fen >= 10000:
             cash_extra = 3000  # 冲100送30
 
         order = Order(user=profile, money=cash_fen, status=0,
