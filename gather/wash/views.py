@@ -404,7 +404,7 @@ def get_show_info(request):
     else:
         param['is_for_company'] = False
 
-    washes = WashType.objects.filter(**param)
+    washes = WashType.objects.filter(**param).order_by('-is_for_company')
     return basket_info(request, washes)
 
 
@@ -414,7 +414,7 @@ def basket_info(request, washes=None):
     basket_list = Basket.get_list(sessionid)
     company_discounts_dict = Discount.short_descs(request.user)
     if washes is None:
-        washes = WashType.objects.filter(id__in=basket_list.keys()).order_by('-is_for_company')
+        washes = WashType.objects.filter(id__in=basket_list.keys())
 
     wash_arr = []
     for wash in washes:
