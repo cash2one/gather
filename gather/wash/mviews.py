@@ -278,7 +278,7 @@ def discount_update(request, discount_id, form_class=DiscountForm, template_name
             discount.price = request.POST.get('price')
             discount.begin = request.POST.get('begin')
             discount.end = request.POST.get('end')
-            discount.status = True if request.POST.get('status') == '1' else False
+            discount.is_for_user = True if request.POST.get('is_for_user') == '1' else False
             discount.save()
             return HttpResponseRedirect(reverse("wash.mviews.discount"))
         else:
