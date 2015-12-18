@@ -262,7 +262,7 @@ def order(request, template_name="wash/order.html"):
     # 优惠券各个类别的只能用一个
 
     # 获取各个类别的优惠券
-    discount_dict = Discount.get_discounts()
+    discount_dict = Discount.get_discounts(profile)
     discount_all = discount_dict['all']
     discount_class = discount_dict['class']
     discount_single = discount_dict['single']
@@ -283,12 +283,21 @@ def order(request, template_name="wash/order.html"):
     #if wash_count < settings.TRANS_COUNT:
     #    price_sum += settings.TRANS_PRICE_FEN  # 800分
 
-    # 非个人的全部优惠 优惠券中price为元，wash中为分
-    if discount_all:
-        if discount_all['discount_type'] == 1:
-            price_sum -= int(discount_all['price'])*100
-        else:
-            price_sum *= float(discount_all['price']) * 0.1
+    # 非个人的全部优惠 包括全部优惠和公司优惠 优惠券中price为元，wash中为分
+    not_self_discount_sum = 0
+    for all in discount_all:
+        can_use = True
+        if all.company_id is not None and all.company_id != profile.company_id:
+            can_use = False
+
+        if can_use:
+            if all['discount_type'] == 1:
+                price_sum -= int(all['price'])*100
+                not_self_discount_sum += int(all['price'])*100
+            else:
+                old_sum = price_sum
+                price_sum *= float(all['price']) * 0.1
+                not_self_discount_sum += old_sum - price_sum
 
     # 个人优惠券
     my_discount_id = request.GET.get('my_discount_id', None)
@@ -296,7 +305,7 @@ def order(request, template_name="wash/order.html"):
         my_discount_id = request.POST.get('my_discount_id', None)
 
     my_discount = None
-    my_discounts = MyDiscount.get_discounts()
+    my_discounts = MyDiscount.get_discounts(profile)
     if my_discount_id is None:
         if my_discounts:
             my_discount = my_discounts[0]
@@ -364,7 +373,7 @@ def order(request, template_name="wash/order.html"):
         'wash_list': wash_list,
         'price_sum': money_format(price_sum),
         'today': datetime.datetime.now(),
-        'discount': discount_all,
+        'not_self_discount_sum': not_self_discount_sum,
         'my_discount': my_discount,
         'my_discounts': my_discounts
     })

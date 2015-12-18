@@ -323,7 +323,7 @@ class Discount(models.Model):
                 return {}
 
     @classmethod
-    def get_discounts(cls):
+    def get_discounts(cls, profile):
         today = datetime.datetime.now()
         if cls.objects.filter(begin__lte=today, end__gte=today, status=True, is_for_user=False).exists():
             discounts = cls.objects.filter(begin__lte=today, end__gte=today, status=True, is_for_user=False)
@@ -346,7 +346,7 @@ class Discount(models.Model):
             f['company_id'] = discount.company_id
             f['desc'] = discount.desc
             if discount.range_type == 1:
-                f_discounts['all'] = f
+                f_discounts['all'][discount.id] = f
             elif discount.range_type == 2:
                 f_discounts['class'][discount.wash_type] = f
             else:
@@ -419,10 +419,12 @@ class MyDiscount(models.Model):
                 cls.create(profile.phone, discount)
 
     @classmethod
-    def get_discounts(cls):
+    def get_discounts(cls, profile):
         today = datetime.datetime.now()
-        if cls.objects.filter(begin__lte=today, end__gte=today, discount__status=True).exists():
-            discounts = cls.objects.filter(begin__lte=today, end__gte=today, discount__status=True)
+        if cls.objects.filter(phone=profile.phone, begin__lte=today, end__gte=today,
+                              discount__status=True, status=True).exists():
+            discounts = cls.objects.filter(phone=profile.phone, begin__lte=today, end__gte=today,
+                                           discount__status=True, status=True)
             return discounts
         else:
             return None
