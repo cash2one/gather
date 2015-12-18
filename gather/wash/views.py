@@ -285,18 +285,14 @@ def order(request, template_name="wash/order.html"):
 
     # 非个人的全部优惠 包括全部优惠和公司优惠 优惠券中price为元，wash中为分
     not_self_discount_sum = 0
-    for all in discount_all:
-        can_use = True
-        if all.company_id is not None and all.company_id != profile.company_id:
-            can_use = False
-
-        if can_use:
-            if all['discount_type'] == 1:
-                price_sum -= int(all['price'])*100
-                not_self_discount_sum += int(all['price'])*100
+    for key, discount in discount_all:
+        if discount.company_id is None or discount.company_id == profile.company_id:
+            if discount['discount_type'] == 1:
+                price_sum -= int(discount['price'])*100
+                not_self_discount_sum += int(discount['price'])*100
             else:
                 old_sum = price_sum
-                price_sum *= float(all['price']) * 0.1
+                price_sum *= float(discount['price']) * 0.1
                 not_self_discount_sum += old_sum - price_sum
 
     # 个人优惠券

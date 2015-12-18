@@ -1,5 +1,5 @@
 {% extends 'wash/manage/base.html' %}
-
+{% load util_tag %}
 {% block order_menu %}style="display:block"{% endblock %}
 {% block nav_bar %}
 <ul class="breadcrumb">
@@ -39,7 +39,7 @@
                     <td>{{ detail.id }}</td>
                     <td>{{ detail.order.user.phone }}</td>
                     <td>{{ detail.name }}</td>
-                    <td>{{ detail.price }}</td>
+                    <td>{{ detail.price|money_format }}</td>
                     <td>{{ detail.count }}</td>
                     <td>{{ detail.measure }}</td>
                     <td>{{ detail.belong }}</td>
