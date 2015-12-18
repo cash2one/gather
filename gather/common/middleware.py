@@ -39,8 +39,7 @@ class ClickLogMiddleWare(object):
         """ 用户点击纪录"""
         user_agent = request.META.get('HTTP_USER_AGENT', '')
         path = request.META.get('PATH_INFO', '')
-
-        if settings.DEBUG == 'False' and 'wash' in path:
+        if not settings.DEBUG and 'wash' in path:
             # 只允许微信访问wash
             if 'MicroMessenger' not in user_agent:
                 raise PermissionDenied
