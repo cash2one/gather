@@ -540,7 +540,7 @@ class Order(models.Model):
 
     @property
     def gen_order_id(self):
-        return "{}{}".format(self.created.strftime('%Y%m%d%H%M%S%f'), self.id)
+        return "{}{}".format(self.created.strftime('%Y%m%d%H%M%S'), self.id)
 
     @classmethod
     def exists(cls, oid):
