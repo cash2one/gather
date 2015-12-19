@@ -343,7 +343,7 @@ def order(request, template_name="wash/order.html"):
             OrderLog.create(order.id, 0)
             data = {
                 'first': {'value': u'您好，您已下单成功。', 'color': '#173177'},
-                'keyword1': {'value': order.id, 'color': '#173177'},
+                'keyword1': {'value': order.gen_order_id, 'color': '#173177'},
                 'keyword2': {'value': u'创建成功,在线支付', 'color': '#173177'},
                 'keyword3': {'value': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'color': '#173177'},
                 'remark': {'value': u'请尽快支付订单', 'color': '#173177'},
@@ -352,7 +352,7 @@ def order(request, template_name="wash/order.html"):
             OrderLog.create(order.id, 10)
             data = {
                 'first': {'value': u'您好，您已下单成功。', 'color': '#173177'},
-                'keyword1': {'value': order.id, 'color': '#173177'},
+                'keyword1': {'value': order.gen_order_id, 'color': '#173177'},
                 'keyword2': {'value': u'创建成功, 货到付款', 'color': '#173177'},
                 'keyword3': {'value': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'color': '#173177'},
                 'remark': {'value': u'请耐心等待客服与您确认', 'color': '#173177'},

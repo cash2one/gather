@@ -538,6 +538,10 @@ class Order(models.Model):
             names = [detail.name for detail in OrderDetail.objects.filter(order_id=self.id)]
             return u','.join(names)
 
+    @property
+    def gen_order_id(self):
+        return "{}{}".format(self.created.strftime('%Y%m%d%H%M%S%f'), self.id)
+
     @classmethod
     def exists(cls, oid):
         return cls.objects.filter(pk=oid).exists()
@@ -557,7 +561,7 @@ class Order(models.Model):
                         param['status'] = 11
                         data = {
                             'first': {'value': u'充值成功', 'color': '#173177'},
-                            'keyword1': {'value': order.id, 'color': '#173177'},
+                            'keyword1': {'value': order.gen_order_id, 'color': '#173177'},
                             'keyword2': {'value': u'您已充值成功{}元'.format(money_format(order.money)), 'color': '#173177'},
                             'keyword3': {
                                 'value': u"您的账户余额为{}".format(money_format(order.user.cash)),
@@ -574,7 +578,7 @@ class Order(models.Model):
                         param['hour'] = hour
                         data = {
                             'first': {'value': u'付款成功', 'color': '#173177'},
-                            'keyword1': {'value': order.id, 'color': '#173177'},
+                            'keyword1': {'value': order.gen_order_id, 'color': '#173177'},
                             'keyword2': {'value': u'您已付款成功', 'color': '#173177'},
                             'keyword3': {
                                 'value': u'请耐心等待客服与您确认',
@@ -621,7 +625,7 @@ class Order(models.Model):
                     param['status'] = 2
                     data = {
                         'first': {'value': u'卖家已确认', 'color': '#173177'},
-                        'keyword1': {'value': order.id, 'color': '#173177'},
+                        'keyword1': {'value': order.gen_order_id, 'color': '#173177'},
                         'keyword2': {'value': u'等待工作人员取货中', 'color': '#173177'},
                         'keyword3': {
                             'value': u"取货时间{},{},{}".format(order.service_time.strftime('%Y-%m-%d'), order.get_am_pm_display(), hour),
@@ -659,7 +663,7 @@ class Order(models.Model):
                 elif order.status == 3:
                     data = {
                         'first': {'value': u'送货通知', 'color': '#173177'},
-                        'keyword1': {'value': order.id, 'color': '#173177'},
+                        'keyword1': {'value': order.gen_order_id, 'color': '#173177'},
                         'keyword2': {'value': u'工作人员送货中', 'color': '#173177'},
                         'keyword3': {
                             'value': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
@@ -675,7 +679,7 @@ class Order(models.Model):
                     if verify_code == str(order.verify_code):
                         data = {
                             'first': {'value': u'交易成功', 'color': '#173177'},
-                            'keyword1': {'value': order.id, 'color': '#173177'},
+                            'keyword1': {'value': order.gen_order_id, 'color': '#173177'},
                             'keyword2': {'value': u'交易完毕', 'color': '#173177'},
                             'keyword3': {
                                 'value': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
