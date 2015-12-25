@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from PIL import Image, ImageDraw, ImageFont
 from math import ceil
 
-from gather import settings
+from django.conf import settings
 
 
 current_path = os.path.join(settings.BASE_DIR, "static/verify")
