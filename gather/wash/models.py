@@ -56,6 +56,14 @@ class WashUserProfile(models.Model):
         # 用户名保密
         return self.phone[:3] + "******"
 
+    @property
+    def name(self):
+        default = UserAddress.get_default(self)
+        if default is not None:
+            return default.name
+        else:
+            return '无'
+
     @classmethod
     def pay(cls, profile, money):
         if profile.verify_cash == get_encrypt_cash(profile):
@@ -183,6 +191,7 @@ class UserAddress(models.Model):
                 return cls.objects.get(user=user, id=choose)
         except:
             return None
+
 
 class WashType(models.Model):
     """ 洗刷类型"""
@@ -593,7 +602,7 @@ class Order(models.Model):
                         seller_data = {
                             'first': {'value': u'有新订单支付成功(未确认)', 'color': '#173177'},
                             'keyword1': {'value': order.desc, 'color': '#173177'},
-                            'keyword2': {'value': order.user.phone, 'color': '#173177'},
+                            'keyword2': {'value': "{}({})".format(order.user.name, order.user.phone), 'color': '#173177'},
                             'keyword3': {
                                 'value': UserAddress.get_default(order.user).detail,
                                 'color': '#173177'
@@ -640,7 +649,7 @@ class Order(models.Model):
                     seller_data = {
                             'first': {'value': u'订单已确认', 'color': '#173177'},
                             'keyword1': {'value': order.desc, 'color': '#173177'},
-                            'keyword2': {'value': order.user.phone, 'color': '#173177'},
+                            'keyword2': {'value': "{}({})".format(order.user.name, order.user.phone), 'color': '#173177'},
                             'keyword3': {
                                 'value': UserAddress.get_default(order.user).detail,
                                 'color': '#173177'
@@ -864,5 +873,13 @@ class Config(models.Model):
             return int(c.value)*100
         else:
             return settings.TRANS_FOR_FREE
+
+    @classmethod
+    def get_admins(cls):
+        if cls.exists(1):
+            admins = cls.objects.filter(key=1)
+            return [admin.value for admin in admins]
+        else:
+            return ['oXP2qt5mU7eZF0twnxEkSpdITDhQ', 'oXP2qt5mU7eZF0twnxEkSpdITDhQ']
 
 

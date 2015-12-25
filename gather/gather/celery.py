@@ -18,6 +18,7 @@ from django.template import Context, loader
 from wechat.models import WeProfile
 from wechat.views import get_server_access_token
 from utils import gen_info_msg
+from wash.models import Config
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'gather.settings')
 
@@ -61,8 +62,9 @@ def async_send_html_email(self, subject, recipient_list, template_name, context)
 
 #@app.task(bind=True, default_retry_delay=300, max_retries=1)
 def send_wechat_msg(user, msg_type, order_id, data=None):
-    open_id = WeProfile.objects.get(user=user).open_id
+    open_ids = [WeProfile.objects.get(user=user).open_id]
     url = "{url}/wash/user/order/detail/{order_id}".format(url=settings.SERVER_NAME, order_id=order_id)
+    count = 1
 
     if msg_type == 'order_create':
         template_id = settings.ORDER_CREATE_ID
@@ -76,18 +78,18 @@ def send_wechat_msg(user, msg_type, order_id, data=None):
         template_id = settings.ORDER_CLOSE_ID
     elif msg_type == 'order_seller':
         template_id = settings.ORDER_SELLER_ID
-        # open_id = 'oXP2qt5mU7eZF0twnxEkSpdITDhQ'
-        open_id = 'oXP2qt5mU7eZF0twnxEkSpdITDhQ'
+        open_ids = Config.get_admins()
         url = "{}/wash/manage/".format(settings.SERVER_NAME)
 
-    json_data = {
-       "touser": str(open_id),
-       "template_id": template_id,
-       "url":  url,
-       "data": data
-    }
-    access_token = get_server_access_token()
-    url = settings.SEND_WE_MSG_URL % access_token
-    r = requests.post(url, json.dumps(json_data, ensure_ascii=False).encode('utf-8'))
+    for open_id in open_ids:
+        json_data = {
+           "touser": str(open_id),
+           "template_id": template_id,
+           "url":  url,
+           "data": data
+        }
+        access_token = get_server_access_token()
+        url = settings.SEND_WE_MSG_URL % access_token
+        r = requests.post(url, json.dumps(json_data, ensure_ascii=False).encode('utf-8'))
 
 
