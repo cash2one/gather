@@ -62,7 +62,7 @@ class WashUserProfile(models.Model):
         if default is not None:
             return default.name
         else:
-            return '无'
+            return u'无'
 
     @classmethod
     def pay(cls, profile, money):
@@ -602,7 +602,7 @@ class Order(models.Model):
                         seller_data = {
                             'first': {'value': u'有新订单支付成功(未确认)', 'color': '#173177'},
                             'keyword1': {'value': order.desc, 'color': '#173177'},
-                            'keyword2': {'value': "{}({})".format(order.user.name, order.user.phone), 'color': '#173177'},
+                            'keyword2': {'value': u"{}({})".format(order.user.name, order.user.phone), 'color': '#173177'},
                             'keyword3': {
                                 'value': UserAddress.get_default(order.user).detail,
                                 'color': '#173177'
@@ -649,7 +649,7 @@ class Order(models.Model):
                     seller_data = {
                             'first': {'value': u'订单已确认', 'color': '#173177'},
                             'keyword1': {'value': order.desc, 'color': '#173177'},
-                            'keyword2': {'value': "{}({})".format(order.user.name, order.user.phone), 'color': '#173177'},
+                            'keyword2': {'value': u"{}({})".format(order.user.name, order.user.phone), 'color': '#173177'},
                             'keyword3': {
                                 'value': UserAddress.get_default(order.user).detail,
                                 'color': '#173177'
