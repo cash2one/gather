@@ -828,8 +828,41 @@ class Config(models.Model):
         (2, '邮费'),
         (3, '是否需要邮费'),
         (4, '包邮件数'),
+        (5, '包邮(消费最低额度)'),
     )
     key = models.IntegerField(choices=KEY_CHOICES)
     value = models.CharField('值', max_length=150)
     is_single = models.BooleanField('是否可多个', default=True)
+
+    @classmethod
+    def exists(cls, key):
+        return cls.objects.filter(key=key)
+
+    @classmethod
+    def is_post_for_free(cls):
+        if cls.exists(3):
+            c = cls.objects.get(key=3)
+            if c.value == '1':
+                return False
+            else:
+                return True
+        else:
+            return False
+
+    @classmethod
+    def get_postage(cls):
+        if cls.exists(2):
+            c = cls.objects.get(key=2)
+            return int(c.value)
+        else:
+            return settings.TRANS_PRICE_FEN
+
+    @classmethod
+    def least_pay_for_free(cls):
+        if cls.exists(5):
+            c = cls.objects.get(key=5)
+            return int(c.value)
+        else:
+            return settings.TRANS_FOR_FREE
+
 

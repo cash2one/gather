@@ -18,7 +18,7 @@ from django.db.models import Sum
 
 from wash.models import VerifyCode, WashUserProfile, WashType, IndexBanner
 from wash.models import Basket, UserAddress, Address, Order, OrderDetail, OrderLog
-from wash.models import Discount, MyDiscount, Advice, Company, PayRecord
+from wash.models import Discount, MyDiscount, Advice, Company, PayRecord, Config
 from wash.forms import RegistForm
 from CCPRestSDK import REST
 from utils import gen_verify_code, adjacent_paginator
@@ -317,8 +317,11 @@ def order(request, template_name="wash/order.html"):
 
     price_sum = 0 if price_sum < 0 else price_sum
 
-    # 总价大于30则包送
-    price_sum = price_sum + settings.TRANS_PRICE_FEN if price_sum < settings.TRANS_FOR_FREE else price_sum
+    # 不包邮配置情况
+    if not Config.is_post_for_free():
+        postage = Config.get_postage()
+        least_pay_for_free = Config.least_pay_for_free()
+        price_sum = price_sum + postage if price_sum <= least_pay_for_free else price_sum
 
     if request.method == "POST":
         address_id = request.POST.get('address_id', '')
