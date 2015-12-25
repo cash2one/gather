@@ -612,7 +612,7 @@ class Order(models.Model):
                                 'color': '#173177'
                             },
                             'keyword5': {
-                                'value': u'{}元'.format(money_format(order.money)),
+                                'value': u'{}元, 订单号{}'.format(money_format(order.money), order.gen_order_id),
                                 'color': '#173177'
                             },
                             'remark': {
@@ -659,7 +659,7 @@ class Order(models.Model):
                                 'color': '#173177'
                             },
                             'keyword5': {
-                                'value': u'{}元'.format(money_format(order.money)),
+                                'value': u'{}元, 订单号{}'.format(money_format(order.money), order.gen_order_id),
                                 'color': '#173177'
                             },
                             'remark': {
@@ -880,6 +880,6 @@ class Config(models.Model):
             admins = cls.objects.filter(key=1)
             return [admin.value for admin in admins]
         else:
-            return ['oXP2qt5mU7eZF0twnxEkSpdITDhQ', 'oXP2qt5mU7eZF0twnxEkSpdITDhQ']
+            return ['oXP2qt5mU7eZF0twnxEkSpdITDhQ',]
 
 

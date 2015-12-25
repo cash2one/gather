@@ -33,6 +33,7 @@ WASH_URL = settings.WASH_URL
 OAUTH_WASH_URL = settings.OAUTH_WASH_URL
 
 INFO_LOG = logging.getLogger('info')
+ERR_LOG = logging.getLogger('err')
 
 
 def auto_login(func):
@@ -75,6 +76,7 @@ def index(request, template_name='wash/index.html'):
 def account(request, template_name='wash/account.html'):
     user = request.user
     if user.is_authenticated():
+        ERR_LOG.info(user)
         profile = WashUserProfile.objects.get(user=user)
     else:
         profile = None
