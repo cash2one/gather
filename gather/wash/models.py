@@ -853,7 +853,7 @@ class Config(models.Model):
     def get_postage(cls):
         if cls.exists(2):
             c = cls.objects.get(key=2)
-            return int(c.value)
+            return int(c.value)*100
         else:
             return settings.TRANS_PRICE_FEN
 
@@ -861,7 +861,7 @@ class Config(models.Model):
     def least_pay_for_free(cls):
         if cls.exists(5):
             c = cls.objects.get(key=5)
-            return int(c.value)
+            return int(c.value)*100
         else:
             return settings.TRANS_FOR_FREE
 
