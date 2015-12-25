@@ -77,6 +77,7 @@ def account(request, template_name='wash/account.html'):
     user = request.user
     if user.is_authenticated():
         ERR_LOG.info(user)
+        INFO_LOG.info(user)
         profile = WashUserProfile.objects.get(user=user)
     else:
         profile = None
