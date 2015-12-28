@@ -559,7 +559,7 @@ class Order(models.Model):
     def status_next(cls, oid, verify_code=None, hour=u'无'):
         if cls.exists(oid):
             order = Order.objects.get(pk=oid)
-            if order.status < 5:
+            if order.status < 5 or order.status == 10:
                 param = {
                     'status': order.status+1
                 }
@@ -602,7 +602,7 @@ class Order(models.Model):
                         seller_data = {
                             'first': {'value': u'有新订单支付成功(未确认)', 'color': '#173177'},
                             'keyword1': {'value': order.desc, 'color': '#173177'},
-                            'keyword2': {'value': u"{}({})".format(order.user.name, order.user.phone), 'color': '#173177'},
+                            'keyword2': {'value': u"{}".format(order.user.name), 'color': '#173177'},
                             'keyword3': {
                                 'value': UserAddress.get_default(order.user).detail,
                                 'color': '#173177'
@@ -649,7 +649,7 @@ class Order(models.Model):
                     seller_data = {
                             'first': {'value': u'订单已确认', 'color': '#173177'},
                             'keyword1': {'value': order.desc, 'color': '#173177'},
-                            'keyword2': {'value': u"{}({})".format(order.user.name, order.user.phone), 'color': '#173177'},
+                            'keyword2': {'value': u"{}".format(order.user.name), 'color': '#173177'},
                             'keyword3': {
                                 'value': UserAddress.get_default(order.user).detail,
                                 'color': '#173177'

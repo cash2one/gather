@@ -367,7 +367,7 @@ def order(request, template_name="wash/order.html"):
             seller_data = {
                 'first': {'value': u'有新订单下单成功(货到付款, 未确认)', 'color': '#173177'},
                 'keyword1': {'value': order.desc, 'color': '#173177'},
-                'keyword2': {'value': u"{}({})".format(order.user.name, order.user.phone), 'color': '#173177'},
+                'keyword2': {'value': u"{}".format(order.user.name), 'color': '#173177'},
                 'keyword3': {
                     'value': UserAddress.get_default(order.user).detail,
                     'color': '#173177'
