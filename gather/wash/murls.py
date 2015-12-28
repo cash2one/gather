@@ -41,5 +41,8 @@ urlpatterns = patterns('wash.mviews',
     # 配置信息
     url(r'^config/$', 'config', name='manage_config'),
 
+    # 充值
+    url(r'^recharge/$', 'recharge', name='manage_recharge'),
+
 
 )

@@ -78,15 +78,16 @@ def send_wechat_msg(user, msg_type, order_id, data=None):
         open_ids = ['oXP2qt5mU7eZF0twnxEkSpdITDhQ', 'oXP2qt4NT-izUpr_B86wbViypiqI']
         url = "{}/wash/manage/".format(settings.SERVER_NAME)
 
-    for open_id in open_ids:
-        json_data = {
-           "touser": str(open_id),
-           "template_id": template_id,
-           "url":  url,
-           "data": data
-        }
-        access_token = get_server_access_token()
-        url = settings.SEND_WE_MSG_URL % access_token
-        r = requests.post(url, json.dumps(json_data, ensure_ascii=False).encode('utf-8'))
+    if not settings.DEBUG:
+        for open_id in open_ids:
+            json_data = {
+               "touser": str(open_id),
+               "template_id": template_id,
+               "url":  url,
+               "data": data
+            }
+            access_token = get_server_access_token()
+            url = settings.SEND_WE_MSG_URL % access_token
+            r = requests.post(url, json.dumps(json_data, ensure_ascii=False).encode('utf-8'))
 
 

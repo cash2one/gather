@@ -130,7 +130,7 @@ def verify_code(request):
                 result = True if result == '000000' else False
                 return HttpResponse(json.dumps({'result': result}))
         return HttpResponse(json.dumps({"result": False, 'msg': u'手机号格式错误'}))
-    return render(request)
+    return HttpResponse(False)
 
 
 @auto_login

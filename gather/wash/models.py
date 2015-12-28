@@ -492,7 +492,8 @@ class Basket(models.Model):
 PAY = (
     (0, '在线支付'),
     (1, '货到付款'),
-    (2, '充值')
+    (2, '充值'),
+    (3, '扣款')
 )
 
 STATUS = (
@@ -507,7 +508,8 @@ STATUS = (
     (8, u'卖家取消交易'),
     (9, u'已过期'),
     (10, u'货到付款,未处理'),
-    (11, u'充值成功')
+    (11, u'充值成功'),
+    (12, u'后台扣款成功')
 
 )
 
@@ -850,7 +852,9 @@ class PayRecord(models.Model):
         (1, u'充值'),
         (2, u'银行卡扣费'),
         (3, u'账户扣费'),
-        (4, u'充值赠送')
+        (4, u'充值赠送'),
+        (5, u'后台充值'),
+        (6, u'后台扣除')
     )
 
     user = models.ForeignKey(WashUserProfile, related_name='pay_record')

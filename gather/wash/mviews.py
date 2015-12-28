@@ -15,10 +15,10 @@ from django.conf import settings
 from django.contrib.auth import login, authenticate
 
 from wash.models import WashType, WashUserProfile, Discount, Order, OrderDetail
-from wash.models import IndexBanner, Company, Config
+from wash.models import IndexBanner, Company, Config, PayRecord, OrderLog
 from account.models import LoginLog
 from wash.forms import WashTypeForm, DiscountForm, IndexForm
-from utils import adjacent_paginator
+from utils import adjacent_paginator, get_encrypt_cash
 
 WASH_MURL = settings.WASH_MURL
 
@@ -399,4 +399,38 @@ def config(request, template_name='wash/manage/config.html'):
         'configs': configs,
         'keys': Config.KEY_CHOICES
     })
+
+
+@login_required(login_url=WASH_MURL)
+def recharge(request, template_name='wash/manage/recharge.html'):
+    if request.method == "POST":
+        cash = float(request.POST.get('cash', 0))
+        phone = request.POST.get('phone', '')
+        choice = request.POST.get('choice', '')
+        pay_type = 5 if choice == 'plus' else 6
+        pay_method = 2 if choice == 'plus' else 3
+        status = 11 if choice == 'plus' else 12
+        cash = cash if choice == 'plus' else 0-cash
+
+        if WashUserProfile.objects.filter(phone=phone).exists():
+            profile = WashUserProfile.objects.get(phone=phone)
+            try:
+                cash = int(cash*100.0)
+                order = Order(user=profile, money=cash, status=status,
+                              service_time=datetime.datetime.now(), pay_method=pay_method)
+                order.save()
+                OrderLog.create(order.id, 0)
+                profile.cash += cash
+                profile.verify_cash = get_encrypt_cash(profile)
+                profile.save()
+                PayRecord(user=profile, order=order, pay_type=pay_type,
+                          money=cash, status=1, balance=profile.cash).save()
+            except:
+                pass
+
+    records = PayRecord.objects.filter(pay_type__in=[5, 6])
+    return render(request, template_name, {
+        'records': records,
+    })
+
 
