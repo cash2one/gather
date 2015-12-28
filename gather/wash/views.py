@@ -381,7 +381,7 @@ def order(request, template_name="wash/order.html"):
                     'color': '#173177'
                 },
                 'remark': {
-                    'value': u"取货时间{},{}".format(order.service_time.strftime('%Y-%m-%d'), order.get_am_pm_display()),
+                    'value': u"取货时间{},{}".format(order.service_time, order.get_am_pm_display()),
                     'color': '#173177'
                 },
             }
