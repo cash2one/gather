@@ -347,47 +347,10 @@ def order(request, template_name="wash/order.html"):
         Basket.submit(request.session.session_key)
         if pay == '0':
             OrderLog.create(order.id, 0)
-            data = {
-                'first': {'value': u'您好，您已下单成功。', 'color': '#173177'},
-                'keyword1': {'value': order.gen_order_id, 'color': '#173177'},
-                'keyword2': {'value': u'创建成功,在线支付', 'color': '#173177'},
-                'keyword3': {'value': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'color': '#173177'},
-                'remark': {'value': u'请尽快支付订单', 'color': '#173177'},
-            }
+            Order.first_step(order.pk)
         else:
             OrderLog.create(order.id, 10)
-            data = {
-                'first': {'value': u'您好，您已下单成功。', 'color': '#173177'},
-                'keyword1': {'value': order.gen_order_id, 'color': '#173177'},
-                'keyword2': {'value': u'创建成功, 货到付款', 'color': '#173177'},
-                'keyword3': {'value': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'color': '#173177'},
-                'remark': {'value': u'请耐心等待客服与您确认', 'color': '#173177'},
-            }
-            # 发送给商家
-            seller_data = {
-                'first': {'value': u'有新订单下单成功(货到付款, 未确认)', 'color': '#173177'},
-                'keyword1': {'value': order.desc, 'color': '#173177'},
-                'keyword2': {'value': u"{}".format(order.user.name), 'color': '#173177'},
-                'keyword3': {
-                    'value': UserAddress.get_default(order.user).detail,
-                    'color': '#173177'
-                },
-                'keyword4': {
-                    'value': order.user.phone,
-                    'color': '#173177'
-                },
-                'keyword5': {
-                    'value': u'{}元, 订单号{}'.format(money_format(order.money), order.gen_order_id),
-                    'color': '#173177'
-                },
-                'remark': {
-                    'value': u"取货时间{},{}".format(order.service_time, order.get_am_pm_display()),
-                    'color': '#173177'
-                },
-            }
-            send_wechat_msg(request.user, 'order_seller', order.id, seller_data)
-
-        send_wechat_msg(request.user, 'order_create', order.id, data)
+            Order.first_step(order.pk, pay='offline', send_seller=True)
 
         return HttpResponseRedirect(reverse('wash.views.user_order'))
     else:
@@ -537,6 +500,7 @@ def address_street(request):
         for street in streets:
             street_arr.append(street.name)
         return HttpResponse(json.dumps({'result': True, 'info': street_arr}))
+    return HttpResponse(json.dumps({'result': False, 'info': []}))
 
 
 @login_required(login_url=OAUTH_WASH_URL.format(next='/wash/user/address/'))

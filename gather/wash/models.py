@@ -552,6 +552,55 @@ class Order(models.Model):
         return "{}{}".format(self.created.strftime('%Y%m%d%H%M%S'), self.id)
 
     @classmethod
+    def first_step(cls, oid, pay="online", send_seller=False):
+        if cls.exists(oid):
+            order = Order.objects.get(pk=oid)
+            user = order.user.user
+            if pay == 'online':
+                data = {
+                    'first': {'value': u'您好，您已下单成功。', 'color': '#173177'},
+                    'keyword1': {'value': order.gen_order_id, 'color': '#173177'},
+                    'keyword2': {'value': u'创建成功,在线支付', 'color': '#173177'},
+                    'keyword3': {'value': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'color': '#173177'},
+                    'remark': {'value': u'请尽快支付订单', 'color': '#173177'},
+                }
+            else:
+                data = {
+                    'first': {'value': u'您好，您已下单成功。', 'color': '#173177'},
+                    'keyword1': {'value': order.gen_order_id, 'color': '#173177'},
+                    'keyword2': {'value': u'创建成功, 货到付款', 'color': '#173177'},
+                    'keyword3': {'value': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'color': '#173177'},
+                    'remark': {'value': u'请耐心等待客服与您确认', 'color': '#173177'},
+                }
+            if send_seller:
+                # 发送给商家
+                seller_data = {
+                    'first': {'value': u'有新订单下单成功(货到付款, 未确认)', 'color': '#173177'},
+                    'keyword1': {'value': order.desc, 'color': '#173177'},
+                    'keyword2': {'value': u"{}".format(order.user.name), 'color': '#173177'},
+                    'keyword3': {
+                        'value': UserAddress.get_default(order.user).detail,
+                        'color': '#173177'
+                    },
+                    'keyword4': {
+                        'value': order.user.phone,
+                        'color': '#173177'
+                    },
+                    'keyword5': {
+                        'value': u'{}元, 订单号{}'.format(money_format(order.money), order.gen_order_id),
+                        'color': '#173177'
+                    },
+                    'remark': {
+                        'value': u"取货时间{},{}".format(order.service_time, order.get_am_pm_display()),
+                        'color': '#173177'
+                    },
+                }
+                send_wechat_msg(user, 'order_seller', order.id, seller_data)
+            send_wechat_msg(user, 'order_create', order.id, data)
+            return True
+        return False
+
+    @classmethod
     def exists(cls, oid):
         return cls.objects.filter(pk=oid).exists()
 
