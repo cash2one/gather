@@ -22,6 +22,7 @@ urlpatterns = patterns('',
     url(r'^wash/', include('wash.urls')),
     url(r'^wash/manage/', include('wash.murls')),
     url(r'^abount_us/', 'gather.views.about_us', name='about_us'),
+    url(r'^check_vin/', 'gather.views.check_vin', name='check_vin'),
     url(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
 )
 
