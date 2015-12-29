@@ -33,6 +33,7 @@ def check_vin(request):
 
         jiaquan = [8, 7, 6, 5, 4, 3, 2, 10, 0, 9, 8, 7, 6, 5, 4, 3, 2]
         vin_sum = 0
+        key = 0
 
         for i in xrange(17):
             if i != 8:
@@ -47,8 +48,9 @@ def check_vin(request):
 
         data['vin'] = vin
         data['verify_code'] = vin[8]
+        data['left'] = left
         data['vin_sum'] = vin_sum
-        data['status'] = str(left) == vin[8]
+        data['status'] = str(left) == str(key)
         return HttpResponse(json.dumps(data))
 
     return HttpResponse(json.dumps({'result': False}))
