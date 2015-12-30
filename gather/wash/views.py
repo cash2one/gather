@@ -39,6 +39,7 @@ ERR_LOG = logging.getLogger('err')
 def auto_login(func):
     def wrapped(_request, *args, **kwargs):
         user = _request.user
+
         if not user.is_authenticated():
             status, open_id = code_get_openid(_request)
             if status:
@@ -52,6 +53,9 @@ def auto_login(func):
                         return HttpResponseRedirect(_request.GET.get('next', '/wash/account/'))
                 else:
                     kwargs['open_id'] = open_id
+            elif _request.GET.get('next', '') == '/wash/account/':  # 兼容未注册用户点击我的账户不跳转到注册
+                return HttpResponseRedirect(_request.GET.get('next', '/wash/account/'))
+
         return func(_request, *args, **kwargs)
         wrapped.__doc__ = func.__doc__
         wrapped.__name__ = func.__name__
@@ -72,7 +76,7 @@ def index(request, template_name='wash/index.html'):
     })
 
 
-@auto_login
+@login_required(login_url=OAUTH_WASH_URL.format(next='/wash/account/'))
 def account(request, template_name='wash/account.html'):
     user = request.user
     if user.is_authenticated():
