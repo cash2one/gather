@@ -776,6 +776,14 @@ def advice(request, template_name='wash/advice.html'):
     return render(request, template_name)
 
 
+def qr(request, templace_name='wash/qr.html'):
+    """
+    扫码二维码关注
+    """
+    pass
+
+
+
 @login_required(login_url=OAUTH_WASH_URL.format(next='/wash/verify/company/'))
 def verify_company(request, template_name='wash/verify_company.html'):
     user = request.user

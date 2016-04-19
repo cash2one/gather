@@ -2,6 +2,7 @@
 # -*- coding:utf-8 -*-
 
 import logging
+import datetime
 
 from django.conf import settings
 from django.core.cache import get_cache
@@ -37,6 +38,8 @@ class UserRestrictMiddleware(object):
 class ClickLogMiddleWare(object):
     def process_request(self, request):
         """ 用户点击纪录"""
+        if ClickLog.objects.filter(click_time=datetime.datetime.now()).count() > 10:
+            raise PermissionDenied
         user_agent = request.META.get('HTTP_USER_AGENT', '')
         path = request.META.get('PATH_INFO', '')
         if settings.DEBUG == 'False' and 'wash' in path:
@@ -56,7 +59,7 @@ class ClickLogMiddleWare(object):
                 remote_ip=request.META['REMOTE_ADDR'],
             ).save()
             CLICK_LOG.info(gen_info_msg(request, action=u'点击', url=request.path, username=username))
-        else:
+        elif 'wash' in path:
             ClickLog(
                 username='guest',
                 click_url=request.path[:50],

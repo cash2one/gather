@@ -6,6 +6,7 @@ from django.views.generic import TemplateView
 
 urlpatterns = patterns('wash.views',
     url(r'^$', 'index', name='wash_index'),
+    url(r'^qr/$', 'qr', name='qr'),
     url(r'^code/$', 'verify_code_img', name='verify_code_img'),
     url(r'^oauth/$', 'oauth', name='oauth'),
     url(r'^check_code/$', 'verify_code_check', name='verify_code_check'),
